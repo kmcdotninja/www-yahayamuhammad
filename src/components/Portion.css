@@ -1,0 +1,60 @@
+.portion {
+  width: clamp(260px, 28vw, 420px);
+  height: clamp(260px, 28vw, 420px);
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+  display: block;
+  background: transparent;
+}
+
+.portion:active {
+  cursor: grabbing;
+}
+
+.portion canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  outline: none;
+  border: none;
+}
+
+.portion--hovering {
+  cursor: none;
+}
+
+.portion--hovering:active {
+  cursor: none;
+}
+
+.portion__cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+  transition: opacity 0.18s ease;
+  z-index: 5;
+}
+
+.portion--hovering .portion__cursor {
+  opacity: 1;
+}
+
+[data-theme='light'] .portion__cursor {
+  background: #0a0a0a;
+  color: #f5f3ee;
+}

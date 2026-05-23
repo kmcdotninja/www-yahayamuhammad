@@ -1,0 +1,217 @@
+.footer-art {
+  position: relative;
+  padding: 56px var(--pad) 0;
+  background: var(--bg);
+  overflow: hidden;
+  user-select: none;
+}
+
+.hr-full {
+  position: relative;
+  display: block;
+  width: 100vw;
+  height: 1px;
+  border: 0;
+  background: var(--border);
+  margin: 0 0 0 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.footer-art__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 480px;
+  margin-bottom: 56px;
+  position: relative;
+  z-index: 4;
+  user-select: text;
+}
+
+.footer-art__bio {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+
+.footer-art__contact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-art__email,
+.footer-art__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  border: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.footer-art__email:hover {
+  background: #fff;
+}
+
+.footer-art__copy:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.footer-art__copy:active {
+  transform: scale(0.96);
+}
+
+[data-theme='light'] .footer-art__email,
+[data-theme='light'] .footer-art__copy {
+  background: #0a0a0a;
+  color: #f5f3ee;
+}
+
+[data-theme='light'] .footer-art__email:hover,
+[data-theme='light'] .footer-art__copy:hover {
+  background: #1a1a1a;
+}
+
+.footer-art__text {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: calc((min(100vw, 1512px) - var(--pad) * 2 - var(--rail) * 2) / 1.8);
+  letter-spacing: 0;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: -0.22em;
+  cursor: none;
+}
+
+.footer-art__icon {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--rot));
+  object-fit: contain;
+  pointer-events: none;
+  animation: trail-pop 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+  z-index: 3;
+}
+
+.footer-art__letter-icon {
+  position: absolute;
+  pointer-events: none;
+  width: clamp(120px, 17vw, 320px);
+  height: auto;
+  object-fit: contain;
+  z-index: 2;
+  bottom: 6%;
+}
+
+.footer-art__letter-icon--y {
+  left: 14%;
+  transform: translateX(-50%);
+}
+
+.footer-art__letter-icon--m {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer-art__letter-icon--d {
+  left: 86%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 700px) {
+  .footer-art__letter-icon {
+    width: clamp(60px, 16vw, 140px);
+  }
+}
+
+@keyframes trail-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rot)) scale(0.4);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rot)) scale(1.1);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rot)) scale(0.9);
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px var(--pad);
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  color: var(--text);
+  background: var(--bg);
+  position: relative;
+  gap: 16px;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.footer__copy {
+  color: var(--text);
+}
+
+.footer__links {
+  display: flex;
+  gap: 28px;
+}
+
+.footer__links a {
+  color: var(--text);
+  transition: opacity 0.2s ease;
+}
+
+.footer__links a:hover {
+  opacity: 0.5;
+}
+
+@media (max-width: 700px) {
+  .footer {
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .footer__links {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}

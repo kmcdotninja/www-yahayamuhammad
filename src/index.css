@@ -1,0 +1,51 @@
+:root {
+  --bg: #0a0a0a;
+  --text: #e6e3dc;
+  --text-dim: #8a8780;
+  --text-muted: #5a5854;
+  --border: rgba(255, 255, 255, 0.12);
+  --pill-border: rgba(255, 255, 255, 0.35);
+
+  --rail: clamp(16px, 2.4vw, 32px);
+  --pad: clamp(20px, 3vw, 48px);
+
+  --sans: 'Instrument Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --display: 'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --serif: var(--display);
+
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}

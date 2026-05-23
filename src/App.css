@@ -1,0 +1,53 @@
+.page {
+  background: var(--bg);
+  min-height: 100svh;
+  width: 100%;
+  max-width: 1512px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.page::before,
+.page::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.page::before {
+  left: var(--rail);
+}
+
+.page::after {
+  right: var(--rail);
+}
+
+main {
+  display: block;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid var(--pill-border);
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  background: transparent;
+  text-transform: uppercase;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+}
+
+.pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

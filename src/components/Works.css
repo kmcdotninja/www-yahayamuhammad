@@ -1,0 +1,196 @@
+.works {
+  background: var(--bg);
+}
+
+.project {
+  padding: 80px 0;
+  position: relative;
+}
+
+.project::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.project__title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(56px, 8.4vw, 140px);
+  letter-spacing: 0;
+  line-height: 0.9;
+  margin: 0 0 56px;
+  padding: 0 var(--pad);
+  text-transform: uppercase;
+}
+
+.project__info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(20px, 4vw, 80px);
+  padding: 0 var(--pad);
+  margin-bottom: 56px;
+  align-items: start;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.info-block__label {
+  align-self: flex-start;
+  background: transparent;
+  color: var(--text);
+  padding: 7px 16px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.info-block__text,
+.info-block__list {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+  max-width: 38ch;
+}
+
+.info-block__list {
+  list-style: none;
+  padding: 0;
+}
+
+.info-block__list li + li {
+  margin-top: 2px;
+}
+
+.project__scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-inline: var(--rail);
+  margin-bottom: 56px;
+  padding-left: calc(var(--pad) - var(--rail));
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.project__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.project__scroller--grabbing {
+  cursor: grabbing;
+}
+
+.project__track {
+  display: flex;
+  align-items: flex-end;
+  width: max-content;
+  will-change: scroll-position;
+}
+
+.project__image {
+  margin: 0 18px 0 0;
+  height: clamp(360px, 56vh, 620px);
+  flex-shrink: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #1a1a1a;
+  cursor: none;
+  transition: transform 0.25s ease;
+}
+
+.project__scroller--grabbing,
+.project__scroller--grabbing .project__image {
+  cursor: grabbing;
+}
+
+.project__image:hover {
+  transform: translateY(-2px);
+}
+
+.project__image img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.project__image img {
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .project__info {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .project__image {
+    height: clamp(280px, 50vh, 420px);
+  }
+}
+
+@media (max-width: 700px) {
+  .project__image {
+    margin: 0 10px 0 0;
+    height: clamp(220px, 38vw, 240px);
+    border-radius: 14px;
+  }
+}
+
+/* ---- Cursor-following pill on image hover ---- */
+.project__cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+  transition: opacity 0.18s ease;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.project__cursor--visible {
+  opacity: 1;
+}
+
+[data-theme='light'] .project__cursor {
+  background: #0a0a0a;
+  color: #f5f3ee;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Touch devices: keep native cursor (the pill never shows for non-mouse anyway) */
+@media (hover: none) {
+  .project__image {
+    cursor: pointer;
+  }
+}

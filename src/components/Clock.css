@@ -1,0 +1,28 @@
+.clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.clock__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.55);
+  animation: clock-pulse 1.6s ease-in-out infinite;
+}
+
+.clock__zone {
+  color: var(--text-dim);
+}
+
+@keyframes clock-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
