@@ -1,0 +1,78 @@
+.sr {
+  width: 100%;
+  max-width: 100ch;
+  margin-inline: auto;
+}
+
+/* ---- Paragraphs ---- */
+.sr__paragraphs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.5vw, 56px);
+}
+
+.sr__paragraph {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(40px, 8vw, 120px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Each word starts as a soft ghost and scrubs up to full as you scroll. */
+.sr__word {
+  display: inline;
+  opacity: 0.18;
+  will-change: opacity;
+}
+
+/* ---- Signature block ---- */
+.sr__sign {
+  margin-top: clamp(56px, 8vw, 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.sr__name {
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.sr__sig {
+  display: block;
+  width: 100%;
+  max-width: 244px;
+  height: auto;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr__word {
+    opacity: 1;
+  }
+  .sr__sign {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .sr {
+    max-width: 100%;
+  }
+  .sr__paragraph {
+    font-size: clamp(32px, 9vw, 56px);
+    line-height: 1.15;
+  }
+  .sr__sig {
+    max-width: 200px;
+  }
+}

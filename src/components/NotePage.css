@@ -1,0 +1,14 @@
+.note {
+  background: var(--bg);
+  min-height: 100svh;
+  padding: 156px var(--pad) clamp(80px, 10vw, 160px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 760px) {
+  .note {
+    padding-top: 120px;
+  }
+}

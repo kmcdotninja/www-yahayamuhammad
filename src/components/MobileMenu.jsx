@@ -146,7 +146,16 @@ export default function MobileMenu({
             <img src="/Work%201.png" alt="" className="mm__card-icon" />
             <span>Work</span>
           </a>
-          <a href="#note" className="mm__card" onClick={handleNavClick}>
+          <a
+            href="/note"
+            className="mm__card"
+            onClick={(e) => {
+              e.preventDefault()
+              play(SOUNDS.BUTTON)
+              onClose()
+              navigate('/note')
+            }}
+          >
             <img src="/Note%201.png" alt="" className="mm__card-icon" />
             <span>Note</span>
           </a>
