@@ -7,8 +7,8 @@ import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 
 export default function App() {
-  useScrollAnimations()
   const pathname = usePathname()
+  useScrollAnimations(pathname)
 
   return (
     <div className="page">
