@@ -15,11 +15,14 @@ export default function PlaygroundPage() {
 
       <main className="pgp">
         <header className="pgp__head" data-reveal>
-          <h1 className="pgp__title">Bits I make between projects</h1>
+          <h1 className="pgp__title">
+            Bits I make
+            <br />
+            between projects
+          </h1>
           <p className="pgp__sub">
-            A loose, ongoing archive of small things. Type tests, colour
-            experiments, posters, screens that never shipped. Updated when
-            something is worth keeping.
+            A loose archive of small things between projects. Type tests,
+            colour studies, posters, screens that never shipped.
           </p>
         </header>
 

@@ -14,9 +14,9 @@
 .pgp__title {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(56px, 8.4vw, 140px);
-  line-height: 0.95;
-  letter-spacing: -0.01em;
+  font-size: clamp(40px, 6.4vw, 112px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   color: var(--text);
   margin: 0;
