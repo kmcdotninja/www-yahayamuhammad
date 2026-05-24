@@ -107,7 +107,7 @@
 
 .project__image {
   margin: 0 7px 0 0;
-  height: clamp(360px, 56vh, 620px);
+  height: clamp(440px, 68vh, 760px);
   flex-shrink: 0;
   border-radius: 20px;
   overflow: hidden;
@@ -143,14 +143,14 @@
     gap: 28px;
   }
   .project__image {
-    height: clamp(280px, 50vh, 420px);
+    height: clamp(360px, 60vh, 540px);
   }
 }
 
 @media (max-width: 700px) {
   .project__image {
     margin: 0 7px 0 0;
-    height: clamp(220px, 38vw, 240px);
+    height: clamp(300px, 62vw, 380px);
     border-radius: 14px;
   }
 }
