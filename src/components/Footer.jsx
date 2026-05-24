@@ -204,6 +204,13 @@ export default function Footer() {
           >
             LinkedIn
           </a>
+          <a
+            href="https://github.com/kmcdotninja"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
         </nav>
       </footer>
     </>
