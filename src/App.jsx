@@ -11,6 +11,7 @@ import Loader from './components/Loader.jsx'
 import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 const LEAVE_MS = 520
 const ENTER_MS = 760
@@ -127,6 +128,7 @@ export default function App() {
           onDone={() => setLoading(false)}
         />
       )}
+      <SpeedInsights />
     </div>
   )
 }
