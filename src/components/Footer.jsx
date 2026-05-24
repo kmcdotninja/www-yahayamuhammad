@@ -199,7 +199,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Twitter (X)
+            X
           </a>
           <a
             href="https://www.instagram.com/kmcdotninja"
