@@ -75,6 +75,9 @@
   .sr {
     max-width: 100%;
   }
+  .sr__paragraph {
+    font-size: clamp(42px, 13.5vw, 108px);
+  }
   .sr__sig {
     max-width: 200px;
   }
