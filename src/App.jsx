@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import './App.css'
 import Hero from './components/Hero.jsx'
 import HeroCentered from './components/HeroCentered.jsx'
@@ -127,6 +128,7 @@ export default function App() {
           onDone={() => setLoading(false)}
         />
       )}
+      <SpeedInsights />
     </div>
   )
 }
