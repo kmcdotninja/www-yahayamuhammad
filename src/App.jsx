@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import Hero from './components/Hero.jsx'
+import HeroCentered from './components/HeroCentered.jsx'
 import Works from './components/Works.jsx'
 import PlaygroundPage from './components/PlaygroundPage.jsx'
 import NotePage from './components/NotePage.jsx'
@@ -14,6 +15,8 @@ import { getLenis } from './lib/lenisStore.js'
 const LEAVE_MS = 520
 const ENTER_MS = 760
 
+const DESKTOP_MQ = '(min-width: 901px)'
+
 export default function App() {
   const pathname = usePathname()
 
@@ -21,6 +24,17 @@ export default function App() {
   // so the leaving page can finish its exit animation before the new one mounts.
   const [renderPath, setRenderPath] = useState(pathname)
   const [transition, setTransition] = useState('idle') // 'idle' | 'leaving' | 'entering'
+
+  // Desktop swaps in the centered hero variant; mobile keeps the left-aligned one.
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(DESKTOP_MQ).matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_MQ)
+    const onChange = () => setIsDesktop(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
 
   useScrollAnimations(renderPath)
 
@@ -78,7 +92,7 @@ export default function App() {
   } else if (renderPath === '/') {
     body = (
       <>
-        <Hero />
+        {isDesktop ? <HeroCentered /> : <Hero />}
         <Works />
         <Footer />
       </>
