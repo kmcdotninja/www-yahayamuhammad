@@ -21,7 +21,7 @@
 .footer-art__cta {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
   max-width: 760px;
   margin-bottom: 56px;
   position: relative;

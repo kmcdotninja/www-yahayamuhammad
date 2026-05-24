@@ -189,6 +189,10 @@
   font-weight: 600;
 }
 
+.intro__pill--button {
+  min-width: 78px;
+}
+
 /* ============ LIGHT THEME OVERRIDES ============ */
 [data-theme='light'] .intro__pill {
   background: #0a0a0a;
