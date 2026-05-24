@@ -184,6 +184,13 @@ export default function Footer() {
         <Clock />
         <nav className="footer__links" aria-label="elsewhere">
           <a
+            href="https://github.com/kmcdotninja"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+          <a
             href="https://x.com/kmcdotninja"
             target="_blank"
             rel="noopener noreferrer"
@@ -203,13 +210,6 @@ export default function Footer() {
             rel="noopener noreferrer"
           >
             LinkedIn
-          </a>
-          <a
-            href="https://github.com/kmcdotninja"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub
           </a>
         </nav>
       </footer>
