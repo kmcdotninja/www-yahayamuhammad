@@ -4,6 +4,7 @@ import Hero from './components/Hero.jsx'
 import Works from './components/Works.jsx'
 import PlaygroundPage from './components/PlaygroundPage.jsx'
 import NotePage from './components/NotePage.jsx'
+import NotFoundPage from './components/NotFoundPage.jsx'
 import Footer from './components/Footer.jsx'
 import Loader from './components/Loader.jsx'
 import { useScrollAnimations } from './hooks/useScrollAnimations.js'
@@ -74,7 +75,7 @@ export default function App() {
     body = <PlaygroundPage />
   } else if (renderPath === '/note') {
     body = <NotePage />
-  } else {
+  } else if (renderPath === '/') {
     body = (
       <>
         <Hero />
@@ -82,6 +83,8 @@ export default function App() {
         <Footer />
       </>
     )
+  } else {
+    body = <NotFoundPage />
   }
 
   const transitionClass =
