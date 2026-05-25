@@ -87,15 +87,5 @@
   }
 }
 
-[data-theme='light'] .copy-toast {
-  background: #0a0a0a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 16px 44px rgba(0, 0, 0, 0.45);
-}
-
-[data-theme='light'] .copy-toast__title {
-  color: #f5f3ee;
-}
+/* Toast stays cream/white in both themes — the dark light-mode variant
+   had a contrast/feel mismatch against the rest of the light page. */
