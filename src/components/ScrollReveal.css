@@ -77,10 +77,10 @@
 @media (max-width: 1100px) {
   .sr__polaroid-wrap {
     width: 110px;
-    /* Sits mostly off-screen at rest (only ~35px peeks past the right
-       edge) so the paragraphs aren't covered before the user scrolls.
-       The JS reveal pulls it fully into view shortly after scroll begins. */
-    right: -75px;
+    /* Sits partly past the right rail at rest — ~55px of the polaroid
+       peeks past the section edge, the other ~55px hides past it. The
+       JS slide-in pulls it left to land overlaying the right rail line. */
+    right: -55px;
   }
   .sr__polaroid {
     padding: 8px 8px 8px;

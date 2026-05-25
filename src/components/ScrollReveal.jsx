@@ -107,45 +107,62 @@ export default function ScrollReveal() {
       const polaroidWrap = polaroidWrapRef.current
       const signature = signatureWrapRef.current
       if (polaroid && polaroidWrap) {
-        // Amplitude stays within the right-side gutter. We size it from
-        // the distance between the polaroid's left edge and the text
-        // column's right edge so the swing never crosses into the words.
-        const amplitude = () => {
-          const wrapRect = polaroidWrap.getBoundingClientRect()
-          const paragraphs = root.querySelector('.sr__paragraphs')
-          const textRect = paragraphs?.getBoundingClientRect()
-          const safe = textRect
-            ? wrapRect.left - textRect.right - 24
-            : window.innerWidth * 0.08
-          return Math.min(110, Math.max(40, safe))
-        }
-        const maxY = () => {
+        // Layout reads (offsetHeight / getBoundingClientRect) used to
+        // run every scroll frame inside onUpdate — alongside GSAP's
+        // transform writes that caused forced reflows and visible
+        // flicker on mobile. We measure once up front and re-measure
+        // only on ScrollTrigger refresh (which also fires on resize).
+        let maxYVal = 0
+        let amplitudeVal = 40
+        let isMobile = window.innerWidth < 1100
+
+        const measure = () => {
+          if (!polaroidWrap.isConnected) return
+          isMobile = window.innerWidth < 1100
           const wrapH = polaroidWrap.offsetHeight
           const limit = signature
             ? signature.offsetTop - wrapH - 40
             : root.offsetHeight - wrapH - 40
-          return Math.max(0, limit)
+          maxYVal = Math.max(0, limit)
+
+          if (!isMobile) {
+            const wrapRect = polaroidWrap.getBoundingClientRect()
+            const paragraphs = root.querySelector('.sr__paragraphs')
+            const textRect = paragraphs?.getBoundingClientRect()
+            const safe = textRect
+              ? wrapRect.left - textRect.right - 24
+              : window.innerWidth * 0.08
+            amplitudeVal = Math.min(110, Math.max(40, safe))
+          }
         }
+        measure()
+        ScrollTrigger.addEventListener('refresh', measure)
+
+        // quickSetter skips the per-call tween allocation and just
+        // applies the transform — much cheaper for per-frame updates.
+        const setWrapY = gsap.quickSetter(polaroidWrap, 'y', 'px')
+        const setX = gsap.quickSetter(polaroid, 'x', 'px')
+        const setRot = gsap.quickSetter(polaroid, 'rotation', 'deg')
+
         ScrollTrigger.create({
           trigger: root,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.6,
+          scrub: 0.4,
           onUpdate: (self) => {
             const p = self.progress
             const phase = p * Math.PI * 3
-            const isMobile = window.innerWidth < 1100
             const rot = Math.sin(phase + Math.PI / 5) * (isMobile ? 5 : 7)
-            // Mobile: polaroid is parked off-screen (right: -75px). A reveal
-            // ramp pulls it ~85px left over the first 8% of scroll so it
-            // glides into full view, then a smaller wave keeps it moving
-            // without ever fully crossing the words.
+            // Mobile: polaroid is parked partly off-screen (right: -55px).
+            // The reveal ramp pulls it ~55px left over the first 8% of
+            // scroll so it lands sitting on top of the right rail line.
+            // The smaller wave keeps it gently zigzagging from there.
             const x = isMobile
-              ? -85 * Math.min(1, p * 12) + Math.sin(phase) * 20
-              : Math.sin(phase) * amplitude()
-            const y = p * maxY()
-            gsap.set(polaroidWrap, { y })
-            gsap.set(polaroid, { x, rotation: rot })
+              ? -55 * Math.min(1, p * 12) + Math.sin(phase) * 15
+              : Math.sin(phase) * amplitudeVal
+            setWrapY(p * maxYVal)
+            setX(x)
+            setRot(rot)
           },
         })
       }
