@@ -21,12 +21,14 @@
   --g2: #006d32;
   --g3: #26a641;
   --g4: #39d353;
+  --logo-bg: #ffffff;
+  --cell-peak-l4: #b6f0c1;
 
   position: relative;
   display: inline-flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px 14px 12px;
+  padding: 14px;
   background: var(--paper);
   color: var(--ink);
   border-radius: var(--radius);
@@ -66,13 +68,14 @@
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
-  mix-blend-mode: screen;
+  mix-blend-mode: soft-light;
   background: radial-gradient(
-    220px circle at var(--gx) var(--gy),
-    rgba(255, 255, 255, 0.55),
-    rgba(255, 255, 255, 0) 60%
+    70px circle at var(--gx) var(--gy),
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.25) 30%,
+    rgba(255, 255, 255, 0) 75%
   );
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
   z-index: 3;
 }
 
@@ -89,7 +92,6 @@
   letter-spacing: 0.06em;
   color: var(--ink);
   line-height: 1;
-  padding: 0 2px;
 }
 
 .commit-sticker__gh {
@@ -145,7 +147,7 @@
 
 .commit-sticker__cell--l4 {
   --base: var(--g4);
-  --peak: #b6f0c1;
+  --peak: var(--cell-peak-l4);
   background: var(--g4);
 }
 
@@ -158,9 +160,12 @@
   height: var(--logo-size);
   transform: translate(-50%, -50%);
   padding: 3px;
-  background: #f5f3ee;
+  background: var(--logo-bg);
   border-radius: 6px;
-  box-shadow: 0 0 0 3px var(--qr-bg);
+  box-shadow:
+    0 0 0 3px var(--qr-bg),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
 .commit-sticker__logo img {
@@ -176,8 +181,6 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 2px;
-  margin-top: 2px;
 }
 
 .commit-sticker__label {
@@ -212,6 +215,14 @@
   --paper: #0a0a0a;
   --ink: #f5f3ee;
   --ink-dim: #8a8780;
+  --qr-bg: #ffffff;
+  --cell-empty: #ebedf0;
+  --g1: #9be9a8;
+  --g2: #40c463;
+  --g3: #30a14e;
+  --g4: #216e39;
+  --logo-bg: #ffffff;
+  --cell-peak-l4: #0d4520;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
     0 2px 6px rgba(0, 0, 0, 0.06),
@@ -227,9 +238,25 @@
 
 @media (max-width: 700px) {
   .commit-sticker {
-    --cell: 6px;
+    --cell: 7px;
     --gap: 1.5px;
     --qr-pad: 10px;
-    padding: 12px 12px 10px;
+    --radius: 18px;
+    gap: 9px;
+    padding: 12px;
+  }
+  .commit-sticker__head {
+    font-size: 12px;
+    gap: 5px;
+  }
+  .commit-sticker__gh {
+    width: 12px;
+    height: 12px;
+  }
+  .commit-sticker__label {
+    font-size: 8.5px;
+  }
+  .commit-sticker__date {
+    font-size: 9.5px;
   }
 }

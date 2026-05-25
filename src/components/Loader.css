@@ -100,9 +100,18 @@
   opacity: 0;
 }
 
-.loader__mark svg {
-  width: clamp(160px, 18vw, 280px);
-  height: auto;
+.loader__model {
+  /* 70vmin keeps the model roughly 70% of the shorter viewport edge, so it
+     reads big on desktop without overflowing the loader rails on mobile. */
+  width: clamp(280px, 70vmin, 720px);
+  height: clamp(280px, 70vmin, 720px);
+}
+
+/* The model component manages its own canvas sizing; only the wrapper here
+   needs to define how much room it gets in the loader layout. */
+.loader__model .portion {
+  width: 100%;
+  height: 100%;
 }
 
 .loader__label,

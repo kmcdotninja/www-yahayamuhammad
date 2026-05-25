@@ -34,6 +34,19 @@ body {
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE/old Edge */
+  -ms-overflow-style: none;
+}
+
+/* Chromium / WebKit */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 html.is-loading,
