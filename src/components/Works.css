@@ -73,7 +73,7 @@
   padding-left: calc(var(--pad) - var(--rail));
   scrollbar-width: none;
   -ms-overflow-style: none;
-  cursor: grab;
+  cursor: var(--cursor-grab);
   user-select: none;
   -webkit-user-select: none;
   /* Safari: keep programmatic scrollLeft writes synchronous (a global
@@ -87,7 +87,7 @@
 }
 
 .project__scroller--grabbing {
-  cursor: grabbing;
+  cursor: var(--cursor-grabbing);
 }
 
 .project__track {
@@ -110,7 +110,7 @@
 
 .project__scroller--grabbing,
 .project__scroller--grabbing .project__image {
-  cursor: grabbing;
+  cursor: var(--cursor-grabbing);
 }
 
 .project__image:hover {
@@ -183,6 +183,6 @@
 /* Touch devices: keep native cursor (the pill never shows for non-mouse anyway) */
 @media (hover: none) {
   .project__image {
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
   }
 }

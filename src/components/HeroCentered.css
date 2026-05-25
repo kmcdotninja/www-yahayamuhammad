@@ -29,7 +29,13 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -28%);
+  /* Was -28% (model lifted high enough to sit on top of the headline).
+     -8% keeps the top edge of the model just inside the bottom of the
+     headline so the text is fully readable but the two layers still
+     touch — the "tiny overlay" the design calls for. The bio + scroll
+     link below stay where they are (anchored by margin-top: auto on
+     .introC__about), so this only moves the model. */
+  transform: translate(-50%, -8%);
   width: clamp(300px, 34vw, 520px);
   aspect-ratio: 1 / 1;
   z-index: 2;
@@ -70,7 +76,7 @@
   align-self: end;
   justify-self: end;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: opacity 0.2s ease;
 }
 

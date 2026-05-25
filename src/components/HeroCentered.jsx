@@ -23,7 +23,9 @@ export default function HeroCentered() {
     const update = () => {
       pending = false
       const y = window.scrollY * PARALLAX_RATE
-      el.style.transform = `translate(-50%, calc(-28% + ${y}px))`
+      // Baseline must match the CSS resting transform (`-8%`) so the
+      // first paint and the JS-driven update line up to the same spot.
+      el.style.transform = `translate(-50%, calc(-8% + ${y}px))`
     }
     const onScroll = () => {
       if (pending) return
@@ -56,7 +58,7 @@ export default function HeroCentered() {
 
       <div className="introC__about">
         <p className="introC__bio">
-          Currently designing a product at Kutuby to make Islamic studies more fun and engaging for kids.
+          Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
         <a
           href="#work"

@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="intro__about" data-reveal>
         <Portion />
         <p className="intro__bio">
-        Currently designing a product at Kutuby to make Islamic studies more fun and engaging for kids.
+        Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
         <a
           href="#work"

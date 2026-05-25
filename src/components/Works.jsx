@@ -6,7 +6,7 @@ import { projects } from '../data.js'
 const AUTO_SPEED_PX_PER_FRAME = 0.5
 
 function Project({ project, onOpen }) {
-  const { name, description, roles, team, images } = project
+  const { name, description, roles, team, images, comingSoon } = project
   const scrollerRef = useRef(null)
   const pillRef = useRef(null)
   const hoverRef = useRef(false)
@@ -131,7 +131,11 @@ function Project({ project, onOpen }) {
   const openDrawer = (e) => {
     if (dragRef.current.moved) return
     e?.preventDefault?.()
-    setPillVisible(false)
+    // Don't blank the pill on click — the image has `cursor: none`, so
+    // hiding the pill leaves the user with no visible pointer at all
+    // (especially obvious on "Coming Soon" where the drawer never
+    // opens). Pill still hides naturally on pointerleave.
+    if (comingSoon) return
     onOpen()
   }
 
@@ -207,7 +211,7 @@ function Project({ project, onOpen }) {
         className={`project__cursor ${pillVisible ? 'project__cursor--visible' : ''}`}
         aria-hidden="true"
       >
-        Open
+        {comingSoon ? 'Coming Soon' : 'Open'}
       </span>
     </article>
   )

@@ -2,14 +2,14 @@
   width: clamp(260px, 28vw, 420px);
   height: clamp(260px, 28vw, 420px);
   position: relative;
-  cursor: grab;
+  cursor: var(--cursor-grab);
   touch-action: none;
   display: block;
   background: transparent;
 }
 
 .portion:active {
-  cursor: grabbing;
+  cursor: var(--cursor-grabbing);
 }
 
 .portion canvas {

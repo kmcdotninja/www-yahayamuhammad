@@ -23,7 +23,7 @@
   border-radius: 999px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 0;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 

@@ -115,6 +115,9 @@ export const projects = [
   },
   {
     name: 'Waffle',
+    // Drawer is parked for now — the scroller, info block, and
+    // `sections` content below stay so we can flip this back on later.
+    comingSoon: true,
     description:
       'A developer platform for shipping AI customer agents in days, not months. I designed Waffle end to end, from the wordmark to the marketing site that gets developers to the docs.',
     roles: ['Brand Identity', 'Web Design', 'Marketing Design', 'Art Direction'],

@@ -13,6 +13,15 @@
   --display: 'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --serif: var(--display);
 
+  /* Custom SVG cursors live in /public/Cursors. Each SVG is white-fill
+     with a thick black stroke, so they remain visible on both the dark
+     default theme and the light theme without needing separate files.
+     Values are `url(...) hotspot-x hotspot-y, system-fallback`. */
+  --cursor-default: url('/Cursors/Arrow.svg') 6 4, default;
+  --cursor-pointer: url('/Cursors/Point%20Up.svg') 13 5, pointer;
+  --cursor-grab: url('/Cursors/Grab.svg') 14 14, grab;
+  --cursor-grabbing: url('/Cursors/Grab.svg') 14 14, grabbing;
+
   color-scheme: dark;
   color: var(--text);
   background: var(--bg);
@@ -21,6 +30,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--sans);
+  cursor: var(--cursor-default);
 }
 
 * {
@@ -60,6 +70,19 @@ html.is-loading body {
   min-height: 100svh;
 }
 
+/* Browsers ship a user-agent `cursor: pointer` (or `auto`) on anchors
+   and buttons that beats inherited cursors from :root, so the custom
+   Point Up cursor wasn't appearing on the nav pills, mail button, etc.
+   Pointing the same selector at our variable wins the cascade and
+   gives every interactive element the custom cursor by default. */
+a,
+button,
+[role='button'],
+[type='button'],
+[type='submit'] {
+  cursor: var(--cursor-pointer);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -67,5 +90,5 @@ a {
 
 button {
   font-family: inherit;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
 }

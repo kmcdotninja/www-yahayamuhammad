@@ -91,7 +91,7 @@
   text-transform: uppercase;
   white-space: nowrap;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
 }
 
@@ -163,7 +163,7 @@
   font-family: var(--sans);
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition:
     background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -234,7 +234,7 @@
   background: #101010;
   color: #f5f3ee;
   border: 0;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -294,7 +294,7 @@
   align-self: end;
   justify-self: end;
   text-decoration: none;
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
   transition: opacity 0.2s ease;
 }
 
