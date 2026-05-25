@@ -45,11 +45,11 @@ export default function HeroCentered() {
       <TopNav />
 
       <h1 className="introC__big" data-reveal>
-        a software designer
+        Product designer
         <br />
-        passionate about artificial intelligence and improving
+        crafting brands, products
         <br />
-        people&rsquo;s lives through design
+        and websites
       </h1>
 
       <div ref={portionRef} className="introC__portion-wrap" data-reveal>

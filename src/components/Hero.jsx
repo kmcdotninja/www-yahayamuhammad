@@ -11,11 +11,11 @@ export default function Hero() {
       <TopNav />
 
       <h1 className="intro__big" data-reveal>
-        a software designer
+        Product designer
         <br />
-        passionate about artificial intelligence and improving
+        crafting brands, products
         <br />
-        people&rsquo;s lives through design
+        and websites
       </h1>
 
       <div className="intro__about" data-reveal>
