@@ -138,6 +138,13 @@ export default function ScrollReveal() {
         measure()
         ScrollTrigger.addEventListener('refresh', measure)
 
+        // Seed a 3D transform so the browser promotes both elements to
+        // their own compositor layer. Subsequent translate/rotate
+        // updates stay on the GPU instead of re-rasterising the photo
+        // and shadow every frame — that was the visible flicker on iOS.
+        gsap.set(polaroidWrap, { z: 0, force3D: true })
+        gsap.set(polaroid, { z: 0, force3D: true })
+
         // quickSetter skips the per-call tween allocation and just
         // applies the transform — much cheaper for per-frame updates.
         const setWrapY = gsap.quickSetter(polaroidWrap, 'y', 'px')
@@ -148,18 +155,29 @@ export default function ScrollReveal() {
           trigger: root,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.4,
+          // scrub:true pins the animation to scroll position 1:1 — no
+          // 0.4s lerp catching up, which is what produced the "bounce"
+          // feel after fast swipes on touch devices.
+          scrub: true,
           onUpdate: (self) => {
             const p = self.progress
-            const phase = p * Math.PI * 3
-            const rot = Math.sin(phase + Math.PI / 5) * (isMobile ? 5 : 7)
-            // Mobile: polaroid is parked partly off-screen (right: -55px).
-            // The reveal ramp pulls it ~55px left over the first 8% of
-            // scroll so it lands sitting on top of the right rail line.
-            // The smaller wave keeps it gently zigzagging from there.
-            const x = isMobile
-              ? -55 * Math.min(1, p * 12) + Math.sin(phase) * 15
-              : Math.sin(phase) * amplitudeVal
+            let x, rot
+            if (isMobile) {
+              // One slow half-cycle across the whole scroll, with a
+              // small amplitude — drifts gently rather than oscillating
+              // back and forth multiple times. Rotation rides the same
+              // single arc so the photo never spins through zero
+              // multiple times on a fast swipe.
+              const slide = -55 * Math.min(1, p * 10)
+              const drift = Math.sin(p * Math.PI) * 5
+              x = slide + drift
+              rot = Math.sin(p * Math.PI) * 3
+            } else {
+              // Desktop keeps the original multi-swing zigzag.
+              const phase = p * Math.PI * 3
+              x = Math.sin(phase) * amplitudeVal
+              rot = Math.sin(phase + Math.PI / 5) * 7
+            }
             setWrapY(p * maxYVal)
             setX(x)
             setRot(rot)

@@ -85,6 +85,19 @@
   .sr__polaroid {
     padding: 8px 8px 8px;
     border-radius: 14px;
+    /* Lighter, single-layer shadow on mobile — the multi-tier desktop
+       shadow forces a wide repaint region every frame while the card
+       moves/rotates, which was contributing to the scroll flicker. */
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.45) inset,
+      0 6px 14px rgba(0, 0, 0, 0.08);
+    /* Keep the card on its own compositor layer. */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .sr__polaroid-wrap {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   .sr__polaroid img {
     height: 130px;
