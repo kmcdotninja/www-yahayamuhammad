@@ -173,7 +173,7 @@ export default function MobileMenu({
               // smooth-scroll to #work.
             }}
           >
-            <img src="/Work%201.png" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
+            <img src="/Work%201.webp" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
             <span>Work</span>
           </a>
           <a
@@ -186,7 +186,7 @@ export default function MobileMenu({
               navigate('/playground')
             }}
           >
-            <img src="/Playground%201.png" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
+            <img src="/Playground%201.webp" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
             <span>Playground</span>
           </a>
           <a
@@ -199,7 +199,7 @@ export default function MobileMenu({
               navigate('/about')
             }}
           >
-            <img src="/Note%201.png" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
+            <img src="/Note%201.webp" alt="" className="mm__card-icon" loading="lazy" decoding="async" />
             <span>About</span>
           </a>
         </div>

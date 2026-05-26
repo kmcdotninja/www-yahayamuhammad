@@ -5,10 +5,10 @@ import './Stickers.css'
 // Source set for the playground — each unique icon repeated 4× so the
 // stage feels like a packed pile of stickers, not a single row.
 const UNIQUE = [
-  '/Work%201.png',
-  '/Note%201.png',
-  '/Robot%201.png',
-  '/Playground%201.png',
+  '/Work%201.webp',
+  '/Note%201.webp',
+  '/Robot%201.webp',
+  '/Playground%201.webp',
   '/Mailbox.png',
 ]
 const STICKERS = Array.from({ length: 4 }, () => UNIQUE).flat()

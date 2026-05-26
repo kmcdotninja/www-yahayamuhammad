@@ -6,10 +6,10 @@ import CopyToast from './CopyToast.jsx'
 import { useSnd } from '../hooks/useSnd.js'
 
 const ICONS = [
-  '/Work%201.png',
-  '/Note%201.png',
-  '/Playground%201.png',
-  '/Robot%201.png',
+  '/Work%201.webp',
+  '/Note%201.webp',
+  '/Playground%201.webp',
+  '/Robot%201.webp',
 ]
 
 const EMAIL = 'yahayabinmuhammad@gmail.com'
@@ -117,19 +117,19 @@ export default function Footer() {
         {TRAIL_ENABLED && (
           <>
             <img
-              src="/Note%201.png"
+              src="/Note%201.webp"
               alt=""
               aria-hidden="true"
               className="footer-art__letter-icon footer-art__letter-icon--y"
             />
             <img
-              src="/Work%201.png"
+              src="/Work%201.webp"
               alt=""
               aria-hidden="true"
               className="footer-art__letter-icon footer-art__letter-icon--m"
             />
             <img
-              src="/Robot%201.png"
+              src="/Robot%201.webp"
               alt=""
               aria-hidden="true"
               className="footer-art__letter-icon footer-art__letter-icon--d"

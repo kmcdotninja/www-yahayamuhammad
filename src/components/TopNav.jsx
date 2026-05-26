@@ -123,7 +123,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo(pathname === '/' ? '/#work' : '/')}
             >
-              <NavIcon src="/Work%201.png" />
+              <NavIcon src="/Work%201.webp" />
               <span className="intro__pill">Work</span>
             </a>
             <a
@@ -131,7 +131,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/playground')}
             >
-              <NavIcon src="/Playground%201.png" />
+              <NavIcon src="/Playground%201.webp" />
               <span className="intro__pill">Playground</span>
             </a>
             <a
@@ -139,7 +139,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/about')}
             >
-              <NavIcon src="/Note%201.png" />
+              <NavIcon src="/Note%201.webp" />
               <span className="intro__pill">About</span>
             </a>
           </nav>

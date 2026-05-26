@@ -163,10 +163,11 @@
       }
     </script>
 
-    <!-- Preload above-the-fold images so they don't block first paint -->
-    <link rel="preload" as="image" href="/Work%201.png" />
-    <link rel="preload" as="image" href="/Playground%201.png" />
-    <link rel="preload" as="image" href="/Note%201.png" />
+    <!-- Nav voxel icons (Work / Playground / Note) used to be preloaded
+         here, but at ~6.9MB combined they choked the network on slow
+         connections and blocked the actual hero content. They now load
+         lazily via the normal <img> tag in TopNav. -->
+    <link rel="preload" as="image" href="/yahaya-hero.webp" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
