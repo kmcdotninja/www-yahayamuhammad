@@ -18,6 +18,9 @@ export default function AboutPage() {
       <TopNav />
 
       <main className="about">
+        <h1 className="sr-only">
+          About Yahaya Muhammad — Product Designer & UX Designer based in Nigeria
+        </h1>
         <ScrollReveal />
       </main>
 

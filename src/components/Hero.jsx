@@ -10,13 +10,16 @@ export default function Hero() {
     <section className="intro">
       <TopNav />
 
-      <h1 className="intro__big" data-reveal>
+      <h1 className="sr-only">
+        Yahaya Muhammad — Product Designer & UX Designer
+      </h1>
+      <p className="intro__big" data-reveal aria-hidden="true">
         Product designer
         <br />
         crafting brands, products
         <br />
         and websites
-      </h1>
+      </p>
 
       <div className="intro__about" data-reveal>
         <Portion />

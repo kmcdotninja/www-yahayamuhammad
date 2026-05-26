@@ -1,0 +1,10 @@
+# https://yahayamuhammad.com — Yahaya Muhammad portfolio
+
+User-agent: *
+Allow: /
+
+# Disallow crawling of build/source helpers if ever served
+Disallow: /src/
+Disallow: /node_modules/
+
+Sitemap: https://yahayamuhammad.com/sitemap.xml

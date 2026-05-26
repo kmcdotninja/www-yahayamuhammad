@@ -44,13 +44,16 @@ export default function HeroCentered() {
     <section className="introC">
       <TopNav />
 
-      <h1 className="introC__big" data-reveal>
+      <h1 className="sr-only">
+        Yahaya Muhammad — Product Designer & UX Designer
+      </h1>
+      <p className="introC__big" data-reveal aria-hidden="true">
         Product designer
         <br />
         crafting brands, products
         <br />
         and websites
-      </h1>
+      </p>
 
       <div ref={portionRef} className="introC__portion-wrap" data-reveal>
         <Portion />

@@ -12,6 +12,7 @@ import Loader from './components/Loader.jsx'
 import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
+import { applySEO, ROUTE_SEO } from './lib/seo.js'
 
 const LEAVE_MS = 520
 const ENTER_MS = 760
@@ -38,6 +39,11 @@ export default function App() {
   }, [])
 
   useScrollAnimations(renderPath)
+
+  useEffect(() => {
+    const seo = ROUTE_SEO[pathname] || ROUTE_SEO['/404']
+    applySEO({ ...seo, path: pathname })
+  }, [pathname])
 
   const [loading, setLoading] = useState(true)
   // Only the home page mounts the 3D model — other pages can dismiss the

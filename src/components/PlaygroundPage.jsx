@@ -16,6 +16,9 @@ export default function PlaygroundPage() {
       <main className="pgp">
         <header className="pgp__head" data-reveal>
           <h1 className="pgp__title">
+            <span className="sr-only">
+              Yahaya Muhammad’s Playground —{' '}
+            </span>
             Bits I make
             <br />
             between projects
