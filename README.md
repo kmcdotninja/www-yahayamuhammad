@@ -8,7 +8,7 @@ Currently designing at **Kutuby**, building a learning app that turns Islamic st
 
 I push to this repo often — sometimes a typography tweak, sometimes a new playground card. If it reads different next week, that's the point.
 
-Live at [creative-portfolio-orpin.vercel.app](https://creative-portfolio-orpin.vercel.app/).
+Live at https://www.yahayamuhammad.com
 
 ### Contact
 **yahayabinmuhammad@gmail.com**
