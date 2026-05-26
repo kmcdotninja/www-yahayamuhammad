@@ -1,3 +1,63 @@
+/* BDO Grotesk — the project's primary sans, served from /public/BDO Font.
+   Each weight maps to its standard CSS number. font-display: swap so the
+   fallback (Instrument Sans → system) shows immediately if the .otf
+   files haven't loaded yet, then BDO swaps in once ready. */
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-DemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BDO Grotesk';
+  src: url('/BDO%20Font/BDOGrotesk-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #0a0a0a;
   --text: #e6e3dc;
@@ -9,7 +69,7 @@
   --rail: clamp(16px, 2.4vw, 32px);
   --pad: clamp(20px, 3vw, 48px);
 
-  --sans: 'Instrument Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --sans: 'BDO Grotesk', 'Instrument Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --display: 'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --serif: var(--display);
 

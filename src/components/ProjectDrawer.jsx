@@ -247,31 +247,44 @@ export default function ProjectDrawer({
               </div>
             </div>
 
-            <div className="pd__gallery">
-              {sections.map((section, si) => (
-                <section
-                  className={`pd__section ${section.heading ? '' : 'pd__section--bare'}`}
-                  key={section.heading || `section-${si}`}
-                >
-                  {section.heading && (
-                    <header className="pd__section-head">
-                      <span className="pd__section-num">
-                        {String(si + 1).padStart(2, '0')}
-                      </span>
-                      <h3 className="pd__section-title">{section.heading}</h3>
-                      {section.note && (
-                        <p className="pd__section-note">{section.note}</p>
-                      )}
-                    </header>
-                  )}
-                  <div className="pd__section-rows">
-                    {section.rows.map((row, ri) =>
-                      renderRow(row, `${si}-${ri}`),
+            {project.comingSoon ? (
+              <div className="pd__coming-soon" aria-label="case study coming soon">
+                <span className="pd__coming-soon-eyebrow">
+                  <span className="pd__coming-soon-dot" aria-hidden="true" />
+                  In progress
+                </span>
+                <h3 className="pd__coming-soon-title">Case study coming soon</h3>
+                <p className="pd__coming-soon-body">
+                  I'm still putting this one together. The full write-up will land here soon — until then the image strip on the homepage gives you the quick look.
+                </p>
+              </div>
+            ) : (
+              <div className="pd__gallery">
+                {sections.map((section, si) => (
+                  <section
+                    className={`pd__section ${section.heading ? '' : 'pd__section--bare'}`}
+                    key={section.heading || `section-${si}`}
+                  >
+                    {section.heading && (
+                      <header className="pd__section-head">
+                        <span className="pd__section-num">
+                          {String(si + 1).padStart(2, '0')}
+                        </span>
+                        <h3 className="pd__section-title">{section.heading}</h3>
+                        {section.note && (
+                          <p className="pd__section-note">{section.note}</p>
+                        )}
+                      </header>
                     )}
-                  </div>
-                </section>
-              ))}
-            </div>
+                    <div className="pd__section-rows">
+                      {section.rows.map((row, ri) =>
+                        renderRow(row, `${si}-${ri}`),
+                      )}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
 
             {nextProject && onNext && (
               <button

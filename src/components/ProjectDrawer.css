@@ -264,6 +264,82 @@
   gap: clamp(56px, 8vw, 112px);
 }
 
+/* ---- Coming-soon placeholder ---- */
+/* Renders in place of the gallery for projects with `comingSoon: true`
+   in data.js. Keeps the drawer's chrome (title, lede, role, team) so
+   visitors still see the project's identity, while the case-study
+   content stays parked behind the same flag the corner ribbon uses. */
+.pd__coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(72px, 14vw, 160px) 0;
+  text-align: center;
+}
+
+.pd__coming-soon-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.pd__coming-soon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f0b429;
+  box-shadow: 0 0 0 0 rgba(240, 180, 41, 0.5);
+  animation: pd-coming-soon-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pd-coming-soon-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(240, 180, 41, 0.5);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(240, 180, 41, 0);
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd__coming-soon-dot {
+    animation: none;
+  }
+}
+
+.pd__coming-soon-title {
+  font-family: var(--display);
+  font-size: clamp(44px, 7vw, 88px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.pd__coming-soon-body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  max-width: 52ch;
+  margin: 0;
+}
+
 /* ---- Section (Brand / Character / Mobile app / Website) ---- */
 .pd__section {
   display: flex;
