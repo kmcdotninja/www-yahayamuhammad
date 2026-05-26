@@ -128,18 +128,12 @@
   font-weight: 600;
 }
 
-/* The close button in the top bar is sized larger so it reads at the
-   same scale as the wordmark and the giant nav type underneath —
-   36px gets visually lost next to the huge headlines. The 14px icon
-   inside it scales up to match the new pill. */
+/* Close button matches the hamburger trigger (`.intro__menu-btn`,
+   42×42) so the open and close affordances feel like the same pill at
+   the same scale. */
 .mm2__bar .mm2__chip--icon {
-  width: 56px;
-  height: 56px;
-}
-
-.mm2__bar .mm2__chip--icon svg {
-  width: 20px;
-  height: 20px;
+  width: 42px;
+  height: 42px;
 }
 
 /* ============ Large stacked nav ============ */
