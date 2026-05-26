@@ -1,4 +1,4 @@
-![Site Header](./readme-header.png)
+![Site Header](/readme-header.png)
 
 # Yahaya Muhammad - Portfolio
 
