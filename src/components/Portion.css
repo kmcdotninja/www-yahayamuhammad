@@ -8,6 +8,18 @@
   background: transparent;
 }
 
+/* On touch devices we disable drag-to-rotate (see Portion.jsx) — let
+   touches pan the page so the section scrolls normally. */
+@media (hover: none) and (pointer: coarse) {
+  .portion {
+    touch-action: pan-y;
+    cursor: default;
+  }
+  .portion:active {
+    cursor: default;
+  }
+}
+
 .portion:active {
   cursor: var(--cursor-grabbing);
 }
