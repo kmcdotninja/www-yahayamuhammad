@@ -138,7 +138,7 @@ export default function CommitSticker() {
 
         <span className="commit-sticker__logo">
           <img
-            src="/yahaya-hero.webp"
+            src="/Commit%20Image.png"
             alt=""
             loading="lazy"
             decoding="async"
