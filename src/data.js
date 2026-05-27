@@ -128,6 +128,7 @@ export const projects = [
     ],
     images: [
       '/Waffle%20Project/Logo.webp',
+      '/Waffle%20Project/Header.png',
       '/Waffle%20Project/Hero%20Images.webp',
       '/Waffle%20Project/Features%201.webp',
       '/Waffle%20Project/Features%202.png',
