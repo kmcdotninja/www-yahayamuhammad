@@ -1,0 +1,133 @@
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import './Loader3.css'
+import StickerStack from './playground2/interactions/StickerStack.jsx'
+import { kmcStickers } from './playground2/data/kmcStickers.js'
+import { useReducedMotion } from '../hooks/useReducedMotion.js'
+
+// Same on-screen budget as the original Loader so the route entry timing
+// stays familiar — counter run-up + a beat of hold + fade out ≈ 3 s total.
+const COUNT_DUR = 2.35
+const HOLD_AFTER = 0.2
+const FADE_OUT = 0.45
+
+const MAX_WAIT_MS = 5000
+
+/**
+ * Loader 3 — the sticker-stack variant. The 3D bust is swapped out for the
+ * playground's <StickerStack>; everything else (counter, rails, label,
+ * fade-out gate) is preserved so this slots into App.jsx in place of
+ * <Loader /> with no other changes.
+ */
+export default function Loader3({ onDone, gateReady = true }) {
+  const [percent, setPercent] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  const wrapperRef = useRef(null)
+  const reduced = useReducedMotion()
+  const timelineDoneRef = useRef(false)
+  const finishedRef = useRef(false)
+  const gateReadyRef = useRef(gateReady)
+  const onDoneRef = useRef(onDone)
+
+  useEffect(() => {
+    onDoneRef.current = onDone
+  }, [onDone])
+
+  const tryFinish = () => {
+    if (finishedRef.current) return
+    if (!timelineDoneRef.current) return
+    if (!gateReadyRef.current) return
+    finishedRef.current = true
+    setLeaving(true)
+    setTimeout(() => onDoneRef.current?.(), FADE_OUT * 1000)
+  }
+
+  useEffect(() => {
+    gateReadyRef.current = gateReady
+    if (gateReady) tryFinish()
+  }, [gateReady])
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+
+    const safetyId = setTimeout(() => {
+      gateReadyRef.current = true
+      timelineDoneRef.current = true
+      tryFinish()
+    }, MAX_WAIT_MS)
+
+    const markTimelineDone = () => {
+      timelineDoneRef.current = true
+      tryFinish()
+    }
+
+    if (reduced) {
+      gsap.set(wrapper, { opacity: 1 })
+      setPercent(100)
+      const t = setTimeout(markTimelineDone, 400)
+      return () => {
+        clearTimeout(t)
+        clearTimeout(safetyId)
+      }
+    }
+
+    const counter = { value: 0 }
+    const tl = gsap.timeline({
+      delay: 0.05,
+      onComplete: () => setTimeout(markTimelineDone, HOLD_AFTER * 1000),
+    })
+
+    tl.to(wrapper, { opacity: 1, duration: 0.5, ease: 'power2.out' })
+    tl.to(
+      counter,
+      {
+        value: 100,
+        duration: COUNT_DUR,
+        ease: 'power1.inOut',
+        onUpdate: () => setPercent(Math.round(counter.value)),
+      },
+      '<',
+    )
+
+    return () => {
+      tl.kill()
+      clearTimeout(safetyId)
+    }
+  }, [reduced])
+
+  return (
+    <div
+      className={`loader${leaving ? ' loader--leave' : ''}`}
+      role="status"
+      aria-live="polite"
+      aria-label={`Loading ${percent} percent`}
+    >
+      <div className="loader__rails" aria-hidden="true" />
+
+      <div ref={wrapperRef} className="loader__mark">
+        <div className="loader__stickers">
+          {/* The sticker stack runs its own entry animation as soon as it
+              measures the container. controls={false} hides the replay pill
+              — the loader's counter is the only chrome we want. */}
+          <StickerStack
+            stickers={kmcStickers}
+            play
+            referenceWidth={900}
+            controls={false}
+          />
+        </div>
+      </div>
+
+      <span className="loader__label">
+        LOADING
+        <span className="loader__dots" aria-hidden="true">
+          <span className="loader__dot">.</span>
+          <span className="loader__dot">.</span>
+          <span className="loader__dot">.</span>
+        </span>
+      </span>
+      <span className="loader__count">{percent}%</span>
+    </div>
+  )
+}
