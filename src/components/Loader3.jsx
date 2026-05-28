@@ -19,11 +19,30 @@ const MAX_WAIT_MS = 5000
  * fade-out gate) is preserved so this slots into App.jsx in place of
  * <Loader /> with no other changes.
  */
+// Stickers scale by `container_width / referenceWidth`. Dropping the
+// reference from 900 → 525 on phones gives a ~1.7× larger sticker pose
+// at the same container size — desktop stays untouched.
+const STICKER_REF_MOBILE = 525
+const STICKER_REF_DESKTOP = 900
+const MOBILE_MQ = '(max-width: 600px)'
+
 export default function Loader3({ onDone, gateReady = true }) {
   const [percent, setPercent] = useState(0)
   const [leaving, setLeaving] = useState(false)
   const wrapperRef = useRef(null)
   const reduced = useReducedMotion()
+  const [mobile, setMobile] = useState(
+    () =>
+      typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
+  )
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia(MOBILE_MQ)
+    const onChange = () => setMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
   const timelineDoneRef = useRef(false)
   const finishedRef = useRef(false)
   const gateReadyRef = useRef(gateReady)
@@ -113,7 +132,7 @@ export default function Loader3({ onDone, gateReady = true }) {
           <StickerStack
             stickers={kmcStickers}
             play
-            referenceWidth={900}
+            referenceWidth={mobile ? STICKER_REF_MOBILE : STICKER_REF_DESKTOP}
             controls={false}
           />
         </div>

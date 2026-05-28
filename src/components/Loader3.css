@@ -8,3 +8,12 @@
   width: clamp(280px, 70vmin, 720px);
   height: clamp(280px, 70vmin, 720px);
 }
+
+/* On phones the container fills nearly the full short edge of the viewport,
+   so the bigger sticker pose has somewhere to actually land. */
+@media (max-width: 600px) {
+  .loader__stickers {
+    width: min(96vmin, 720px);
+    height: min(96vmin, 720px);
+  }
+}
