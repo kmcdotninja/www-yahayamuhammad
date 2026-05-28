@@ -12,6 +12,7 @@ import StickerStack from './playground2/interactions/StickerStack.jsx'
 import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
 import NumberFlipCounter from './playground2/interactions/NumberFlipCounter.jsx'
 import AppleCarousel from './playground2/interactions/AppleCarousel.jsx'
+import ThinkingStream from './playground2/interactions/ThinkingStream.jsx'
 import { kmcStickers } from './playground2/data/kmcStickers.js'
 import { carImage, carScenes } from './playground2/data/carScenes.js'
 import { carouselCards } from './playground2/data/carouselCards.jsx'
@@ -63,6 +64,12 @@ export default function PlaygroundPage() {
 
           <PlaygroundSection title="Apple Carousel" meta="Drag · Snap" aspect="wide">
             {() => <AppleCarousel items={carouselCards} autoPlay loop showControls showDots />}
+          </PlaygroundSection>
+
+          <PlaygroundSection title="Thinking Stream" meta="Scramble · Loop" aspect="wide">
+            {({ inView }) => (
+              <ThinkingStream active={inView} mode="analytical" accentColor="#37D15D" />
+            )}
           </PlaygroundSection>
         </div>
       </main>
