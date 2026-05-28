@@ -30,7 +30,8 @@
   position: absolute;
   right: 16px;
   top: 16px;
-  z-index: 9999;
+  /* Just above the stickers inside this card — never above the fixed nav. */
+  z-index: 2;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
