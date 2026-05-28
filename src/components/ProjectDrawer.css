@@ -9,15 +9,21 @@
   pointer-events: auto;
 }
 
-/* ---- Backdrop ---- */
+/* ---- Backdrop ----
+   The blur is routed through a CSS variable. Vite 8's CSS minifier
+   dedupes adjacent `backdrop-filter` + `-webkit-backdrop-filter` declarations
+   with identical values and keeps only the prefixed one — which Firefox
+   and modern Chrome don't honour. Indirecting through `--pd-bf` makes the
+   two declarations textually distinct after minification, so both survive. */
 .pd__scrim {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.42);
-  /* Starts unblurred while invisible; blur ramps in alongside the
-     opacity fade so the page visibly softens as the drawer slides in. */
-  backdrop-filter: blur(0px) saturate(120%);
-  -webkit-backdrop-filter: blur(0px) saturate(120%);
+  /* Start with a near-zero blur (not 0px — the minifier strips empty `blur()`
+     and the transition's starting frame disappears). */
+  --pd-bf: blur(0.01px) saturate(120%);
+  -webkit-backdrop-filter: var(--pd-bf);
+  backdrop-filter: var(--pd-bf);
   border: 0;
   cursor: var(--cursor-pointer);
   padding: 0;
@@ -29,9 +35,8 @@
 }
 
 .pd--open .pd__scrim {
+  --pd-bf: blur(18px) saturate(140%);
   opacity: 1;
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
 [data-theme='light'] .pd__scrim {
