@@ -1,0 +1,120 @@
+.pg2-counter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 0 16px;
+}
+
+.pg2-counter__status {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.pg2-counter__pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #fff;
+  display: inline-block;
+}
+
+.pg2-counter__digits {
+  position: relative;
+  display: flex;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.pg2-counter__fade {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(28, 28, 30, 0.95) 0%,
+    rgba(28, 28, 30, 0) 26%,
+    rgba(28, 28, 30, 0) 74%,
+    rgba(28, 28, 30, 0.95) 100%
+  );
+}
+
+.pg2-digit {
+  position: relative;
+  overflow: hidden;
+}
+
+.pg2-digit__glyph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg2-counter__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pg2-counter__hold {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+  user-select: none;
+  touch-action: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-counter__hold:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.pg2-counter__hold:active {
+  transform: scale(0.95);
+}
+
+.pg2-counter__randomize {
+  user-select: none;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 20px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: var(--cursor-pointer, pointer);
+  font-family: var(--sans, inherit);
+}
+
+.pg2-counter__randomize:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}

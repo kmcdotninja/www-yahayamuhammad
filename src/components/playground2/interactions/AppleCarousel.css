@@ -1,0 +1,128 @@
+.pg2-carousel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  outline: none;
+}
+
+.pg2-carousel__track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.pg2-carousel__slot {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg2-carousel__card {
+  height: 74%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #000;
+  transition: box-shadow 0.3s ease;
+  cursor: var(--cursor-pointer, pointer);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+}
+
+.pg2-carousel__card img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pg2-carousel__card--active {
+  cursor: default;
+  box-shadow: 0 40px 90px -25px rgba(0, 0, 0, 0.9);
+}
+
+.pg2-carousel__controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(-50%);
+}
+
+.pg2-carousel__dots {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0 16px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pg2-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  transition: background-color 0.2s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-carousel__dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.pg2-carousel__dot--active {
+  position: relative;
+  width: 28px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.pg2-carousel__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.pg2-carousel__play {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: none;
+  padding: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-carousel__play:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pg2-carousel__play:active {
+  transform: scale(0.95);
+}

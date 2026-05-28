@@ -1,8 +1,20 @@
 import { useEffect } from 'react'
 import './PlaygroundPage.css'
-import Playground from './Playground.jsx'
 import Footer from './Footer.jsx'
 import TopNav from './TopNav.jsx'
+// Playground 1 (tilt-card image grid) is parked. Files kept around so we
+// can bring it back later — flip the import + render below to revive it.
+// eslint-disable-next-line no-unused-vars
+import Playground from './Playground.jsx'
+
+import PlaygroundSection from './playground2/PlaygroundSection.jsx'
+import StickerStack from './playground2/interactions/StickerStack.jsx'
+import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
+import NumberFlipCounter from './playground2/interactions/NumberFlipCounter.jsx'
+import AppleCarousel from './playground2/interactions/AppleCarousel.jsx'
+import { kmcStickers } from './playground2/data/kmcStickers.js'
+import { carImage, carScenes } from './playground2/data/carScenes.js'
+import { carouselCards } from './playground2/data/carouselCards.jsx'
 
 export default function PlaygroundPage() {
   useEffect(() => {
@@ -24,12 +36,27 @@ export default function PlaygroundPage() {
             between projects
           </h1>
           <p className="pgp__sub">
-            A loose archive of small things between projects. Type tests,
-            colour studies, posters, screens that never shipped.
+            Small experiments in motion, physics, and interaction design.
           </p>
         </header>
 
-        <Playground />
+        <div className="pgp__demos">
+          <PlaygroundSection title="Sticker Stack" meta="Drag · Spring" aspect="wide">
+            {({ inView }) => <StickerStack stickers={kmcStickers} play={inView} loop />}
+          </PlaygroundSection>
+
+          <PlaygroundSection title="Image Zoom Story" meta="Camera · Zoom" aspect="wide">
+            {() => <ImageZoomStory image={carImage} scenes={carScenes} autoPlay loop />}
+          </PlaygroundSection>
+
+          <PlaygroundSection title="Number Flip Counter" meta="Spring · Roll" aspect="wide">
+            {() => <NumberFlipCounter value={0} maxDigits={4} autoPlay duration={0.6} />}
+          </PlaygroundSection>
+
+          <PlaygroundSection title="Apple Carousel" meta="Drag · Snap" aspect="wide">
+            {() => <AppleCarousel items={carouselCards} autoPlay loop showControls showDots />}
+          </PlaygroundSection>
+        </div>
       </main>
 
       <Footer />

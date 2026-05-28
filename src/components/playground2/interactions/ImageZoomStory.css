@@ -1,0 +1,215 @@
+.pg2-zoom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #171717;
+  outline: none;
+}
+
+.pg2-zoom__camera {
+  position: absolute;
+  inset: 0;
+}
+
+.pg2-zoom__image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.pg2-zoom__vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Hotspots — ping + dot + tooltip */
+.pg2-zoom__hotspot {
+  position: absolute;
+  z-index: 30;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-zoom__hotspot-ping {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+  animation: pg2ZoomPing 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.pg2-zoom__hotspot:hover .pg2-zoom__hotspot-ping {
+  display: none;
+}
+
+.pg2-zoom__hotspot-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.pg2-zoom__hotspot:hover .pg2-zoom__hotspot-dot {
+  transform: scale(1.25);
+}
+
+.pg2-zoom__hotspot-label {
+  pointer-events: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 8px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pg2-zoom__hotspot:hover .pg2-zoom__hotspot-label {
+  opacity: 1;
+}
+
+@keyframes pg2ZoomPing {
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Icon button base */
+.pg2-zoom__icon-btn {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  padding: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-zoom__icon-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.pg2-zoom__icon-btn:active {
+  transform: scale(0.95);
+}
+
+.pg2-zoom__icon-btn--disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pg2-zoom__replay {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 40;
+}
+
+/* Top-left scene label */
+.pg2-zoom__label-wrap {
+  pointer-events: none;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  z-index: 40;
+}
+
+.pg2-zoom__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pg2-zoom__counter {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pg2-zoom__label-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Bottom controls */
+.pg2-zoom__controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(-50%);
+}
+
+.pg2-zoom__dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 10px 16px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pg2-zoom__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.pg2-zoom__dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.pg2-zoom__dot--active {
+  width: 20px;
+  background: #fff;
+}

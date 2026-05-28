@@ -31,6 +31,14 @@
   font-weight: 400;
 }
 
+/* ---- Demo grid: 2 columns on desktop. ---- */
+.pgp__demos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(16px, 1.6vw, 24px);
+  row-gap: clamp(48px, 5vw, 64px);
+}
+
 @media (max-width: 900px) {
   .pgp__title {
     font-size: clamp(28px, 9vw, 72px);
@@ -46,5 +54,10 @@
   }
   .pgp__sub {
     font-size: clamp(15px, 4vw, 20px);
+  }
+  /* Single column on narrow viewports so each demo stays usable. */
+  .pgp__demos {
+    grid-template-columns: 1fr;
+    row-gap: 56px;
   }
 }

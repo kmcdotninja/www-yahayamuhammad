@@ -1,0 +1,60 @@
+.pg2-section {
+  margin: 0;
+}
+
+.pg2-section--full {
+  grid-column: 1 / -1;
+}
+
+.pg2-section__stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1c1c1e;
+  transition: border-color 0.3s ease;
+}
+
+.pg2-section__stage:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pg2-section__stage--wide {
+  aspect-ratio: 16 / 10;
+}
+
+.pg2-section__stage--square {
+  aspect-ratio: 1 / 1;
+}
+
+.pg2-section__caption {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pg2-section__title {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.005em;
+}
+
+.pg2-section__meta {
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 640px) {
+  .pg2-section__title {
+    font-size: 14px;
+  }
+}
