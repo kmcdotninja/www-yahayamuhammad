@@ -54,7 +54,11 @@ export default function App() {
     applySEO({ ...seo, path: pathname })
   }, [pathname])
 
-  const [loading, setLoading] = useState(true)
+  // Loader unplugged — page renders straight to content with no intro.
+  // Flip back to `useState(true)` to bring the loader back; all the
+  // surrounding plumbing (portionReady, is-loading class, lenis stop)
+  // is intact so the revival is a one-line change.
+  const [loading, setLoading] = useState(false)
   // Only the home page mounts the 3D model — other pages can dismiss the
   // loader as soon as the timeline finishes.
   const [portionReady, setPortionReady] = useState(pathname !== '/')
