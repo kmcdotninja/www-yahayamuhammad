@@ -1,9 +1,6 @@
-import { lazy, Suspense } from 'react'
 import './Hero.css'
 import TopNav from './TopNav.jsx'
 import { useSnd } from '../hooks/useSnd.js'
-
-const Portion = lazy(() => import('./Portion.jsx'))
 
 export default function Hero() {
   const { play, SOUNDS } = useSnd()
@@ -24,11 +21,8 @@ export default function Hero() {
       </p>
 
       <div className="intro__about" data-reveal>
-        <Suspense fallback={<div className="portion portion--placeholder" aria-hidden="true" />}>
-          <Portion />
-        </Suspense>
         <p className="intro__bio">
-        Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
+          Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
         <a
           href="#work"

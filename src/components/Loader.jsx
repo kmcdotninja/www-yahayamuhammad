@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import './Loader.css'
-import Portion from './Portion.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 
 // Tuned so the loader's total on-screen time (counter + hold + fade-out)
@@ -100,9 +99,15 @@ export default function Loader({ onDone, gateReady = true }) {
       <div className="loader__rails" aria-hidden="true" />
 
       <div ref={wrapperRef} className="loader__mark">
-        <div className="loader__model">
-          <Portion />
-        </div>
+        <img
+          src="/images/hero-shot.png"
+          alt=""
+          aria-hidden="true"
+          className="loader__hero"
+          width="490"
+          height="636"
+          decoding="async"
+        />
       </div>
 
       <span className="loader__label">

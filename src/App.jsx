@@ -66,11 +66,10 @@ export default function App() {
   }, [])
 
   // Loader unplugged — page renders straight to content with no intro.
-  // Flip back to `useState(true)` to bring the loader back; all the
-  // surrounding plumbing (portionReady, is-loading class, lenis stop)
-  // is intact so the revival is a one-line change.
+  // Flip back to `useState(true)` to bring the loader back; the
+  // surrounding plumbing (is-loading class, lenis stop) is intact so the
+  // revival is a one-line change.
   const [loading, setLoading] = useState(false)
-  const [portionReady, setPortionReady] = useState(pathname !== '/')
 
   useEffect(() => {
     if (pathname === renderPath) return
@@ -87,16 +86,6 @@ export default function App() {
     const enterTimer = setTimeout(() => setTransition('idle'), ENTER_MS)
     return () => clearTimeout(enterTimer)
   }, [transition])
-
-  useEffect(() => {
-    if (renderPath !== '/') {
-      setPortionReady(true)
-      return
-    }
-    const onReady = () => setPortionReady(true)
-    window.addEventListener('app:portion-ready', onReady, { once: true })
-    return () => window.removeEventListener('app:portion-ready', onReady)
-  }, [renderPath])
 
   useEffect(() => {
     if (loading) {
@@ -164,10 +153,7 @@ export default function App() {
       <div className={veilClass} aria-hidden="true" />
       {loading && (
         <Suspense fallback={null}>
-          <Loader
-            gateReady={portionReady}
-            onDone={() => setLoading(false)}
-          />
+          <Loader onDone={() => setLoading(false)} />
         </Suspense>
       )}
       {analyticsReady && (

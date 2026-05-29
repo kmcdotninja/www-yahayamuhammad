@@ -32,12 +32,9 @@ export default defineConfig({
       output: {
         // Hand-tuned vendor chunks. We split the heaviest deps so they can
         // cache independently and so the route shells (home, playground,
-        // about) only download what they need. Three.js stays alone because
-        // it's only used by Portion (lazy-loaded behind the 3D hero).
+        // about) only download what they need.
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined
-          if (id.includes('three/')) return 'three'
-          if (id.includes('@react-three')) return 'three'
           if (id.includes('gsap')) return 'gsap'
           if (
             id.includes('framer-motion') ||

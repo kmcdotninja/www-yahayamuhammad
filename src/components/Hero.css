@@ -1,5 +1,9 @@
 .intro {
-  min-height: 100svh;
+  /* Was 100svh when the section hosted the 3D model / hero image.
+     Text-only hero only needs enough height to seat the headline at
+     the top and the bio/scroll cue at the bottom with breathing room
+     between — 60svh keeps presence without stranding empty space. */
+  min-height: 60svh;
   display: flex;
   flex-direction: column;
   padding: 116px var(--pad) 28px;
@@ -325,13 +329,6 @@
     grid-template-columns: 1fr;
     gap: 14px;
     padding-top: clamp(16px, 3.5vh, 40px);
-  }
-  /* Bump the 3D model ~30% on mobile and let the smaller about padding
-     pull the whole block (model first) higher into the viewport so it
-     reads bigger without crowding the title above. */
-  .intro__about > .portion {
-    width: clamp(300px, 72vw, 500px);
-    height: clamp(300px, 72vw, 500px);
   }
   .intro__scroll {
     justify-self: start;
