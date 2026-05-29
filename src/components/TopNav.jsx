@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import './Hero.css'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
+import Picture from './Picture.jsx'
 import { useSnd } from '../hooks/useSnd.js'
 import { useTheme } from '../hooks/useTheme.js'
 import { navigate, usePathname } from '../lib/router.js'
@@ -13,7 +14,7 @@ const EMAIL = 'yahayabinmuhammad@gmail.com'
 
 function NavIcon({ src, width = 44, height = 44, eager }) {
   return (
-    <img
+    <Picture
       src={src}
       alt=""
       className="voxel"
@@ -21,7 +22,7 @@ function NavIcon({ src, width = 44, height = 44, eager }) {
       height={height}
       decoding="async"
       loading={eager ? 'eager' : 'lazy'}
-      fetchpriority={eager ? 'high' : 'low'}
+      fetchPriority={eager ? 'high' : 'low'}
     />
   )
 }

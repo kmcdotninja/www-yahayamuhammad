@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './ScrollReveal.css'
+import Picture from './Picture.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -200,14 +201,14 @@ export default function ScrollReveal() {
       <div className="sr__art" aria-hidden="true">
         <div ref={polaroidWrapRef} className="sr__polaroid-wrap">
           <div ref={polaroidRef} className="sr__polaroid">
-            <img
+            <Picture
               src="/images/polaroid-kaduna.webp"
               alt=""
               width="320"
               height="400"
               loading="lazy"
               decoding="async"
-              fetchpriority="low"
+              fetchPriority="low"
             />
             <div className="sr__polaroid-cap">
               <span>KADUNA</span>

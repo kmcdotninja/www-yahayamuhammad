@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import './MobileMenu2.css'
+import Picture from './Picture.jsx'
 import { useSnd } from '../hooks/useSnd.js'
 import { navigate, usePathname } from '../lib/router.js'
 
@@ -144,7 +145,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>Work</span>
-          <img src="/icons/nav/work.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <Picture src="/icons/nav/work.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
         <a
           href="/playground"
@@ -153,7 +154,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>Playground </span>
-          <img src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <Picture src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
         <a
           href="/about"
@@ -162,7 +163,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>About</span>
-          <img src="/icons/nav/note.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <Picture src="/icons/nav/note.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
       </nav>
 

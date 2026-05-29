@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './ProjectDrawer.css'
+import Picture from './Picture.jsx'
 import { getLenis } from '../lib/lenisStore.js'
 
 const NARROW_RATIO = 1.15 // width/height — anything below is treated as pairable
@@ -141,7 +142,7 @@ export default function ProjectDrawer({
     setDims((d) => (d[src] ? d : { ...d, [src]: { w, h } }))
   }
 
-  const renderRow = (row, key) => {
+  const renderRow = (row, key, isFirstRow) => {
     if (row.type === 'note') {
       return (
         <p className="pd__note" key={key}>
@@ -151,19 +152,25 @@ export default function ProjectDrawer({
     }
     return (
       <div key={key} className={`pd__row pd__row--${row.type}`}>
-        {row.srcs.map((src) => (
-          <figure className="pd__image" key={src}>
-            <img
-              src={src}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              fetchpriority="low"
-              draggable={false}
-              onLoad={onImgLoad(src)}
-            />
-          </figure>
-        ))}
+        {row.srcs.map((src, ix) => {
+          // First row of the drawer gallery is what the user sees the
+          // instant the panel slides open — eager-load it, high priority,
+          // sync decode so it lands without a paint-then-replace flash.
+          const eager = isFirstRow && ix === 0
+          return (
+            <figure className="pd__image" key={src}>
+              <Picture
+                src={src}
+                alt=""
+                loading={eager ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchPriority={eager ? 'high' : 'low'}
+                draggable={false}
+                onLoad={onImgLoad(src)}
+              />
+            </figure>
+          )
+        })}
       </div>
     )
   }
@@ -286,7 +293,7 @@ export default function ProjectDrawer({
                     )}
                     <div className="pd__section-rows">
                       {section.rows.map((row, ri) =>
-                        renderRow(row, `${si}-${ri}`),
+                        renderRow(row, `${si}-${ri}`, si === 0 && ri === 0),
                       )}
                     </div>
                   </section>
@@ -304,13 +311,13 @@ export default function ProjectDrawer({
                 <span className="pd__next-label">↓ Next project</span>
                 <span className="pd__next-title">{nextProject.name}</span>
                 {nextProject.images?.[0] && (
-                  <img
+                  <Picture
                     src={nextProject.images[0]}
                     alt=""
                     className="pd__next-hero"
                     loading="lazy"
                     decoding="async"
-                    fetchpriority="low"
+                    fetchPriority="low"
                     draggable={false}
                   />
                 )}

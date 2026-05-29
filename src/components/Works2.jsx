@@ -1,6 +1,7 @@
 import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import './Works.css'
 import './Works2.css'
+import Picture from './Picture.jsx'
 import { projects } from '../data.js'
 
 // ProjectDrawer is heavy (image loader + portal + lenis hooks) and only
@@ -70,13 +71,14 @@ const Project = memo(function Project({ project, onOpen }) {
               onPointerMove={onImageMove}
               onPointerLeave={onImageLeave}
             >
-              <img
+              <Picture
                 src={src}
                 alt={`${name} ${i + 1}`}
                 loading="lazy"
                 decoding="async"
-                fetchpriority="low"
+                fetchPriority="low"
                 draggable={false}
+                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
               />
             </figure>
           </div>

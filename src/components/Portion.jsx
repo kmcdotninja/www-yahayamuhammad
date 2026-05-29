@@ -1,34 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import './Portion.css'
 
-const MODEL_URL = '/models/bust.stl'
+const MODEL_URL = '/models/bust.glb'
 
 // Module-level cache so the model + processed geometry is reused across
 // renders (e.g. swapping between Hero and HeroCentered on resize, or
 // remounting after a route transition). Three.js is loaded behind a
-// dynamic import so it never touches the initial bundle.
+// dynamic import so it never touches the initial bundle. We use GLB
+// (decimated + pre-baked smooth normals) instead of STL so the on-the-wire
+// payload is ~70% smaller and the runtime skips mergeVertices entirely.
 let threePromise = null
 const loadThree = () => {
   if (!threePromise) {
     threePromise = Promise.all([
       import('three'),
       import('three/examples/jsm/controls/OrbitControls.js'),
-      import('three/examples/jsm/loaders/STLLoader.js'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
       import('three/examples/jsm/environments/RoomEnvironment.js'),
-      import('three/examples/jsm/utils/BufferGeometryUtils.js'),
     ]).then(
-      ([
-        THREE,
-        { OrbitControls },
-        { STLLoader },
-        { RoomEnvironment },
-        { mergeVertices },
-      ]) => ({
+      ([THREE, { OrbitControls }, { GLTFLoader }, { RoomEnvironment }]) => ({
         THREE: THREE.default || THREE,
         OrbitControls,
-        STLLoader,
+        GLTFLoader,
         RoomEnvironment,
-        mergeVertices,
       }),
     )
   }
@@ -36,17 +30,26 @@ const loadThree = () => {
 }
 
 let geometryCache = null
-const loadGeometry = (THREE, STLLoader, mergeVertices) => {
+const loadGeometry = (GLTFLoader) => {
   if (geometryCache) return geometryCache
   geometryCache = new Promise((resolve, reject) => {
-    new STLLoader().load(
+    new GLTFLoader().load(
       MODEL_URL,
-      (rawGeometry) => {
-        const merged = mergeVertices(rawGeometry, 1e-5)
-        merged.computeVertexNormals()
-        merged.center()
-        merged.computeBoundingSphere()
-        resolve(merged)
+      (gltf) => {
+        // The exported scene contains one mesh (the bust) — pull its
+        // geometry, center it, and re-fit so callers can scale to
+        // whatever radius they need.
+        let geom = null
+        gltf.scene.traverse((obj) => {
+          if (!geom && obj.isMesh) geom = obj.geometry
+        })
+        if (!geom) {
+          reject(new Error('No mesh in GLB'))
+          return
+        }
+        geom.center()
+        geom.computeBoundingSphere()
+        resolve(geom)
       },
       undefined,
       reject,
@@ -86,7 +89,7 @@ export default function Portion() {
     let cleanup = () => {}
 
     loadThree().then(
-      async ({ THREE, OrbitControls, STLLoader, RoomEnvironment, mergeVertices }) => {
+      async ({ THREE, OrbitControls, GLTFLoader, RoomEnvironment }) => {
         if (disposed || !containerRef.current) return
 
         const width = container.clientWidth
@@ -157,16 +160,16 @@ export default function Portion() {
         controls.minPolarAngle = Math.PI / 3
         controls.maxPolarAngle = (2 * Math.PI) / 3
 
-        // ---- Load STL (cached at module scope) ----
+        // ---- Load GLB (cached at module scope) ----
         let mesh = null
         try {
-          const baseGeo = await loadGeometry(THREE, STLLoader, mergeVertices)
+          const baseGeo = await loadGeometry(GLTFLoader)
           if (disposed) return
-          // Clone so each mount owns its geometry buffer and we can dispose
-          // cleanly without invalidating the cached source.
-          const merged = baseGeo.clone()
-          merged.computeBoundingSphere()
-          const radius = merged.boundingSphere?.radius || 1
+          // Clone so each mount owns its geometry buffer and we can
+          // dispose cleanly without invalidating the cached source.
+          const geometry = baseGeo.clone()
+          geometry.computeBoundingSphere()
+          const radius = geometry.boundingSphere?.radius || 1
           const s = 1.4 / radius
 
           const material = new THREE.MeshPhysicalMaterial({
@@ -178,7 +181,7 @@ export default function Portion() {
             envMapIntensity: 1.4,
           })
 
-          mesh = new THREE.Mesh(merged, material)
+          mesh = new THREE.Mesh(geometry, material)
           mesh.scale.setScalar(s)
           scene.add(mesh)
 
@@ -189,7 +192,7 @@ export default function Portion() {
             window.dispatchEvent(new Event('app:portion-ready'))
           })
         } catch (err) {
-          console.error('STL load failed', err)
+          console.error('GLB load failed', err)
           window.dispatchEvent(new Event('app:portion-ready'))
         }
 
