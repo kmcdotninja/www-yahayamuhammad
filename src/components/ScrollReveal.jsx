@@ -201,7 +201,7 @@ export default function ScrollReveal() {
         <div ref={polaroidWrapRef} className="sr__polaroid-wrap">
           <div ref={polaroidRef} className="sr__polaroid">
             <img
-              src="/yahaya-hero.webp"
+              src="/images/polaroid-kaduna.webp"
               alt=""
               width="320"
               height="400"

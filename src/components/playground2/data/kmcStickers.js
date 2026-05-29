@@ -1,4 +1,4 @@
-const stickerBase = '/kmc%20stickers'
+const stickerBase = '/playground/stickers'
 
 // Tighter cluster — positions pulled ~25% closer to centre so the stickers
 // pile up on each other rather than spreading to the card edges. Sizes

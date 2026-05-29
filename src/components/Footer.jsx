@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import './Footer.css'
 import Clock from './Clock.jsx'
 import CopyToast from './CopyToast.jsx'
@@ -9,51 +9,11 @@ import { useSnd } from '../hooks/useSnd.js'
 // footer, so we lazy-load it — first paint never pays for it.
 const CommitSticker = lazy(() => import('./CommitSticker.jsx'))
 
-const ICONS = [
-  '/Work%201.webp',
-  '/Note%201.webp',
-  '/Playground%201.webp',
-  '/Robot%201.webp',
-]
-
 const EMAIL = 'yahayabinmuhammad@gmail.com'
-
-// Flip to true to re-enable the YMD hover cursor-trail and the static
-// Y/M/D letter icons. Kept here so the behavior is easy to bring back.
-const TRAIL_ENABLED = false
 
 export default function Footer() {
   const { play, SOUNDS } = useSnd()
-  const [trail, setTrail] = useState([])
   const [copied, setCopied] = useState(false)
-  const lastSpawnRef = useRef(0)
-  const sectionRef = useRef(null)
-
-  const spawn = (e) => {
-    if (!sectionRef.current) return
-    const now = performance.now()
-    if (now - lastSpawnRef.current < 90) return
-    lastSpawnRef.current = now
-
-    const rect = sectionRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const id = Math.random().toString(36).slice(2)
-    const icon = ICONS[Math.floor(Math.random() * ICONS.length)]
-    const rotation = (Math.random() - 0.5) * 50
-    const size = 120 + Math.random() * 80
-    const ox = (Math.random() - 0.5) * 60
-    const oy = (Math.random() - 0.5) * 60
-
-    setTrail((prev) => [...prev, { id, x: x + ox, y: y + oy, icon, rotation, size }])
-    setTimeout(() => {
-      setTrail((prev) => prev.filter((t) => t.id !== id))
-    }, 900)
-  }
-
-  const clear = () => {
-    setTimeout(() => setTrail([]), 900)
-  }
 
   const copyEmail = async () => {
     try {
@@ -71,7 +31,6 @@ export default function Footer() {
       <CopyToast visible={copied} />
       <hr className="hr-full" aria-hidden="true" />
       <section
-        ref={sectionRef}
         className="footer-art"
         aria-label="YMD"
         data-reveal
@@ -106,59 +65,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <span
-          className="footer-art__text"
-          onMouseMove={TRAIL_ENABLED ? spawn : undefined}
-          onMouseLeave={TRAIL_ENABLED ? clear : undefined}
-        >
-          YMD
-        </span>
+        <span className="footer-art__text">YMD</span>
 
         <div className="footer-art__sticker">
           <Suspense fallback={null}>
             <CommitSticker />
           </Suspense>
         </div>
-
-        {TRAIL_ENABLED && (
-          <>
-            <img
-              src="/Note%201.webp"
-              alt=""
-              aria-hidden="true"
-              className="footer-art__letter-icon footer-art__letter-icon--y"
-            />
-            <img
-              src="/Work%201.webp"
-              alt=""
-              aria-hidden="true"
-              className="footer-art__letter-icon footer-art__letter-icon--m"
-            />
-            <img
-              src="/Robot%201.webp"
-              alt=""
-              aria-hidden="true"
-              className="footer-art__letter-icon footer-art__letter-icon--d"
-            />
-          </>
-        )}
-
-        {TRAIL_ENABLED &&
-          trail.map((t) => (
-            <img
-              key={t.id}
-              src={t.icon}
-              alt=""
-              className="footer-art__icon"
-              style={{
-                left: t.x,
-                top: t.y,
-                width: t.size,
-                height: t.size,
-                '--rot': `${t.rotation}deg`,
-              }}
-            />
-          ))}
       </section>
 
       <footer className="footer">

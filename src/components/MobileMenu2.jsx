@@ -144,7 +144,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>Work</span>
-          <img src="/Work%201.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <img src="/icons/nav/work.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
         <a
           href="/playground"
@@ -153,7 +153,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>Playground </span>
-          <img src="/Playground%201.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <img src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
         <a
           href="/about"
@@ -162,7 +162,7 @@ export default function MobileMenu2({
           tabIndex={open ? 0 : -1}
         >
           <span>About</span>
-          <img src="/Note%201.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+          <img src="/icons/nav/note.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
         </a>
       </nav>
 

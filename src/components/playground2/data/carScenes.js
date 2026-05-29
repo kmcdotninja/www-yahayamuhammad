@@ -1,4 +1,4 @@
-export const carImage = '/playground2/car.jpg'
+export const carImage = '/playground/car.jpg'
 
 export const carScenes = [
   { id: 'full',      x: 0.5,  y: 0.5,  scale: 1,   label: 'Full View' },

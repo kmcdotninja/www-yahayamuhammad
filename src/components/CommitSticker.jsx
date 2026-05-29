@@ -167,7 +167,7 @@ export default function CommitSticker() {
 
         <span className="commit-sticker__logo">
           <img
-            src="/Commit%20Image.png"
+            src="/icons/commit.png"
             alt=""
             width="80"
             height="80"

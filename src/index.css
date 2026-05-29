@@ -8,7 +8,7 @@
    without sacrificing the typography on repeat visits. */
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-Light.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: optional;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-Regular.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-Medium.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/Medium.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -32,7 +32,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-DemiBold.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/DemiBold.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -40,7 +40,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-Bold.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -48,7 +48,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-ExtraBold.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/ExtraBold.otf') format('opentype');
   font-weight: 800;
   font-style: normal;
   font-display: optional;
@@ -56,7 +56,7 @@
 
 @font-face {
   font-family: 'BDO Grotesk';
-  src: url('/BDO%20Font/BDOGrotesk-Black.otf') format('opentype');
+  src: url('/fonts/bdo-grotesk/Black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
   font-display: optional;
@@ -81,10 +81,10 @@
      with a thick black stroke, so they remain visible on both the dark
      default theme and the light theme without needing separate files.
      Values are `url(...) hotspot-x hotspot-y, system-fallback`. */
-  --cursor-default: url('/Cursors/Arrow.svg') 6 4, default;
-  --cursor-pointer: url('/Cursors/Point%20Up.svg') 13 5, pointer;
-  --cursor-grab: url('/Cursors/Grab.svg') 14 14, grab;
-  --cursor-grabbing: url('/Cursors/Grab.svg') 14 14, grabbing;
+  --cursor-default: url('/cursors/arrow.svg') 6 4, default;
+  --cursor-pointer: url('/cursors/point-up.svg') 13 5, pointer;
+  --cursor-grab: url('/cursors/grab.svg') 14 14, grab;
+  --cursor-grabbing: url('/cursors/grab.svg') 14 14, grabbing;
 
   color-scheme: dark;
   color: var(--text);

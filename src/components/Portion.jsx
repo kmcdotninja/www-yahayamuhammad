@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './Portion.css'
 
-const MODEL_URL = '/yahya%20model.stl'
+const MODEL_URL = '/models/bust.stl'
 
 // Module-level cache so the model + processed geometry is reused across
 // renders (e.g. swapping between Hero and HeroCentered on resize, or

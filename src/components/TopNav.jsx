@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+// Nav styles (`.intro__top`, `.intro__wordmark`, …) live in Hero.css.
+// TopNav imports them directly so it carries its own styling regardless
+// of which hero variant (Hero / HeroCentered) is mounted.
 import './Hero.css'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
@@ -146,7 +149,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo(pathname === '/' ? '/#work' : '/')}
             >
-              <NavIcon src="/Work%201.webp" eager />
+              <NavIcon src="/icons/nav/work.webp" eager />
               <span className="intro__pill">Work</span>
             </a>
             <a
@@ -154,7 +157,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/playground')}
             >
-              <NavIcon src="/Playground%201.webp" eager />
+              <NavIcon src="/icons/nav/playground.webp" eager />
               <span className="intro__pill">Playground</span>
             </a>
             <a
@@ -162,7 +165,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/about')}
             >
-              <NavIcon src="/Note%201.webp" eager />
+              <NavIcon src="/icons/nav/note.webp" eager />
               <span className="intro__pill">About</span>
             </a>
           </nav>

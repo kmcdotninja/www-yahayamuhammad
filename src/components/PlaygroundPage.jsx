@@ -2,10 +2,6 @@ import { useEffect } from 'react'
 import './PlaygroundPage.css'
 import Footer from './Footer.jsx'
 import TopNav from './TopNav.jsx'
-// Playground 1 (tilt-card image grid) is parked. Files kept around so we
-// can bring it back later — flip the import + render below to revive it.
-// eslint-disable-next-line no-unused-vars
-import Playground from './Playground.jsx'
 
 import PlaygroundSection from './playground2/PlaygroundSection.jsx'
 import StickerStack from './playground2/interactions/StickerStack.jsx'

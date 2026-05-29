@@ -38,10 +38,12 @@ export default function CopyToast({ visible }) {
     >
       <h3 className="copy-toast__title">You just copied my email</h3>
       <img
-        src="/Mailbox.png"
+        src="/icons/mailbox.png"
         alt=""
         aria-hidden="true"
         className="copy-toast__image"
+        width="120"
+        height="120"
         loading="lazy"
         decoding="async"
       />
