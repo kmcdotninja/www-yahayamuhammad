@@ -31,6 +31,25 @@
   z-index: 1;
 }
 
+/* Per-line mask for the load reveal. Each line is its own block so the three
+   lines stack exactly as the old <br>-separated copy did; overflow:hidden
+   clips the inner span while it slides up from below. The small vertical
+   padding + matching negative margin give the clip a little breathing room so
+   the tall Jaro glyphs aren't shaved at the top/bottom edge of the mask. */
+.introC__line {
+  display: block;
+  overflow: hidden;
+  padding: 0.08em 0;
+  margin: -0.08em 0;
+}
+
+.introC__line-inner {
+  display: block;
+  /* Framer Motion drives the transform; will-change hints the compositor so
+     the slide stays on the GPU and doesn't repaint the headline each frame. */
+  will-change: transform;
+}
+
 /* ---- Decorative stickers ---- */
 /* Anchored to the headline's first line on desktop; the small angles
    give them that "tossed onto the page" feel. z-index sits above the

@@ -1,9 +1,43 @@
+import { motion } from 'framer-motion'
 import './HeroCentered.css'
 import TopNav from './TopNav.jsx'
 import { useSnd } from '../hooks/useSnd.js'
+import { useReducedMotion } from '../hooks/useReducedMotion.js'
+
+// The headline reveals line-by-line on load: each line sits inside an
+// overflow-clipped mask and slides up from below, staggered. Splitting the
+// copy into an array keeps one mask wrapper per line in the markup.
+const HEADLINE_LINES = [
+  'Product designer',
+  'crafting brands, products',
+  'and websites',
+]
+
+// Soft expo.out — the same settle curve the scroll reveals use, expressed as
+// a cubic-bezier so Framer Motion matches the rest of the site's motion feel.
+const REVEAL_EASE = [0.16, 1, 0.3, 1]
 
 export default function HeroCentered() {
   const { play, SOUNDS } = useSnd()
+  const reduced = useReducedMotion()
+
+  // Container orchestrates the per-line stagger; each line slides its inner
+  // text up out of the clip. Under Reduced Motion we drop the transform and
+  // just fade so nothing slides.
+  const lineMask = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: reduced ? 0 : 0.12, delayChildren: 0.15 },
+    },
+  }
+  const lineInner = {
+    hidden: reduced ? { opacity: 0 } : { y: '110%' },
+    visible: {
+      y: '0%',
+      opacity: 1,
+      transition: { duration: reduced ? 0.4 : 0.9, ease: REVEAL_EASE },
+    },
+  }
 
   return (
     <section className="introC">
@@ -40,13 +74,21 @@ export default function HeroCentered() {
         draggable={false}
       />
 
-      <p className="introC__big" data-reveal aria-hidden="true">
-        Product designer
-        <br />
-        crafting brands, products
-        <br />
-        and websites
-      </p>
+      <motion.p
+        className="introC__big"
+        aria-hidden="true"
+        variants={lineMask}
+        initial="hidden"
+        animate="visible"
+      >
+        {HEADLINE_LINES.map((line) => (
+          <span key={line} className="introC__line">
+            <motion.span className="introC__line-inner" variants={lineInner}>
+              {line}
+            </motion.span>
+          </span>
+        ))}
+      </motion.p>
 
       <div className="introC__about">
         <p className="introC__bio">
