@@ -62,6 +62,20 @@
   font-display: optional;
 }
 
+/* Jaro — the decorative display face used for the big headings. Self-hosted
+   (latin subset only — headings are uppercase Latin) so it never waits on the
+   Google Fonts CSS→font round trip. Preloaded from index.html, so by the time
+   the heading paints the woff2 is already in cache. `font-display: block`
+   keeps the brief load window invisible rather than flashing the Helvetica
+   fallback, but with the local preload that window is effectively zero. */
+@font-face {
+  font-family: 'Jaro';
+  src: url('/fonts/jaro/jaro-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --bg: #0a0a0a;
   --text: #e6e3dc;

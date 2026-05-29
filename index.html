@@ -29,18 +29,24 @@
     <link rel="apple-touch-icon" href="/icons/favicon-512.png" />
     <link rel="shortcut icon" href="/icons/favicon-512.png" />
 
-    <!-- Google Fonts — connected early and loaded non-blocking. Split into
-         two requests on purpose:
-           • Body fonts (Instrument Sans / Doto) use `display=swap` so text
-             paints instantly in the fallback and swaps in seamlessly.
-           • Jaro — the decorative display face used for headings — uses
-             `display=block`. `swap` made the heading flash the fallback
-             (Helvetica) before Jaro arrived; `block` keeps the heading
-             text invisible for the brief load window and then paints
-             straight in Jaro, so no fallback flash is ever shown.
-         Both hit the already-preconnected fonts.googleapis origin, so the
-         second request reuses the warm connection. preload+onload swap lets
-         the rest of the head continue parsing without waiting on the CSS. -->
+    <!-- Jaro — the decorative display face used for the big headings — is
+         self-hosted (latin subset, ~19KB) and preloaded here so it fetches at
+         highest priority the moment the HTML is parsed, with no Google Fonts
+         CSS→font round trip. By the time the hero heading paints, the woff2 is
+         already in cache, so the `font-display: block` window (in index.css)
+         is effectively zero and the heading shows in Jaro instantly. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/jaro/jaro-latin.woff2"
+      crossorigin
+    />
+
+    <!-- Body fonts (Instrument Sans / Doto) — loaded non-blocking from Google
+         with `display=swap`, so text paints instantly in the fallback and
+         swaps in seamlessly. preconnect warms the connection; preload+onload
+         swap lets the head keep parsing without waiting on the CSS. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -49,20 +55,10 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Doto:wght@400;700;900&display=swap"
       onload="this.onload=null;this.rel='stylesheet'"
     />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=block"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
     <noscript>
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Doto:wght@400;700;900&display=swap"
-      />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=block"
       />
     </noscript>
 
