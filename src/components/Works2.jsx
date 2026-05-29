@@ -1,38 +1,53 @@
-import { useRef, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import './Works.css'
 import './Works2.css'
-import ProjectDrawer from './ProjectDrawer.jsx'
 import { projects } from '../data.js'
 
-function Project({ project, onOpen }) {
+// ProjectDrawer is heavy (image loader + portal + lenis hooks) and only
+// opens on a click — keep it out of the home-page initial chunk.
+const ProjectDrawer = lazy(() => import('./ProjectDrawer.jsx'))
+
+const Project = memo(function Project({ project, onOpen }) {
   const { name, description, roles, team, images, comingSoon } = project
   const pillRef = useRef(null)
   const [pillVisible, setPillVisible] = useState(false)
 
-  const movePill = (clientX, clientY) => {
+  // movePill writes the transform directly so we don't spam React state on
+  // every pointermove. The pill node is a sibling of the figure so this
+  // does not invalidate sibling layout.
+  const movePill = useCallback((clientX, clientY) => {
     const pill = pillRef.current
     if (!pill) return
     pill.style.transform = `translate3d(${clientX}px, ${clientY}px, 0) translate(-50%, -50%)`
-  }
+  }, [])
 
-  const onImageEnter = (e) => {
-    if (e.pointerType !== 'mouse') return
-    setPillVisible(true)
-    movePill(e.clientX, e.clientY)
-  }
+  const onImageEnter = useCallback(
+    (e) => {
+      if (e.pointerType !== 'mouse') return
+      setPillVisible(true)
+      movePill(e.clientX, e.clientY)
+    },
+    [movePill],
+  )
 
-  const onImageMove = (e) => {
-    if (e.pointerType !== 'mouse') return
-    movePill(e.clientX, e.clientY)
-  }
+  const onImageMove = useCallback(
+    (e) => {
+      if (e.pointerType !== 'mouse') return
+      movePill(e.clientX, e.clientY)
+    },
+    [movePill],
+  )
 
-  const onImageLeave = () => setPillVisible(false)
+  const onImageLeave = useCallback(() => setPillVisible(false), [])
 
-  const openDrawer = (e) => {
-    e?.preventDefault?.()
-    if (comingSoon) return
-    onOpen()
-  }
+  const openDrawer = useCallback(
+    (e) => {
+      e?.preventDefault?.()
+      if (comingSoon) return
+      onOpen()
+    },
+    [comingSoon, onOpen],
+  )
 
   return (
     <article className={`project${comingSoon ? ' project--soon' : ''}`}>
@@ -47,7 +62,7 @@ function Project({ project, onOpen }) {
 
       <div className="project__grid">
         {images.map((src, i) => (
-          <div key={i} className="project__tile-frame" data-reveal-card>
+          <div key={src} className="project__tile-frame" data-reveal-card>
             <figure
               className="project__tile"
               onClick={openDrawer}
@@ -60,6 +75,7 @@ function Project({ project, onOpen }) {
                 alt={`${name} ${i + 1}`}
                 loading="lazy"
                 decoding="async"
+                fetchpriority="low"
                 draggable={false}
               />
             </figure>
@@ -103,22 +119,46 @@ function Project({ project, onOpen }) {
       </span>
     </article>
   )
-}
+})
 
 export default function Works2() {
   const [openIndex, setOpenIndex] = useState(null)
+  // Track whether the drawer has been opened at least once so we can keep
+  // it mounted (and benefit from cached images / measured dims) on
+  // subsequent opens.
+  const [drawerArmed, setDrawerArmed] = useState(false)
   const openProject = openIndex !== null ? projects[openIndex] : null
+
+  const openByIndex = useCallback((i) => {
+    setOpenIndex(i)
+    setDrawerArmed(true)
+  }, [])
+
+  // Pre-warm the drawer chunk on first idle so the click feels instant
+  // even though the chunk itself is split off the home bundle.
+  useEffect(() => {
+    const ric = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500))
+    const cancel = window.cancelIdleCallback || clearTimeout
+    const id = ric(() => {
+      import('./ProjectDrawer.jsx').catch(() => {})
+    }, { timeout: 4000 })
+    return () => cancel(id)
+  }, [])
 
   return (
     <section className="works works--grid" id="work">
       {projects.map((p, i) => (
-        <Project key={p.name} project={p} onOpen={() => setOpenIndex(i)} />
+        <Project key={p.name} project={p} onOpen={() => openByIndex(i)} />
       ))}
-      <ProjectDrawer
-        project={openProject}
-        open={openIndex !== null}
-        onClose={() => setOpenIndex(null)}
-      />
+      {drawerArmed && (
+        <Suspense fallback={null}>
+          <ProjectDrawer
+            project={openProject}
+            open={openIndex !== null}
+            onClose={() => setOpenIndex(null)}
+          />
+        </Suspense>
+      )}
     </section>
   )
 }

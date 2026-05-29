@@ -1,12 +1,5 @@
-import { useEffect, useState } from 'react'
-// Nav styles (`.intro__top`, `.intro__wordmark`, …) live in Hero.css.
-// TopNav imports them directly so it carries its own styling regardless
-// of which hero variant (Hero / HeroCentered / HeroStrip) is mounted.
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './Hero.css'
-// Original bottom-sheet drawer kept around for later — swap the import
-// below if you want it back. The current UI uses the full-screen variant.
-// eslint-disable-next-line no-unused-vars
-import MobileMenu from './MobileMenu.jsx'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
 import { useSnd } from '../hooks/useSnd.js'
@@ -15,14 +8,17 @@ import { navigate, usePathname } from '../lib/router.js'
 
 const EMAIL = 'yahayabinmuhammad@gmail.com'
 
-function NavIcon({ src }) {
+function NavIcon({ src, width = 44, height = 44, eager }) {
   return (
     <img
       src={src}
       alt=""
       className="voxel"
+      width={width}
+      height={height}
       decoding="async"
-      fetchpriority="high"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'low'}
     />
   )
 }
@@ -62,38 +58,65 @@ export default function TopNav() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [stuck, setStuck] = useState(
-    () => typeof window !== 'undefined' && window.scrollY > 80,
-  )
+  const headerRef = useRef(null)
 
+  // Stick threshold: 80px. We toggle the class directly on the header DOM
+  // node instead of pushing React state so the only work per scroll frame
+  // is a single classList read and (when crossing the boundary) a write.
+  // No render, no diff, no Suspense re-walk.
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 80)
+    const el = headerRef.current
+    if (!el) return
+    let stuck = window.scrollY > 80
+    if (stuck) el.classList.add('intro__top--stuck')
+    let pending = false
+    const update = () => {
+      pending = false
+      const next = window.scrollY > 80
+      if (next !== stuck) {
+        stuck = next
+        el.classList.toggle('intro__top--stuck', stuck)
+      }
+    }
+    const onScroll = () => {
+      if (pending) return
+      pending = true
+      requestAnimationFrame(update)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
-  const onWordmark = (e) => {
-    e.preventDefault()
-    play(SOUNDS.BUTTON)
-    if (pathname === '/') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else {
-      navigate('/')
-    }
-  }
+  const onWordmark = useCallback(
+    (e) => {
+      e.preventDefault()
+      play(SOUNDS.BUTTON)
+      if (pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        navigate('/')
+      }
+    },
+    [pathname, play, SOUNDS.BUTTON],
+  )
 
-  const linkTo = (to) => (e) => {
-    e.preventDefault()
-    play(SOUNDS.BUTTON)
-    navigate(to)
-  }
+  const linkTo = useCallback(
+    (to) => (e) => {
+      e.preventDefault()
+      play(SOUNDS.BUTTON)
+      navigate(to)
+    },
+    [play, SOUNDS.BUTTON],
+  )
 
-  const onToggleTheme = () => {
+  const onToggleTheme = useCallback(() => {
     play(theme === 'dark' ? SOUNDS.TOGGLE_ON : SOUNDS.TOGGLE_OFF)
     toggleTheme()
-  }
+  }, [theme, toggleTheme, play, SOUNDS.TOGGLE_ON, SOUNDS.TOGGLE_OFF])
 
-  const copyEmail = async () => {
+  const copyEmail = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(EMAIL)
       setCopied(true)
@@ -102,11 +125,11 @@ export default function TopNav() {
     } catch {
       window.location.href = `mailto:${EMAIL}`
     }
-  }
+  }, [play, SOUNDS.CELEBRATION])
 
   return (
     <>
-      <header className={`intro__top ${stuck ? 'intro__top--stuck' : ''}`}>
+      <header ref={headerRef} className="intro__top">
         <div className="intro__top-inner">
           <a
             href="/"
@@ -123,7 +146,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo(pathname === '/' ? '/#work' : '/')}
             >
-              <NavIcon src="/Work%201.webp" />
+              <NavIcon src="/Work%201.webp" eager />
               <span className="intro__pill">Work</span>
             </a>
             <a
@@ -131,7 +154,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/playground')}
             >
-              <NavIcon src="/Playground%201.webp" />
+              <NavIcon src="/Playground%201.webp" eager />
               <span className="intro__pill">Playground</span>
             </a>
             <a
@@ -139,7 +162,7 @@ export default function TopNav() {
               className="intro__nav-group"
               onClick={linkTo('/about')}
             >
-              <NavIcon src="/Note%201.webp" />
+              <NavIcon src="/Note%201.webp" eager />
               <span className="intro__pill">About</span>
             </a>
           </nav>

@@ -6,6 +6,14 @@
   touch-action: none;
   display: block;
   background: transparent;
+  contain: layout paint;
+}
+
+/* Suspense fallback that matches the live canvas footprint so swapping in
+   the real <Portion /> never triggers a layout shift. */
+.portion--placeholder {
+  cursor: default;
+  pointer-events: none;
 }
 
 /* On touch devices we disable drag-to-rotate (see Portion.jsx) — let

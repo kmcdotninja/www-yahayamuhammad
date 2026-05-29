@@ -1,12 +1,67 @@
 import { useEffect, useRef, useState } from 'react'
-import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
-import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import './Portion.css'
 
 const MODEL_URL = '/yahya%20model.stl'
+
+// Module-level cache so the model + processed geometry is reused across
+// renders (e.g. swapping between Hero and HeroCentered on resize, or
+// remounting after a route transition). Three.js is loaded behind a
+// dynamic import so it never touches the initial bundle.
+let threePromise = null
+const loadThree = () => {
+  if (!threePromise) {
+    threePromise = Promise.all([
+      import('three'),
+      import('three/examples/jsm/controls/OrbitControls.js'),
+      import('three/examples/jsm/loaders/STLLoader.js'),
+      import('three/examples/jsm/environments/RoomEnvironment.js'),
+      import('three/examples/jsm/utils/BufferGeometryUtils.js'),
+    ]).then(
+      ([
+        THREE,
+        { OrbitControls },
+        { STLLoader },
+        { RoomEnvironment },
+        { mergeVertices },
+      ]) => ({
+        THREE: THREE.default || THREE,
+        OrbitControls,
+        STLLoader,
+        RoomEnvironment,
+        mergeVertices,
+      }),
+    )
+  }
+  return threePromise
+}
+
+let geometryCache = null
+const loadGeometry = (THREE, STLLoader, mergeVertices) => {
+  if (geometryCache) return geometryCache
+  geometryCache = new Promise((resolve, reject) => {
+    new STLLoader().load(
+      MODEL_URL,
+      (rawGeometry) => {
+        const merged = mergeVertices(rawGeometry, 1e-5)
+        merged.computeVertexNormals()
+        merged.center()
+        merged.computeBoundingSphere()
+        resolve(merged)
+      },
+      undefined,
+      reject,
+    )
+  })
+  return geometryCache
+}
+
+const isTouchDevice = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: none) and (pointer: coarse)').matches
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function Portion() {
   const containerRef = useRef(null)
@@ -27,151 +82,195 @@ export default function Portion() {
     const container = containerRef.current
     if (!container) return
 
-    const width = container.clientWidth
-    const height = container.clientHeight
+    let disposed = false
+    let cleanup = () => {}
 
-    // ---- Scene + camera + renderer ----
-    const scene = new THREE.Scene()
-    scene.background = null
+    loadThree().then(
+      async ({ THREE, OrbitControls, STLLoader, RoomEnvironment, mergeVertices }) => {
+        if (disposed || !containerRef.current) return
 
-    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000)
-    camera.position.set(0, 0, 5)
+        const width = container.clientWidth
+        const height = container.clientHeight
+        const touch = isTouchDevice()
+        const reduced = prefersReducedMotion()
+        setIsTouch(touch)
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      premultipliedAlpha: false,
-    })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(width, height)
-    renderer.setClearColor(0x000000, 0)
-    renderer.setClearAlpha(0)
-    renderer.outputColorSpace = THREE.SRGBColorSpace
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.1
-    container.appendChild(renderer.domElement)
+        // ---- Scene + camera + renderer ----
+        const scene = new THREE.Scene()
+        scene.background = null
 
-    // On touch devices, drag-to-rotate hijacks vertical scrolling. Skip
-    // input entirely so the page scrolls through the canvas — autoRotate
-    // doesn't depend on pointer events and keeps working.
-    const touchQuery = window.matchMedia('(hover: none) and (pointer: coarse)')
-    const touch = touchQuery.matches
-    setIsTouch(touch)
-    if (touch) {
-      renderer.domElement.style.pointerEvents = 'none'
-    }
+        const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000)
+        camera.position.set(0, 0, 5)
 
-    // ---- HDR environment (PMREM from RoomEnvironment) ----
-    const pmrem = new THREE.PMREMGenerator(renderer)
-    pmrem.compileEquirectangularShader()
-    const envScene = new RoomEnvironment(renderer)
-    const envTexture = pmrem.fromScene(envScene, 0.04).texture
-    scene.environment = envTexture
+        // GPU tier: phones and low-power devices ditch antialias and clamp
+        // the pixel ratio to 1.5. The hit to edge crispness is invisible
+        // at the model's actual on-screen size and saves a meaningful
+        // chunk of GPU/CPU per frame.
+        const lowPower =
+          touch ||
+          (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
 
-    // ---- Subtle direct lighting for definition ----
-    scene.add(new THREE.AmbientLight(0xffffff, 0.25))
-    const key = new THREE.DirectionalLight(0xfff4e3, 1.1)
-    key.position.set(5, 7, 5)
-    scene.add(key)
-    const rim = new THREE.DirectionalLight(0xb8d4ff, 0.55)
-    rim.position.set(-4, -2, -5)
-    scene.add(rim)
-
-    // ---- Controls ----
-    const controls = new OrbitControls(camera, renderer.domElement)
-    controls.enableDamping = true
-    controls.dampingFactor = 0.06
-    controls.enablePan = false
-    controls.enableZoom = false
-    controls.autoRotate = true
-    controls.autoRotateSpeed = 0.7
-    controls.minPolarAngle = Math.PI / 3
-    controls.maxPolarAngle = (2 * Math.PI) / 3
-
-    // ---- Load STL ----
-    let mesh = null
-    const loader = new STLLoader()
-    loader.load(
-      MODEL_URL,
-      (rawGeometry) => {
-        // Merge duplicated vertices (STL stores each face as 3 separate
-        // verts) so smooth normals interpolate properly across edges.
-        const merged = mergeVertices(rawGeometry, 1e-5)
-        merged.computeVertexNormals()
-        merged.center()
-        merged.computeBoundingSphere()
-
-        const radius = merged.boundingSphere?.radius || 1
-        const targetRadius = 1.4
-        const s = targetRadius / radius
-
-        const material = new THREE.MeshPhysicalMaterial({
-          color: 0xdcdcdc,
-          roughness: 0.22,
-          metalness: 1.0,
-          clearcoat: 0.2,
-          clearcoatRoughness: 0.22,
-          envMapIntensity: 1.4,
+        const renderer = new THREE.WebGLRenderer({
+          antialias: !lowPower,
+          alpha: true,
+          premultipliedAlpha: false,
+          powerPreference: 'high-performance',
         })
+        const dprCap = lowPower ? 1.5 : 2
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap))
+        renderer.setSize(width, height)
+        renderer.setClearColor(0x000000, 0)
+        renderer.setClearAlpha(0)
+        renderer.outputColorSpace = THREE.SRGBColorSpace
+        renderer.toneMapping = THREE.ACESFilmicToneMapping
+        renderer.toneMappingExposure = 1.1
+        container.appendChild(renderer.domElement)
 
-        mesh = new THREE.Mesh(merged, material)
-        mesh.scale.setScalar(s)
-        scene.add(mesh)
+        if (touch) {
+          renderer.domElement.style.pointerEvents = 'none'
+        }
 
-        // Render one frame synchronously so the canvas has content before
-        // we fade it in — prevents a brief white flash from the empty GL buffer.
-        renderer.render(scene, camera)
-        requestAnimationFrame(() => {
-          setReady(true)
+        // ---- HDR environment (PMREM from RoomEnvironment) ----
+        const pmrem = new THREE.PMREMGenerator(renderer)
+        pmrem.compileEquirectangularShader()
+        const envScene = new RoomEnvironment(renderer)
+        const envTexture = pmrem.fromScene(envScene, 0.04).texture
+        scene.environment = envTexture
+
+        // ---- Subtle direct lighting for definition ----
+        scene.add(new THREE.AmbientLight(0xffffff, 0.25))
+        const key = new THREE.DirectionalLight(0xfff4e3, 1.1)
+        key.position.set(5, 7, 5)
+        scene.add(key)
+        const rim = new THREE.DirectionalLight(0xb8d4ff, 0.55)
+        rim.position.set(-4, -2, -5)
+        scene.add(rim)
+
+        // ---- Controls ----
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.enableDamping = true
+        controls.dampingFactor = 0.06
+        controls.enablePan = false
+        controls.enableZoom = false
+        controls.autoRotate = !reduced
+        controls.autoRotateSpeed = 0.7
+        controls.minPolarAngle = Math.PI / 3
+        controls.maxPolarAngle = (2 * Math.PI) / 3
+
+        // ---- Load STL (cached at module scope) ----
+        let mesh = null
+        try {
+          const baseGeo = await loadGeometry(THREE, STLLoader, mergeVertices)
+          if (disposed) return
+          // Clone so each mount owns its geometry buffer and we can dispose
+          // cleanly without invalidating the cached source.
+          const merged = baseGeo.clone()
+          merged.computeBoundingSphere()
+          const radius = merged.boundingSphere?.radius || 1
+          const s = 1.4 / radius
+
+          const material = new THREE.MeshPhysicalMaterial({
+            color: 0xdcdcdc,
+            roughness: 0.22,
+            metalness: 1.0,
+            clearcoat: 0.2,
+            clearcoatRoughness: 0.22,
+            envMapIntensity: 1.4,
+          })
+
+          mesh = new THREE.Mesh(merged, material)
+          mesh.scale.setScalar(s)
+          scene.add(mesh)
+
+          renderer.render(scene, camera)
+          requestAnimationFrame(() => {
+            if (disposed) return
+            setReady(true)
+            window.dispatchEvent(new Event('app:portion-ready'))
+          })
+        } catch (err) {
+          console.error('STL load failed', err)
           window.dispatchEvent(new Event('app:portion-ready'))
-        })
-      },
-      undefined,
-      (err) => {
-        console.error('STL load failed', err)
-        window.dispatchEvent(new Event('app:portion-ready'))
+        }
+
+        // ---- Visibility + resize observers ----
+        // Pause the RAF loop when the canvas leaves the viewport (saves the
+        // entire render+controls cost while scrolled below the hero) and
+        // when the tab is hidden.
+        let visible = true
+        let inView = true
+        let rafId = 0
+        let needsRender = true
+
+        const tick = () => {
+          rafId = requestAnimationFrame(tick)
+          if (!visible || !inView) return
+          // controls.update() returns true when damping/autoRotate caused
+          // a change. With autoRotate on, this is essentially always true
+          // — but rendering only when something actually moved is still a
+          // worthwhile guard for the reduced-motion path.
+          const moved = controls.update()
+          if (moved || needsRender) {
+            renderer.render(scene, camera)
+            needsRender = false
+          }
+        }
+        tick()
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            inView = entries[0].isIntersecting
+            if (inView) needsRender = true
+          },
+          { rootMargin: '100px' },
+        )
+        io.observe(container)
+
+        const onVis = () => {
+          visible = !document.hidden
+          if (visible) needsRender = true
+        }
+        document.addEventListener('visibilitychange', onVis)
+
+        const onResize = () => {
+          if (!containerRef.current) return
+          const w = container.clientWidth
+          const h = container.clientHeight
+          camera.aspect = w / h
+          camera.updateProjectionMatrix()
+          renderer.setSize(w, h)
+          needsRender = true
+        }
+        const ro = new ResizeObserver(onResize)
+        ro.observe(container)
+
+        cleanup = () => {
+          cancelAnimationFrame(rafId)
+          io.disconnect()
+          ro.disconnect()
+          document.removeEventListener('visibilitychange', onVis)
+          controls.dispose()
+          if (mesh) {
+            mesh.geometry.dispose()
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach((m) => m.dispose())
+            } else {
+              mesh.material.dispose()
+            }
+          }
+          envTexture.dispose()
+          pmrem.dispose()
+          renderer.dispose()
+          if (renderer.domElement.parentNode) {
+            renderer.domElement.parentNode.removeChild(renderer.domElement)
+          }
+        }
       },
     )
 
-    // ---- Resize ----
-    const onResize = () => {
-      const w = container.clientWidth
-      const h = container.clientHeight
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
-      renderer.setSize(w, h)
-    }
-    const ro = new ResizeObserver(onResize)
-    ro.observe(container)
-
-    // ---- Animate loop ----
-    let rafId
-    const animate = () => {
-      rafId = requestAnimationFrame(animate)
-      controls.update()
-      renderer.render(scene, camera)
-    }
-    animate()
-
-    // ---- Cleanup ----
     return () => {
-      cancelAnimationFrame(rafId)
-      ro.disconnect()
-      controls.dispose()
-      if (mesh) {
-        mesh.geometry.dispose()
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach((m) => m.dispose())
-        } else {
-          mesh.material.dispose()
-        }
-      }
-      envTexture.dispose()
-      pmrem.dispose()
-      renderer.dispose()
-      if (renderer.domElement.parentNode) {
-        renderer.domElement.parentNode.removeChild(renderer.domElement)
-      }
+      disposed = true
+      cleanup()
     }
   }, [])
 

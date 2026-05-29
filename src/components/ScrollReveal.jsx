@@ -203,8 +203,11 @@ export default function ScrollReveal() {
             <img
               src="/yahaya-hero.webp"
               alt=""
+              width="320"
+              height="400"
               loading="lazy"
               decoding="async"
+              fetchpriority="low"
             />
             <div className="sr__polaroid-cap">
               <span>KADUNA</span>

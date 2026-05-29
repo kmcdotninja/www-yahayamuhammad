@@ -1,9 +1,13 @@
-import { useRef, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import './Footer.css'
 import Clock from './Clock.jsx'
-import CommitSticker from './CommitSticker.jsx'
 import CopyToast from './CopyToast.jsx'
 import { useSnd } from '../hooks/useSnd.js'
+
+// CommitSticker renders 17×17 = 289 cells + a hover tilt with rAF logic.
+// The whole sticker sits below the fold of every page that mounts the
+// footer, so we lazy-load it — first paint never pays for it.
+const CommitSticker = lazy(() => import('./CommitSticker.jsx'))
 
 const ICONS = [
   '/Work%201.webp',
@@ -111,7 +115,9 @@ export default function Footer() {
         </span>
 
         <div className="footer-art__sticker">
-          <CommitSticker />
+          <Suspense fallback={null}>
+            <CommitSticker />
+          </Suspense>
         </div>
 
         {TRAIL_ENABLED && (

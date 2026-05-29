@@ -1,13 +1,17 @@
 /* BDO Grotesk — the project's primary sans, served from /public/BDO Font.
-   Each weight maps to its standard CSS number. font-display: swap so the
-   fallback (Instrument Sans → system) shows immediately if the .otf
-   files haven't loaded yet, then BDO swaps in once ready. */
+   The four common weights (400/500/600/700) use `font-display: swap` so the
+   browser shows the fallback (Instrument Sans → system) immediately and
+   swaps in BDO as soon as the .otf finishes downloading. The rare
+   extremes (300/800/900) use `font-display: optional` — if they aren't
+   already in the HTTP cache they're skipped on first paint and the
+   fallback is kept, which removes them entirely from the critical path
+   without sacrificing the typography on repeat visits. */
 @font-face {
   font-family: 'BDO Grotesk';
   src: url('/BDO%20Font/BDOGrotesk-Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -47,7 +51,7 @@
   src: url('/BDO%20Font/BDOGrotesk-ExtraBold.otf') format('opentype');
   font-weight: 800;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -55,7 +59,7 @@
   src: url('/BDO%20Font/BDOGrotesk-Black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 :root {
@@ -151,4 +155,18 @@ a {
 button {
   font-family: inherit;
   cursor: var(--cursor-pointer);
+}
+
+/* Respect user motion preferences — silences every transition + animation
+   site-wide unless the element explicitly opts back in. Halves jank on
+   low-end Android browsers and removes a battery cost on Reduced Motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

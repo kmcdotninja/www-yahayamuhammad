@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 import App from './App.jsx'
 
@@ -17,17 +16,19 @@ if (window.location.hash) {
 }
 
 window.scrollTo(0, 0)
-document.documentElement.classList.add('is-loading')
-
-// Warm the network cache for assets that only load on the home page so that
-// navigating to it from /playground or /about never waits on a cold fetch.
-;['/yahya%20model.stl'].forEach((url) => {
-  fetch(url, { cache: 'force-cache' }).catch(() => {})
-})
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-    <Analytics />
   </StrictMode>,
 )
+
+// Defer Vercel Analytics until after first paint — the analytics script
+// is non-essential for rendering and would otherwise compete with React
+// hydration on the main thread.
+const ric = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500))
+ric(() => {
+  import('@vercel/analytics')
+    .then(({ inject }) => inject())
+    .catch(() => {})
+})

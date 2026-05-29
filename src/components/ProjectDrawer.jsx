@@ -158,6 +158,7 @@ export default function ProjectDrawer({
               alt=""
               loading="lazy"
               decoding="async"
+              fetchpriority="low"
               draggable={false}
               onLoad={onImgLoad(src)}
             />
@@ -309,6 +310,7 @@ export default function ProjectDrawer({
                     className="pd__next-hero"
                     loading="lazy"
                     decoding="async"
+                    fetchpriority="low"
                     draggable={false}
                   />
                 )}

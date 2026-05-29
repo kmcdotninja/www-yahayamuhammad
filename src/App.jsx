@@ -1,27 +1,31 @@
-import { useEffect, useState } from 'react'
-import { SpeedInsights } from '@vercel/speed-insights/react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import './App.css'
 import Hero from './components/Hero.jsx'
 import HeroCentered from './components/HeroCentered.jsx'
-// Parked — Dann-Petty-style minimal strip hero. Files kept for revert.
-// import HeroStrip from './components/HeroStrip.jsx'
 import Works2 from './components/Works2.jsx'
-// Parked — Playground teaser strip that sat between Works2 and the
-// Footer on the home page. Files kept for one-line revert.
-// import HomePlayground from './components/HomePlayground.jsx'
-import PlaygroundPage from './components/PlaygroundPage.jsx'
-import AboutPage from './components/AboutPage.jsx'
-import NotFoundPage from './components/NotFoundPage.jsx'
 import Footer from './components/Footer.jsx'
-import Loader from './components/Loader.jsx'
-// Loader3 (sticker-stack variant) is parked. Files kept around so we can
-// flip back later by swapping the import + render below.
-// eslint-disable-next-line no-unused-vars
-import Loader3 from './components/Loader3.jsx'
 import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
 import { applySEO, ROUTE_SEO } from './lib/seo.js'
+
+// Route-level code splitting. The home page (Hero + Works2 + Footer) ships
+// in the initial chunk because that's the LCP path; the other routes lazy
+// in their own chunks so users on /playground or /about don't download the
+// home-page graph and vice-versa.
+const PlaygroundPage = lazy(() => import('./components/PlaygroundPage.jsx'))
+const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
+const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
+// Loader (and its 3D dependency) is gated behind a runtime flag — only
+// pull it into the bundle when we actually decide to mount it.
+const Loader = lazy(() => import('./components/Loader.jsx'))
+
+// Lightweight @vercel/speed-insights wrapper that defers the import until
+// the page is idle, so the analytics script doesn't fight for the main
+// thread during initial paint.
+const SpeedInsightsLazy = lazy(() =>
+  import('@vercel/speed-insights/react').then((m) => ({ default: m.SpeedInsights })),
+)
 
 const LEAVE_MS = 520
 const ENTER_MS = 760
@@ -31,12 +35,9 @@ const DESKTOP_MQ = '(min-width: 901px)'
 export default function App() {
   const pathname = usePathname()
 
-  // What's actually rendered. Lags behind `pathname` during a route transition
-  // so the leaving page can finish its exit animation before the new one mounts.
   const [renderPath, setRenderPath] = useState(pathname)
-  const [transition, setTransition] = useState('idle') // 'idle' | 'leaving' | 'entering'
+  const [transition, setTransition] = useState('idle')
 
-  // Desktop swaps in the centered hero variant; mobile keeps the left-aligned one.
   const [isDesktop, setIsDesktop] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(DESKTOP_MQ).matches,
   )
@@ -54,13 +55,21 @@ export default function App() {
     applySEO({ ...seo, path: pathname })
   }, [pathname])
 
+  // Defer SpeedInsights mount until idle so it never shows up in the
+  // initial JS execution budget.
+  const [analyticsReady, setAnalyticsReady] = useState(false)
+  useEffect(() => {
+    const ric = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500))
+    const cancel = window.cancelIdleCallback || clearTimeout
+    const id = ric(() => setAnalyticsReady(true), { timeout: 3000 })
+    return () => cancel(id)
+  }, [])
+
   // Loader unplugged — page renders straight to content with no intro.
   // Flip back to `useState(true)` to bring the loader back; all the
   // surrounding plumbing (portionReady, is-loading class, lenis stop)
   // is intact so the revival is a one-line change.
   const [loading, setLoading] = useState(false)
-  // Only the home page mounts the 3D model — other pages can dismiss the
-  // loader as soon as the timeline finishes.
   const [portionReady, setPortionReady] = useState(pathname !== '/')
 
   useEffect(() => {
@@ -106,20 +115,31 @@ export default function App() {
 
   let body
   if (renderPath === '/playground') {
-    body = <PlaygroundPage />
+    body = (
+      <Suspense fallback={null}>
+        <PlaygroundPage />
+      </Suspense>
+    )
   } else if (renderPath === '/about') {
-    body = <AboutPage />
+    body = (
+      <Suspense fallback={null}>
+        <AboutPage />
+      </Suspense>
+    )
   } else if (renderPath === '/') {
     body = (
       <>
         {isDesktop ? <HeroCentered /> : <Hero />}
         <Works2 />
-        {/* <HomePlayground /> — parked, see import above. */}
         <Footer />
       </>
     )
   } else {
-    body = <NotFoundPage />
+    body = (
+      <Suspense fallback={null}>
+        <NotFoundPage />
+      </Suspense>
+    )
   }
 
   const transitionClass =
@@ -143,15 +163,18 @@ export default function App() {
       </div>
       <div className={veilClass} aria-hidden="true" />
       {loading && (
-        /* Default loader — 3D bust. Swap for `<Loader3 gateReady … />` to
-           switch to the sticker-stack variant; that file + its CSS are
-           kept in the tree for one-line revert. */
-        <Loader
-          gateReady={portionReady}
-          onDone={() => setLoading(false)}
-        />
+        <Suspense fallback={null}>
+          <Loader
+            gateReady={portionReady}
+            onDone={() => setLoading(false)}
+          />
+        </Suspense>
       )}
-      <SpeedInsights />
+      {analyticsReady && (
+        <Suspense fallback={null}>
+          <SpeedInsightsLazy />
+        </Suspense>
+      )}
     </div>
   )
 }

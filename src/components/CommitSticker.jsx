@@ -71,16 +71,24 @@ export default function CommitSticker() {
   const date = RAW ? new Date(RAW) : null
   const cells = useMemo(buildCells, [])
   const ref = useRef(null)
+  const rafRef = useRef(0)
+  const pendingRef = useRef(null)
+  const rectRef = useRef(null)
   const formatted = date && !Number.isNaN(date.getTime())
     ? dateFormatter.format(date).toUpperCase()
     : null
 
-  const onMove = (e) => {
+  // Coalesce pointermove updates to one paint per frame. We cache the
+  // bounding rect on enter so the hot path skips the layout read on every
+  // event — only one getBoundingClientRect per hover cycle.
+  const flush = () => {
+    rafRef.current = 0
     const el = ref.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const px = (e.clientX - rect.left) / rect.width
-    const py = (e.clientY - rect.top) / rect.height
+    const rect = rectRef.current
+    const ev = pendingRef.current
+    if (!el || !rect || !ev) return
+    const px = (ev.x - rect.left) / rect.width
+    const py = (ev.y - rect.top) / rect.height
     const rx = (0.5 - py) * (TILT_MAX * 2)
     const ry = (px - 0.5) * (TILT_MAX * 2)
     el.style.setProperty('--rx', `${rx.toFixed(2)}deg`)
@@ -89,7 +97,27 @@ export default function CommitSticker() {
     el.style.setProperty('--gy', `${(py * 100).toFixed(1)}%`)
   }
 
+  const onEnter = (e) => {
+    const el = ref.current
+    if (!el) return
+    rectRef.current = el.getBoundingClientRect()
+    pendingRef.current = { x: e.clientX, y: e.clientY }
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(flush)
+  }
+
+  const onMove = (e) => {
+    if (!rectRef.current) return
+    pendingRef.current = { x: e.clientX, y: e.clientY }
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(flush)
+  }
+
   const onLeave = () => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = 0
+    }
+    rectRef.current = null
+    pendingRef.current = null
     const el = ref.current
     if (!el) return
     el.style.removeProperty('--rx')
@@ -103,6 +131,7 @@ export default function CommitSticker() {
       ref={ref}
       className="commit-sticker"
       role="img"
+      onPointerEnter={onEnter}
       onPointerMove={onMove}
       onPointerLeave={onLeave}
       aria-label={
@@ -140,8 +169,11 @@ export default function CommitSticker() {
           <img
             src="/Commit%20Image.png"
             alt=""
+            width="80"
+            height="80"
             loading="lazy"
             decoding="async"
+            fetchpriority="low"
           />
         </span>
       </div>

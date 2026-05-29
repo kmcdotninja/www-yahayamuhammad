@@ -29,15 +29,25 @@
     <link rel="apple-touch-icon" href="/Favicon-Yahaya.png" />
     <link rel="shortcut icon" href="/Favicon-Yahaya.png" />
 
-    <!-- Doto (Neon Ticker dot-matrix font). Loaded non-blocking via a
-         <link> instead of CSS @import so mobile networks with slow
-         Google Fonts don't stall the entire stylesheet. -->
+    <!-- Google Fonts — connected early and loaded non-blocking. Combined
+         into a single request so we don't pay two RTTs to fonts.googleapis
+         for what used to be a Doto-only call plus the main Jaro / Instrument
+         Sans / Doto call. preload+onload swap lets the rest of the head
+         continue parsing without waiting on the CSS file. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;900&display=swap"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Jaro:opsz@6..72&family=Doto:wght@400;700;900&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Jaro:opsz@6..72&family=Doto:wght@400;700;900&display=swap"
+      />
+    </noscript>
 
     <!-- Open Graph -->
     <meta property="og:type" content="profile" />
@@ -173,16 +183,17 @@
       }
     </script>
 
-    <!-- Nav voxel icons (Work / Playground / Note) used to be preloaded
-         here, but at ~6.9MB combined they choked the network on slow
-         connections and blocked the actual hero content. They now load
-         lazily via the normal <img> tag in TopNav. -->
-    <link rel="preload" as="image" href="/yahaya-hero.webp" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Jaro:opsz@6..72&family=Doto:wght@100..900&display=swap" rel="stylesheet" />
+    <!-- Preload only the critical BDO Grotesk weight that the LCP heading
+         relies on. The other six weights swap in lazily through their
+         @font-face rules. yahaya-hero.webp is a below-the-fold image used
+         on /about, not a preload-worthy asset for the home LCP. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/otf"
+      href="/BDO%20Font/BDOGrotesk-Regular.otf"
+      crossorigin
+    />
   </head>
   <body>
     <div id="root"></div>

@@ -2,7 +2,7 @@
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
-      "source": "/(.*)\\.(png|jpg|jpeg|webp|gif|svg|ico|stl|gltf|glb|otf|woff|woff2|ttf)",
+      "source": "/(.*)\\.(png|jpg|jpeg|webp|avif|gif|svg|ico|stl|gltf|glb|otf|woff|woff2|ttf)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -16,6 +16,28 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(js|mjs|css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         }
       ]
     }
