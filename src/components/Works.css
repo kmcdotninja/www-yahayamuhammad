@@ -17,7 +17,7 @@
 .project__title {
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(56px, 8.4vw, 112px);
+  font-size: clamp(56px, 8.4vw, 100px);
   letter-spacing: 0;
   line-height: 0.9;
   margin: 0 0 56px;
