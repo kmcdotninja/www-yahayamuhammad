@@ -271,7 +271,10 @@
   margin: clamp(40px, 8vh, 88px) 0 0;
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(40px, 6.4vw, 112px);
+  /* Locked at 112px on tablet/desktop. The two mobile breakpoints below
+     (max-width: 900px / 760px) still scale it down for phone-sized
+     viewports where 112px would overflow the rail. */
+  font-size: 112px;
   line-height: 1.02;
   letter-spacing: -0.02em;
   color: var(--text);

@@ -13,10 +13,10 @@ export default function HeroCentered() {
         Yahaya Muhammad — Product Designer & UX Designer
       </h1>
 
-      {/* Casual stickers flanking the headline — same SVGs the playground
-          StickerStack uses (4 = thumbtack, 5 = open book). Decorative
-          only (aria-hidden) and width-gated so they never crowd the
-          headline on tablet / phone. */}
+      {/* Casual stickers anchored to the headline — same SVG set the
+          playground StickerStack uses (4 = thumbtack pinning "PRODUCT",
+          8 = brain trailing "BRANDS,"). Decorative only (aria-hidden)
+          and width-gated so they never crowd the headline on tablet. */}
       <img
         className="introC__sticker introC__sticker--pin"
         src="/playground/stickers/4.svg"
@@ -29,12 +29,12 @@ export default function HeroCentered() {
         draggable={false}
       />
       <img
-        className="introC__sticker introC__sticker--book"
-        src="/playground/stickers/5.svg"
+        className="introC__sticker introC__sticker--brain"
+        src="/playground/stickers/8.svg"
         alt=""
         aria-hidden="true"
-        width="220"
-        height="220"
+        width="485"
+        height="340"
         loading="eager"
         decoding="async"
         draggable={false}

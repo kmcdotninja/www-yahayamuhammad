@@ -17,12 +17,16 @@
   margin: clamp(40px, 8vh, 88px) 0 0;
   font-family: var(--display);
   font-weight: 400;
-  font-size: clamp(40px, 6.4vw, 112px);
+  /* Locked at 112px on every desktop viewport — the previous clamp let
+     it shrink under 6.4vw on narrow desktops, which read smaller than
+     the reference calls for. HeroCentered is desktop-only (the App
+     swaps to <Hero> below 901px) so a fixed pixel value is safe. */
+  font-size: 112px;
   line-height: 1.02;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: #fff;
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
   position: relative;
   z-index: 1;
 }
@@ -35,40 +39,50 @@
    variant takes over. */
 .introC__sticker {
   position: absolute;
-  width: clamp(64px, 7vw, 110px);
-  height: auto;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
   z-index: 4;
+  height: auto;
 }
 
+/* Thumbtack — sits over the "P" of PRODUCT (first line, far left).
+   Tilted to feel like it was actually pressed into the page. */
 .introC__sticker--pin {
-  /* Aligns with the first line of the headline ("Product designer")
-     and sits just inside the left rail. */
-  top: clamp(150px, 21vh, 230px);
-  left: clamp(var(--rail), 14vw, 20vw);
-  transform: rotate(-8deg);
+  width: clamp(64px, 7vw, 110px);
+  top: clamp(100px, 13vh, 130px);
+  left: calc(var(--rail) + clamp(8px, 1vw, 28px));
+  transform: rotate(-12deg);
 }
 
-.introC__sticker--book {
-  /* Pulled inward from the right rail so its left edge clips into the
-     end of "DESIGNER" — matches the casual touch the reference shows.
-     The pin stays at its original offset because the headline already
-     overlaps the "P" naturally on its own. */
-  top: clamp(130px, 18vh, 200px);
-  right: clamp(var(--rail), 18vw, 24vw);
-  transform: rotate(8deg);
+/* Brain doodle — trails the end of "CRAFTING BRANDS," on the second
+   line. Wider native aspect, so it gets a bigger width target. */
+.introC__sticker--brain {
+  width: clamp(140px, 11vw, 20px);
+  top: clamp(380px, 50vh, 500px);
+  /* Positions the brain just past where "BRANDS," ends at the locked
+     112px font-size — slight overlap with the comma. */
+  left: clamp(620px, 6vw, 880px);
+  transform: rotate(-2deg);
+}
+
+@media (max-width: 1280px) {
+  .introC__sticker--brain {
+    /* Headline column gets tighter; pin brain to a percentage instead
+       of pixel target so it tracks the shrinking line length. */
+    left: auto;
+    right: clamp(var(--rail), 12vw, 18vw);
+  }
 }
 
 @media (max-width: 1100px) {
-  .introC__sticker {
-    width: clamp(54px, 6vw, 84px);
-  }
   .introC__sticker--pin {
-    left: clamp(var(--rail), 6vw, 64px);
+    width: clamp(54px, 6vw, 84px);
+    left: clamp(var(--rail), 2vw, 24px);
   }
-  .introC__sticker--book {
+  .introC__sticker--brain {
+    width: clamp(110px, 11vw, 160px);
+    top: clamp(320px, 43vh, 420px);
     right: clamp(var(--rail), 6vw, 64px);
   }
 }
