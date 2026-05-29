@@ -12,10 +12,10 @@ export const projects = [
     ],
     // Flat array drives the horizontal scroller on the works page.
     images: [
+      '/projects/kutuby/logo.png',
       '/projects/kutuby/mobile-app-1.webp',
       '/projects/kutuby/mobile-app-2.webp',
       '/projects/kutuby/components.webp',
-      '/projects/kutuby/logo.png',
       '/projects/kutuby/type-2.webp',
       '/projects/kutuby/type-2-1.png',
       '/projects/kutuby/type-1.png',
