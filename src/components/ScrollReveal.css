@@ -154,8 +154,12 @@
   font-size: clamp(40px, 6.4vw, 112px);
   line-height: 1.02;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: #fff;
   margin: 0;
+}
+
+[data-theme='light'] .sr__paragraph {
+  color: var(--text);
 }
 
 /* Each word starts as a soft ghost and scrubs up to full as you scroll. */

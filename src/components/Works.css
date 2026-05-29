@@ -23,6 +23,11 @@
   margin: 0 0 56px;
   padding: 0 var(--pad);
   text-transform: uppercase;
+  color: #fff;
+}
+
+[data-theme='light'] .project__title {
+  color: var(--text);
 }
 
 /* Diagonal corner ribbon for "coming soon" projects. The ribbon strip

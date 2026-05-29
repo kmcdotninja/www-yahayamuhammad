@@ -18,8 +18,12 @@
   line-height: 1.02;
   letter-spacing: -0.02em;
   text-transform: uppercase;
-  color: var(--text);
+  color: #fff;
   margin: 0;
+}
+
+[data-theme='light'] .pgp__title {
+  color: var(--text);
 }
 
 .pgp__sub {

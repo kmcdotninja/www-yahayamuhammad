@@ -203,7 +203,7 @@
   letter-spacing: -0.01em;
   margin: 0 0 clamp(24px, 3vw, 36px);
   text-transform: uppercase;
-  color: var(--text);
+  color: #fff;
 }
 
 .pd__lede {
@@ -340,7 +340,7 @@
   line-height: 1;
   margin: 0;
   text-transform: uppercase;
-  color: var(--text);
+  color: #fff;
 }
 
 .pd__coming-soon-body {
@@ -385,7 +385,7 @@
   line-height: 1;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  color: var(--text);
+  color: #fff;
   margin: 0;
 }
 
@@ -446,9 +446,16 @@
   line-height: 0.95;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  color: var(--text);
+  color: #fff;
   margin-bottom: clamp(28px, 4vw, 48px);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme='light'] .pd__title,
+[data-theme='light'] .pd__coming-soon-title,
+[data-theme='light'] .pd__section-title,
+[data-theme='light'] .pd__next-title {
+  color: var(--text);
 }
 
 .pd__next:hover .pd__next-title {

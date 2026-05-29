@@ -81,7 +81,7 @@
   font-weight: 400;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: #f5f3ee;
+  color: #fff;
 }
 
 /* Action chip cluster — dark-mode toggle + Mail, parked right above
@@ -156,7 +156,7 @@
   line-height: 0.95;
   text-transform: uppercase;
   text-decoration: none;
-  color: #f5f3ee;
+  color: #fff;
   letter-spacing: -0.01em;
   padding: 4px 0;
   width: max-content;

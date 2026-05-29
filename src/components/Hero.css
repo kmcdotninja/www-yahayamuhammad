@@ -98,7 +98,7 @@
   font-size: 20px;
   font-weight: 400;
   letter-spacing: 0.4px;
-  color: var(--text);
+  color: #fff;
   text-transform: uppercase;
   white-space: nowrap;
   text-decoration: none;
@@ -277,8 +277,13 @@
   font-size: 112px;
   line-height: 1.02;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: #fff;
   text-transform: uppercase;
+}
+
+[data-theme='light'] .intro__wordmark,
+[data-theme='light'] .intro__big {
+  color: var(--text);
 }
 
 .intro__about {

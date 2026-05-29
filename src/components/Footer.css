@@ -33,7 +33,7 @@
   font-family: var(--display);
   font-size: 56px;
   line-height: 1.02;
-  color: var(--text);
+  color: #fff;
   text-transform: uppercase;
   margin: 0;
 }
@@ -126,7 +126,7 @@
   /* Sized so "YMD" (Jaro) spans flush from the left rail to the right rail. */
   font-size: calc((min(100vw, 1512px) - var(--rail) * 2) / 1.78);
   letter-spacing: 0;
-  color: var(--text);
+  color: #fff;
   display: block;
   line-height: 1;
   text-align: center;
@@ -135,6 +135,11 @@
   margin-left: calc(var(--rail) - var(--pad));
   margin-right: calc(var(--rail) - var(--pad));
   margin-bottom: -0.28em;
+}
+
+[data-theme='light'] .footer-art__bio,
+[data-theme='light'] .footer-art__text {
+  color: var(--text);
 }
 
 .footer-art__icon {
