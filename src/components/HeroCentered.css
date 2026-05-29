@@ -131,3 +131,7 @@
 .introC__scroll:hover {
   opacity: 0.6;
 }
+
+[data-theme='light'] .introC__big {
+  color: var(--text);
+}
