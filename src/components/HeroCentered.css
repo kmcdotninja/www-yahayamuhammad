@@ -111,7 +111,12 @@
   line-height: 1.5;
   color: var(--text);
   margin: 0;
-  max-width: 30ch;
+  /* Widened from 30ch so the bio settles onto exactly two lines — at 30ch it
+     wrapped to three. ~46ch leaves room for the balancer below. */
+  max-width: 46ch;
+  /* Even the two lines out so the first isn't noticeably longer than the
+     second — the browser redistributes the words to near-equal widths. */
+  text-wrap: balance;
   align-self: end;
 }
 
