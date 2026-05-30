@@ -19,7 +19,7 @@ const ABOUT_IMAGES = [
   { src: '/about/mecca.webp', alt: 'In Mecca', cap: 'Mecca' },
   { src: '/about/madina.webp', alt: 'In Madina', cap: 'Madina' },
   { src: '/about/big-blue-sky.webp', alt: 'Big blue sky', cap: 'Big Blue sky' },
-  { src: '/about/workspace.webp', alt: 'My workspace', cap: 'At Studio' },
+  { src: '/about/workspace.webp', alt: 'My workspace', cap: 'At the Studio' },
   { src: '/about/transit.webp', alt: 'On the move', cap: 'In transit' },
   { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building' },
 ]

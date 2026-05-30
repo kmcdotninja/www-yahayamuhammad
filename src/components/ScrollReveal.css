@@ -12,9 +12,13 @@
   display: flex;
   flex-direction: column;
   gap: clamp(28px, 3.5vw, 56px);
-  max-width: 100ch;
+  /* 108ch (up from 100ch) — just enough to pull one more word onto the line
+     before it wraps. Measured: 100ch wraps to 15/8/10 lines, 106–110ch to
+     14/8/9; 108 sits in the middle of that band so it stays a clean one-word
+     gain without tipping to two. */
+  max-width: 108ch;
   /* Left-aligned to the page rail (var(--pad) on .about) so the text starts
-     where the site's headers do — same max-width, just pinned left instead
+     where the site's headers do — same alignment, just pinned left instead
      of centered. */
   margin-inline: 0 auto;
   position: relative;
