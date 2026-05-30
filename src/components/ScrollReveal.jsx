@@ -21,7 +21,7 @@ const ABOUT_IMAGES = [
   { src: '/about/big-blue-sky.webp', alt: 'Big blue sky', cap: 'Big Blue sky' },
   { src: '/about/workspace.webp', alt: 'My workspace', cap: 'At Studio' },
   { src: '/about/transit.webp', alt: 'On the move', cap: 'In transit' },
-  { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building with AI' },
+  { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building' },
 ]
 
 // All seven gallery cards. The Kaduna polaroid is the 7th — `float: true` marks
