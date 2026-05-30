@@ -198,12 +198,79 @@
   color: var(--text);
 }
 
+/* ---- About gallery ---- */
+/* A casual photo row dropped in below the signature — portrait cards with
+   rounded corners and a slight scattered tilt, echoing the polaroid's
+   "tossed onto the page" feel. */
+.sr__gallery {
+  max-width: 100ch;
+  margin: clamp(48px, 7vw, 96px) auto 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(10px, 1.4vw, 18px);
+  position: relative;
+  z-index: 1;
+}
+
+.sr__photo {
+  margin: 0;
+  /* Matches the native portrait ratio of the source photos (2304×2848) so
+     object-fit cover barely crops. */
+  aspect-ratio: 4 / 5;
+  border-radius: clamp(14px, 1.4vw, 22px);
+  overflow: hidden;
+  background: #1a1a1a;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 18px 40px rgba(0, 0, 0, 0.08);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.sr__photo picture,
+.sr__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Scattered tilt — each card leans a touch differently so the row reads as
+   casually placed rather than a rigid grid. */
+.sr__photo:nth-child(1) { transform: rotate(-2.5deg); }
+.sr__photo:nth-child(2) { transform: rotate(1.5deg); }
+.sr__photo:nth-child(3) { transform: rotate(-1deg); }
+.sr__photo:nth-child(4) { transform: rotate(2deg); }
+.sr__photo:nth-child(5) { transform: rotate(-1.5deg); }
+
+/* Hover straightens and lifts the card. */
+.sr__photo:hover {
+  transform: rotate(0deg) translateY(-6px);
+}
+
+@media (max-width: 900px) {
+  .sr__gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .sr__gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sr__word {
     opacity: 1;
   }
   .sr__sign {
     opacity: 1;
+  }
+  .sr__photo {
+    transition: none;
   }
 }
 

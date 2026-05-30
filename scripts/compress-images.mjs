@@ -36,6 +36,7 @@ const SKIP_BELOW = 60 * 1024
 const TARGET_DIRS = [
   join(PUBLIC_DIR, 'projects'),
   join(PUBLIC_DIR, 'images'),
+  join(PUBLIC_DIR, 'about'),
 ]
 
 async function walk(dir) {
