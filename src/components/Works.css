@@ -30,6 +30,15 @@
   color: var(--text);
 }
 
+/* On phones the title's 56px floor reads larger than the hero headline,
+   inverting the page hierarchy. Match the hero's phone size exactly (see
+   Hero.css @760px) so the work section sits below the hero, not above it. */
+@media (max-width: 760px) {
+  .project__title {
+    font-size: clamp(42px, 13.5vw, 108px);
+  }
+}
+
 /* Diagonal corner ribbon for "coming soon" projects. The ribbon strip
    is wider than its visible area and pulled into the top-left corner
    at -45° so it reads as a printed sash across the project's corner.
