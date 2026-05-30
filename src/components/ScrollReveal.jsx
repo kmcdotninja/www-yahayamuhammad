@@ -16,11 +16,11 @@ const PARAGRAPHS = [
 // Photos shown below the signature. Referenced as .webp so <Picture> can
 // derive the matching .avif sibling (both are produced by compress:images).
 const ABOUT_IMAGES = [
-  { src: '/about/mecca.webp', alt: 'In Mecca' },
-  { src: '/about/madina.webp', alt: 'In Madina' },
-  { src: '/about/workspace.webp', alt: 'My workspace' },
-  { src: '/about/transit.webp', alt: 'On the move' },
-  { src: '/about/ai-build.webp', alt: 'Building with AI' },
+  { src: '/about/mecca.webp', alt: 'In Mecca', cap: 'Mecca' },
+  { src: '/about/madina.webp', alt: 'In Madina', cap: 'Madina' },
+  { src: '/about/workspace.webp', alt: 'My workspace', cap: 'Studio' },
+  { src: '/about/transit.webp', alt: 'On the move', cap: 'In transit' },
+  { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building' },
 ]
 
 const SIGNATURE_PATH =
@@ -271,10 +271,12 @@ export default function ScrollReveal() {
             <Picture
               src={img.src}
               alt={img.alt}
+              className="sr__photo-img"
               loading="lazy"
               decoding="async"
               fetchPriority="low"
             />
+            <figcaption className="sr__photo-cap">{img.cap}</figcaption>
           </figure>
         ))}
       </div>
