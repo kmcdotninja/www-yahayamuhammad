@@ -54,7 +54,7 @@
     padding-top: 96px;
   }
   .pgp__title {
-    font-size: clamp(42px, 13.5vw, 108px);
+    font-size: clamp(48px, 13.5vw, 108px);
   }
   .pgp__sub {
     font-size: clamp(15px, 4vw, 20px);

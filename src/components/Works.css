@@ -35,7 +35,7 @@
    Hero.css @760px) so the work section sits below the hero, not above it. */
 @media (max-width: 760px) {
   .project__title {
-    font-size: clamp(42px, 13.5vw, 108px);
+    font-size: clamp(48px, 13.5vw, 108px);
   }
 }
 

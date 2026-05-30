@@ -365,7 +365,7 @@
 
 @media (max-width: 760px) {
   .intro__big {
-    font-size: clamp(42px, 13.5vw, 108px);
+    font-size: clamp(48px, 13.5vw, 108px);
     margin-top: clamp(16px, 3vh, 32px);
   }
 }
