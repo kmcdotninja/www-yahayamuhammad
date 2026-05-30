@@ -1,139 +1,10 @@
-/* The section spans the full content area now; the text column is
-   constrained on the .sr__paragraphs / .sr__sign children instead, so
-   the polaroid layer has room to sit in the side gutter without
-   covering the words. */
+/* The section stacks the gallery, the text column, and the signature. The
+   text is constrained on the .sr__paragraphs / .sr__sign children; the photo
+   gallery (incl. the Kaduna card that breaks away on desktop) sits above. */
 .sr {
   position: relative;
   width: 100%;
   margin-inline: auto;
-}
-
-/* ---- Floating polaroid ---- */
-/* Lives in an absolute layer that spans the full section width.
-   Polaroid wrap is pinned to the right gutter and never crosses into
-   the 100ch text column. */
-.sr__art {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.sr__polaroid-wrap {
-  position: absolute;
-  top: 0;
-  right: clamp(16px, 2vw, 40px);
-  width: 180px;
-  will-change: transform;
-}
-
-.sr__polaroid {
-  width: 100%;
-  background: #f5f3ee;
-  padding: 12px 12px 4px;
-  /* Matches the commit sticker's 20px outer radius for visual consistency. */
-  border-radius: 20px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.45) inset,
-    0 4px 12px rgba(0, 0, 0, 0.04),
-    0 12px 28px rgba(0, 0, 0, 0.06),
-    0 28px 60px rgba(0, 0, 0, 0.06);
-  will-change: transform;
-  transform-origin: center;
-}
-
-.sr__polaroid img {
-  display: block;
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  /* Mirrors the commit sticker's inner QR panel radius so both cards
-     read as the same design family. */
-  border-radius: 14px;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-.sr__polaroid-cap {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 4px 4px;
-  /* Doto is a dotted/pixel display family — matches the polaroid's
-     "label printer" vibe and visually separates from the body sans. */
-  font-family: 'Doto', var(--sans);
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  color: #2a2825;
-  text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Light-mode page: invert the polaroid so the cream card doesn't
-   disappear into the cream page. Dark-mode keeps the original cream
-   polaroid — already plenty of contrast against the dark page. */
-[data-theme='light'] .sr__polaroid {
-  background: #1a1a1a;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 12px 28px rgba(0, 0, 0, 0.1),
-    0 28px 60px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme='light'] .sr__polaroid-cap {
-  color: #f5f3ee;
-}
-
-/* On mobile/tablet the scroll-driven zigzag jittered too much, so we
-   ditch the GSAP transforms and drop the polaroid in absolutely. It
-   sits above the signature area and rotates slightly so its body
-   overlaps the last lines of the closing paragraph — a casual photo
-   tossed onto the page. */
-@media (max-width: 1100px) {
-  .sr__art {
-    display: block;
-    padding: 0;
-  }
-  .sr__polaroid-wrap {
-    position: absolute;
-    top: auto;
-    left: auto;
-    /* Tucked into the bottom-right corner and pushed past the right
-       edge so the polaroid doesn't sit obviously on top of paragraph
-       text. It still grazes the signature area / last paragraph but
-       the bulk is in dead space below the text column and off-screen
-       right. */
-    bottom: clamp(30px, 6vh, 90px);
-    right: clamp(-40px, -6vw, -20px);
-    width: clamp(130px, 36vw, 160px);
-    transform: rotate(-6deg);
-    will-change: auto;
-    z-index: 3;
-  }
-  .sr__polaroid {
-    padding: 8px 8px 8px;
-    border-radius: 16px;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.45) inset,
-      0 6px 16px rgba(0, 0, 0, 0.18),
-      0 20px 36px rgba(0, 0, 0, 0.22);
-  }
-  .sr__polaroid img {
-    height: 150px;
-    border-radius: 12px;
-  }
-  .sr__polaroid-cap {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sr__art {
-    display: none;
-  }
 }
 
 /* ---- Paragraphs ---- */
@@ -206,16 +77,37 @@
    rounded corners and a slight scattered tilt, echoing the polaroid's
    "tossed onto the page" feel. */
 .sr__gallery {
-  max-width: 100ch;
+  /* Widened past the 100ch text column so all seven same-size cards fit on
+     one line — 7 cards at the old 5-in-100ch width need ~140ch. The
+     paragraphs stay at 100ch; only the photo row extends further right. */
+  max-width: 140ch;
   /* Sits above the about paragraphs, left-aligned to the same page rail so
      the photo row starts where the text and headers do. Space below it
      separates the photos from the opening line of text. */
   margin: 0 auto clamp(48px, 7vw, 96px) 0;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: clamp(10px, 1.4vw, 18px);
   position: relative;
-  z-index: 1;
+  /* Above the paragraphs (z-index 1) so the breakaway Kaduna card stays on
+     top as it descends over the text. */
+  z-index: 3;
+}
+
+/* Desktop: the seven cards as a single equal row (the old 7-column grid,
+   expressed as flex so the same markup can become a marquee on mobile). The
+   duplicate set is hidden here — it exists only for the mobile loop. Overflow
+   stays visible so the Kaduna card can break away below the row. */
+.sr__track {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vw, 18px);
+}
+
+.sr__track > .sr__photo {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sr__photo--dupe {
+  display: none;
 }
 
 .sr__photo {
@@ -277,27 +169,79 @@
 }
 
 /* Scattered tilt — each card leans a touch differently so the row reads as
-   casually placed rather than a rigid grid. */
-.sr__photo:nth-child(1) { transform: rotate(-2.5deg); }
-.sr__photo:nth-child(2) { transform: rotate(1.5deg); }
-.sr__photo:nth-child(3) { transform: rotate(-1deg); }
-.sr__photo:nth-child(4) { transform: rotate(2deg); }
-.sr__photo:nth-child(5) { transform: rotate(-1.5deg); }
+   casually placed rather than a rigid grid. Index classes (not :nth-child) so a
+   duplicated card in the marquee carries the same tilt as its original. */
+.sr__photo--t1 { transform: rotate(-2.5deg); }
+.sr__photo--t2 { transform: rotate(1.5deg); }
+.sr__photo--t3 { transform: rotate(-1deg); }
+.sr__photo--t4 { transform: rotate(2deg); }
+.sr__photo--t5 { transform: rotate(-1.5deg); }
+.sr__photo--t6 { transform: rotate(1deg); }
+.sr__photo--t7 { transform: rotate(1deg); }
+
+/* The breakaway 7th card. Raised above the paragraphs (z-index) so it stays
+   on top as it travels down over them, and promoted for the per-frame
+   transform. On desktop GSAP drives its transform; on touch/reduced-motion it
+   just rests in the grid with the nth-child(7) tilt above. */
+.sr__photo--float {
+  position: relative;
+  z-index: 4;
+  will-change: transform;
+}
+
+/* While actively breaking away, GSAP writes the transform every scroll frame,
+   so the inherited hover transition must be off or the card lags the scroll.
+   At rest (no .is-floating) the transition is back, so the hover lift is as
+   smooth as the other cards. */
+.sr__photo--float.is-floating {
+  transition: none;
+}
 
 /* Hover straightens and lifts the card. */
 .sr__photo:hover {
   transform: rotate(0deg) translateY(-6px);
 }
 
-@media (max-width: 900px) {
-  .sr__gallery {
-    grid-template-columns: repeat(3, 1fr);
+/* Mobile/tablet (<1100px — matches the JS gate that disables the desktop
+   breakaway): the cards become an infinite-scroll marquee dropped in just
+   below the signature. */
+@media (max-width: 1099px) {
+  /* Flex the section so the gallery can be reordered after the signature. */
+  .sr {
+    display: flex;
+    flex-direction: column;
   }
-}
-
-@media (max-width: 600px) {
   .sr__gallery {
-    grid-template-columns: repeat(2, 1fr);
+    order: 1;
+    max-width: none;
+    width: 100%;
+    margin: clamp(40px, 9vw, 72px) 0 0;
+    /* Clip the off-screen part of the scrolling track. */
+    overflow: hidden;
+  }
+  .sr__track {
+    width: max-content;
+    gap: 0;
+    /* Transform is driven by JS (rAF) so the strip can be dragged. Two
+       identical halves (real + duplicate set) let the offset wrap by one
+       group width with no visible seam. */
+    cursor: grab;
+    /* Let vertical gestures scroll the page; horizontal ones drive the drag. */
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .sr__track:active {
+    cursor: grabbing;
+  }
+  /* Both sets show; a fixed width + trailing margin (not flex gap) keeps every
+     card — including the last of each half — evenly spaced so the loop seams. */
+  .sr__track > .sr__photo {
+    flex: 0 0 clamp(150px, 44vw, 188px);
+    margin-right: 14px;
+  }
+  .sr__photo--dupe {
+    display: block;
   }
 }
 

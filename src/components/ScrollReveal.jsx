@@ -18,9 +18,19 @@ const PARAGRAPHS = [
 const ABOUT_IMAGES = [
   { src: '/about/mecca.webp', alt: 'In Mecca', cap: 'Mecca' },
   { src: '/about/madina.webp', alt: 'In Madina', cap: 'Madina' },
-  { src: '/about/workspace.webp', alt: 'My workspace', cap: 'Studio' },
+  { src: '/about/big-blue-sky.webp', alt: 'Big blue sky', cap: 'Big Blue sky' },
+  { src: '/about/workspace.webp', alt: 'My workspace', cap: 'At Studio' },
   { src: '/about/transit.webp', alt: 'On the move', cap: 'In transit' },
-  { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building' },
+  { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'Building with AI' },
+]
+
+// All seven gallery cards. The Kaduna polaroid is the 7th — `float: true` marks
+// it as the one that breaks away from the desktop row (see the float
+// ScrollTrigger). On mobile every card, Kaduna included, just rides the
+// infinite-scroll marquee below the signature.
+const GALLERY_CARDS = [
+  ...ABOUT_IMAGES,
+  { src: '/images/polaroid-kaduna.webp', alt: '', cap: 'Headshot', float: true },
 ]
 
 const SIGNATURE_PATH =
@@ -35,8 +45,11 @@ export default function ScrollReveal() {
   const rootRef = useRef(null)
   const signatureWrapRef = useRef(null)
   const pathRef = useRef(null)
-  const polaroidRef = useRef(null)
-  const polaroidWrapRef = useRef(null)
+  // The Kaduna polaroid is the 7th card in the gallery row; on scroll it
+  // breaks away from the line and zig-zags down alongside the paragraphs.
+  const floatRef = useRef(null)
+  // The marquee track (mobile): auto-scrolls and is drag-scrollable.
+  const trackRef = useRef(null)
   const reduced = useReducedMotion()
 
   useEffect(() => {
@@ -110,98 +123,72 @@ export default function ScrollReveal() {
         })
       }
 
-      // The polaroid travels down through the section as you scroll
-      // (the wrap's translateY tracks scroll progress) and the card
-      // itself zigzags left/right + rotates. At progress 1 the wrap
-      // settles just above the signature so the polaroid rests at the
-      // bottom of the note.
+      // The 7th gallery card (Kaduna) starts in the line, then on scroll it
+      // breaks away — translating down to settle just above the signature
+      // while zig-zagging left into the gutter and wobbling. Its grid slot
+      // stays reserved (transform only), so the other six photos don't move.
       //
-      // Mobile (<1100px) skips this entirely — the polaroid is rendered
-      // as a static tucked-in element via CSS instead. The scroll
-      // animation flickered too much on touch devices.
-      const polaroid = polaroidRef.current
-      const polaroidWrap = polaroidWrapRef.current
+      // Desktop only (>=1100px). Below that the row wraps and the Kaduna card
+      // just sits as a static photo in the grid — the scroll transform
+      // flickered too much on touch devices.
+      const floatCard = floatRef.current
       const signature = signatureWrapRef.current
-      if (polaroid && polaroidWrap && window.innerWidth >= 1100) {
-        // Layout reads (offsetHeight / getBoundingClientRect) used to
-        // run every scroll frame inside onUpdate — alongside GSAP's
-        // transform writes that caused forced reflows and visible
-        // flicker on mobile. We measure once up front and re-measure
-        // only on ScrollTrigger refresh (which also fires on resize).
+      if (floatCard && window.innerWidth >= 1100) {
+        // Layout reads are done once up front (and on refresh/resize) rather
+        // than every scroll frame, so GSAP's transform writes don't force a
+        // reflow mid-animation.
         let maxYVal = 0
-        let amplitudeVal = 40
-        let isMobile = window.innerWidth < 1100
+        let amplitudeVal = 80
 
         const measure = () => {
-          if (!polaroidWrap.isConnected) return
-          isMobile = window.innerWidth < 1100
-          const wrapH = polaroidWrap.offsetHeight
+          if (!floatCard.isConnected) return
+          const cardH = floatCard.offsetHeight
+          // Travel from the card's resting row position down to just above the
+          // signature (offsetTop is measured against .sr, the positioned root).
           const limit = signature
-            ? signature.offsetTop - wrapH - 40
-            : root.offsetHeight - wrapH - 40
+            ? signature.offsetTop - floatCard.offsetTop - cardH - 40
+            : root.offsetHeight - floatCard.offsetTop - cardH - 40
           maxYVal = Math.max(0, limit)
-
-          if (!isMobile) {
-            const wrapRect = polaroidWrap.getBoundingClientRect()
-            const paragraphs = root.querySelector('.sr__paragraphs')
-            const rootRect = root.getBoundingClientRect()
-            // The copy is now left-aligned, but the zigzag amplitude must stay
-            // anchored to where the text column's right edge sits when CENTERED
-            // — otherwise left-aligning the paragraphs widens the polaroid's
-            // swing. The column width is unchanged by the alignment, so we
-            // reconstruct the centered right edge from it.
-            const colW = paragraphs ? paragraphs.offsetWidth : rootRect.width
-            const centeredRight = rootRect.left + rootRect.width / 2 + colW / 2
-            const safe = wrapRect.left - centeredRight - 24
-            amplitudeVal = Math.min(110, Math.max(40, safe))
-          }
+          // Zig-zag swing scaled to the card width, capped so it dips into the
+          // gutter over the paragraphs without flying off the right edge.
+          amplitudeVal = Math.min(110, Math.max(50, floatCard.offsetWidth * 0.55))
         }
         measure()
         ScrollTrigger.addEventListener('refresh', measure)
 
-        // Seed a 3D transform so the browser promotes both elements to
-        // their own compositor layer. Subsequent translate/rotate
-        // updates stay on the GPU instead of re-rasterising the photo
-        // and shadow every frame — that was the visible flicker on iOS.
-        gsap.set(polaroidWrap, { z: 0, force3D: true })
-        gsap.set(polaroid, { z: 0, force3D: true })
-
-        // quickSetter skips the per-call tween allocation and just
-        // applies the transform — much cheaper for per-frame updates.
-        const setWrapY = gsap.quickSetter(polaroidWrap, 'y', 'px')
-        const setX = gsap.quickSetter(polaroid, 'x', 'px')
-        const setRot = gsap.quickSetter(polaroid, 'rotation', 'deg')
+        // quickSetter skips per-call tween allocation — cheap per-frame writes.
+        const setY = gsap.quickSetter(floatCard, 'y', 'px')
+        const setX = gsap.quickSetter(floatCard, 'x', 'px')
+        const setRot = gsap.quickSetter(floatCard, 'rotation', 'deg')
 
         ScrollTrigger.create({
           trigger: root,
           start: 'top top',
           end: 'bottom bottom',
-          // scrub:true pins the animation to scroll position 1:1 — no
-          // 0.4s lerp catching up, which is what produced the "bounce"
-          // feel after fast swipes on touch devices.
+          // scrub:true pins the animation to scroll position 1:1.
           scrub: true,
           onUpdate: (self) => {
             const p = self.progress
-            let x, rot
-            if (isMobile) {
-              // One slow half-cycle across the whole scroll, with a
-              // small amplitude — drifts gently rather than oscillating
-              // back and forth multiple times. Rotation rides the same
-              // single arc so the photo never spins through zero
-              // multiple times on a fast swipe.
-              const slide = -55 * Math.min(1, p * 10)
-              const drift = Math.sin(p * Math.PI) * 5
-              x = slide + drift
-              rot = Math.sin(p * Math.PI) * 3
-            } else {
-              // Desktop keeps the original multi-swing zigzag.
-              const phase = p * Math.PI * 3
-              x = Math.sin(phase) * amplitudeVal
-              rot = Math.sin(phase + Math.PI / 5) * 7
+            // At the very top the card rests in its row. Drop the inline
+            // transform and the floating flag so the CSS tilt + :hover lift
+            // (and its transition) apply exactly like the other six cards.
+            if (p < 0.001) {
+              floatCard.classList.remove('is-floating')
+              floatCard.style.transform = ''
+              return
             }
-            setWrapY(p * maxYVal)
-            setX(x)
-            setRot(rot)
+            // Floating: kill the hover transition so the scrub stays 1:1 with
+            // scroll (a transition here would make the card lag the scroll).
+            floatCard.classList.add('is-floating')
+            const phase = p * Math.PI * 3
+            // Left-biased dip: stays in [-amplitude, 0] and starts at 0 so the
+            // card sits flush in its slot at the top, then sways left and back
+            // as it descends (going right would overrun the page rail).
+            const sway = (Math.cos(phase) - 1) / 2
+            setY(p * maxYVal)
+            setX(sway * amplitudeVal)
+            // Wobble around the card's resting +1deg tilt.
+            setRot(1 + Math.sin(phase) * 5)
           },
         })
       }
@@ -229,42 +216,142 @@ export default function ScrollReveal() {
     }
   }, [reduced])
 
+  // ---- Mobile marquee: auto-scroll + drag ----
+  // Below 1100px (where the desktop breakaway is off) the cards become an
+  // infinite-scroll strip. Driven by rAF rather than a CSS animation so the
+  // user can grab and drag it — auto-scroll pauses while held and resumes on
+  // release, and the offset wraps by one group width so it loops both ways.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const mq = window.matchMedia('(max-width: 1099px)')
+
+    let raf = 0
+    let last = 0
+    let offset = 0
+    let groupWidth = 0
+    let dragging = false
+    let startX = 0
+    let startOffset = 0
+    let pointerId = null
+    let active = false
+    const SPEED = reduced ? 0 : 42 // px/s — gentle drift; 0 honours reduced motion
+
+    const measure = () => {
+      // Two identical halves, so one group is exactly half the track.
+      groupWidth = track.scrollWidth / 2
+    }
+    const wrap = (x) => {
+      if (!groupWidth) return x
+      x %= groupWidth
+      if (x > 0) x -= groupWidth
+      return x
+    }
+    const frame = (now) => {
+      if (!last) last = now
+      const dt = now - last
+      last = now
+      if (!dragging && SPEED) offset -= (SPEED * dt) / 1000
+      offset = wrap(offset)
+      track.style.transform = `translateX(${offset}px)`
+      raf = requestAnimationFrame(frame)
+    }
+    const onDown = (e) => {
+      dragging = true
+      startX = e.clientX
+      startOffset = offset
+      pointerId = e.pointerId
+      track.setPointerCapture?.(e.pointerId)
+    }
+    const onMove = (e) => {
+      if (dragging) offset = startOffset + (e.clientX - startX)
+    }
+    const onUp = () => {
+      dragging = false
+      last = 0 // drop the held interval so it doesn't lurch on resume
+      if (pointerId != null) track.releasePointerCapture?.(pointerId)
+      pointerId = null
+    }
+
+    const start = () => {
+      if (active) return
+      active = true
+      offset = 0
+      last = 0
+      measure()
+      track.addEventListener('pointerdown', onDown)
+      track.addEventListener('pointermove', onMove)
+      track.addEventListener('pointerup', onUp)
+      track.addEventListener('pointercancel', onUp)
+      window.addEventListener('resize', measure)
+      raf = requestAnimationFrame(frame)
+    }
+    const stop = () => {
+      if (!active) return
+      active = false
+      cancelAnimationFrame(raf)
+      track.removeEventListener('pointerdown', onDown)
+      track.removeEventListener('pointermove', onMove)
+      track.removeEventListener('pointerup', onUp)
+      track.removeEventListener('pointercancel', onUp)
+      window.removeEventListener('resize', measure)
+      track.style.transform = '' // hand layout back to the desktop static row
+    }
+
+    const sync = () => (mq.matches ? start() : stop())
+    sync()
+    mq.addEventListener('change', sync)
+    return () => {
+      mq.removeEventListener('change', sync)
+      stop()
+    }
+  }, [reduced])
+
+  // One polaroid card. `primary` is the first (real) set; the second set is an
+  // aria-hidden duplicate that exists only so the mobile marquee can loop
+  // seamlessly (translateX(-50%) lands the duplicate exactly on the original).
+  // Tilt comes from an index class (not :nth-child) so each duplicate matches
+  // its original — otherwise the loop seam would visibly jump.
+  const renderCard = (img, i, primary) => {
+    const isFloat = img.float && primary
+    return (
+      <figure
+        key={(primary ? 'a' : 'b') + img.src}
+        ref={isFloat ? floatRef : undefined}
+        className={
+          `sr__photo sr__photo--t${(i % 7) + 1}` +
+          (isFloat ? ' sr__photo--float' : '') +
+          (primary ? '' : ' sr__photo--dupe')
+        }
+        aria-hidden={primary ? undefined : true}
+      >
+        <Picture
+          src={img.src}
+          alt={img.alt}
+          className="sr__photo-img"
+          /* Eager: in the mobile marquee the later cards start off-screen in
+             the clipped track, where lazy-loading would never fetch them. */
+          loading="eager"
+          decoding="async"
+          fetchPriority="low"
+          draggable={false}
+        />
+        <figcaption className="sr__photo-cap">{img.cap}</figcaption>
+      </figure>
+    )
+  }
+
   return (
     <section ref={rootRef} className="sr">
-      <div className="sr__art" aria-hidden="true">
-        <div ref={polaroidWrapRef} className="sr__polaroid-wrap">
-          <div ref={polaroidRef} className="sr__polaroid">
-            <Picture
-              src="/images/polaroid-kaduna.webp"
-              alt=""
-              width="320"
-              height="400"
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-            />
-            <div className="sr__polaroid-cap">
-              <span>KADUNA</span>
-              <span>MAR &lsquo;26</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {/* Desktop: a 7-in-a-line row above the paragraphs, the Kaduna card
+          breaking away on scroll. Mobile: the same cards become an
+          infinite-scroll marquee below the signature (CSS reorders + animates;
+          the duplicate set makes the loop seamless). */}
       <div className="sr__gallery" aria-label="Photos from my life">
-        {ABOUT_IMAGES.map((img) => (
-          <figure className="sr__photo" key={img.src}>
-            <Picture
-              src={img.src}
-              alt={img.alt}
-              className="sr__photo-img"
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-            />
-            <figcaption className="sr__photo-cap">{img.cap}</figcaption>
-          </figure>
-        ))}
+        <div ref={trackRef} className="sr__track">
+          {GALLERY_CARDS.map((img, i) => renderCard(img, i, true))}
+          {GALLERY_CARDS.map((img, i) => renderCard(img, i, false))}
+        </div>
       </div>
 
       <div className="sr__paragraphs">
