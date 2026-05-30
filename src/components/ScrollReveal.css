@@ -220,8 +220,11 @@
     max-width: none;
     width: 100%;
     margin: clamp(40px, 9vw, 72px) 0 0;
-    /* Clip the off-screen part of the scrolling track. */
+    /* Clip the off-screen part of the scrolling track. Vertical padding gives
+       the cards' tilt corners and drop shadows room inside the clip box, so
+       they don't read as sheared off at the top and bottom edges. */
     overflow: hidden;
+    padding: clamp(18px, 5vw, 32px) 0;
   }
   .sr__track {
     width: max-content;
