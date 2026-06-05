@@ -123,6 +123,7 @@
   text-decoration: none;
 }
 
+/* Voxel nav icons — only rendered when SHOW_NAV_ICONS is on (see lib/flags.js). */
 .voxel {
   width: 44px;
   height: 44px;

@@ -176,7 +176,8 @@
 /* Icon sits at the end of the text and overlaps the last glyph(s) via
    a negative margin in em units, so the overlap scales with the font
    size. Pushed to -0.55em so the icon sinks well into the trailing
-   period/letters and the line keeps its space without wrapping. */
+   period/letters and the line keeps its space without wrapping. Only
+   rendered when SHOW_NAV_ICONS is on (see lib/flags.js). */
 .mm2__item img {
   width: clamp(48px, 14vw, 82px);
   height: auto;

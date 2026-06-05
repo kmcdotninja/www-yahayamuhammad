@@ -6,13 +6,16 @@ import './Hero.css'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
 import Picture from './Picture.jsx'
+import { SHOW_NAV_ICONS } from '../lib/flags.js'
 import { useSnd } from '../hooks/useSnd.js'
 import { useTheme } from '../hooks/useTheme.js'
 import { navigate, usePathname } from '../lib/router.js'
 
 const EMAIL = 'yahayabinmuhammad@gmail.com'
 
+// Gated behind SHOW_NAV_ICONS — flip that flag to bring the voxel icons back.
 function NavIcon({ src, width = 44, height = 44, eager }) {
+  if (!SHOW_NAV_ICONS) return null
   return (
     <Picture
       src={src}
