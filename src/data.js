@@ -82,6 +82,36 @@ export const projects = [
     ],
   },
   {
+    name: 'Groq',
+    // Parked as a teaser for now (same pattern as Waffle) — the card shows the
+    // image strip + info but the drawer stays closed. Flip `comingSoon` off and
+    // add a `sections` array to take it fully live.
+    comingSoon: true,
+    description:
+      'Groq is a crypto payment platform designed to help freelancers and businesses seamlessly receive and spend cryptocurrency.',
+    roles: ['Brand Design', 'Product Design', 'Product Strategy', 'Illustration & Icon Design'],
+    team: [
+      { name: 'Yahaya Muhammad', role: 'Product Designer' },
+      { name: 'Saidu Bello', role: 'Backend Developer' },
+      { name: 'Moses Chimaso', role: 'Frontend Developer' },
+    ],
+    // Flat array drives the horizontal scroller on the works page.
+    images: [
+      '/projects/Groq/1.png',
+      '/projects/Groq/2.png',
+      '/projects/Groq/3.png',
+      '/projects/Groq/4.png',
+      '/projects/Groq/5.png',
+      '/projects/Groq/6.png',
+      '/projects/Groq/7.png',
+      '/projects/Groq/8.png',
+      '/projects/Groq/9.png',
+      '/projects/Groq/10.png',
+      '/projects/Groq/11.png',
+      '/projects/Groq/12.png',
+    ],
+  },
+  {
     name: 'Waffle',
     // Drawer is parked for now — the scroller, info block, and
     // `sections` content below stay so we can flip this back on later.

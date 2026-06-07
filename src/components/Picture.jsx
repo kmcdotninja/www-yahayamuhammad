@@ -21,6 +21,8 @@ const RASTER = /\.(webp|png|jpe?g)$/i
 const NO_AVIF = new Set([
   '/projects/kutuby/logo.png',
   '/projects/kutuby/character-bird.png',
+  // Below the compress:images 60KB floor, so no AVIF sibling is emitted.
+  '/projects/Groq/5.png',
 ])
 
 function deriveAvif(src) {

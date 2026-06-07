@@ -32,7 +32,11 @@
   display: block;
   border-radius: 16px;
   overflow: hidden;
-  background: #1a1a1a;
+  /* Transparent, not a dark fill: images with alpha (e.g. the Groq PNGs)
+     would otherwise show the fill bleeding through the anti-aliased rounded
+     corner as a thin black outline. Transparent blends the edge into the
+     page background in both themes. */
+  background: transparent;
   position: relative;
   cursor: none;
   transition: transform 0.25s ease;
