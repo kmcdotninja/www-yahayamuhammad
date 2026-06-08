@@ -1,0 +1,103 @@
+/* Drag-and-drop: tuck the invoice into the folder. The stage's dark
+   background (#1c1c1e, from PlaygroundSection) shows through, so the scene
+   only paints the folder, the document, and the drop feedback. */
+.fd {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Every layer is absolutely placed via inline left/top + translate(-50%). */
+.fd > * {
+  position: absolute;
+}
+
+/* Folder + feedback layers are purely decorative — let pointer events fall
+   through to the invoice (and the replay button) underneath/over them. */
+.fd__svg {
+  display: block;
+}
+
+.fd__back {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fd__front-wrap {
+  z-index: 4;
+  pointer-events: none;
+}
+
+.fd__invoice {
+  z-index: 30; /* overridden inline while tucking (drops to 3, between layers) */
+  cursor: grab;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fd__invoice:active {
+  cursor: grabbing;
+}
+
+.fd__invoice .fd__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fd__glow {
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 221, 138, 0.5), rgba(255, 221, 138, 0) 72%);
+  filter: blur(6px);
+}
+
+.fd__shadow {
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 75%);
+  filter: blur(5px);
+}
+
+.fd__dot {
+  z-index: 6;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #35de65;
+  box-shadow:
+    0 0 0 4px rgba(53, 222, 101, 0.18),
+    0 0 12px rgba(53, 222, 101, 0.5);
+}
+
+/* Shared circular replay control — matches the other playground demos. */
+.fd__replay {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 50;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+.fd__replay:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fd__replay:active {
+  transform: scale(0.95);
+}

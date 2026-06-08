@@ -4,6 +4,7 @@ import Footer from './Footer.jsx'
 import TopNav from './TopNav.jsx'
 
 import PlaygroundSection from './playground2/PlaygroundSection.jsx'
+import FileDrop from './playground2/interactions/FileDrop.jsx'
 import StickerStack from './playground2/interactions/StickerStack.jsx'
 import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
 import NumberFlipCounter from './playground2/interactions/NumberFlipCounter.jsx'
@@ -39,6 +40,10 @@ export default function PlaygroundPage() {
         </header>
 
         <div className="pgp__demos">
+          <PlaygroundSection title="Drag to File" meta="Drag · Drop" aspect="wide">
+            {({ inView }) => <FileDrop play={inView} loop />}
+          </PlaygroundSection>
+
           <PlaygroundSection title="Sticker Stack" meta="Drag · Spring" aspect="wide">
             {({ inView }) => (
               /* Entry ≈ 1.7 s, so loopDelay 2300 ms gives a 4 s replay cycle. */
