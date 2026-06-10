@@ -28,6 +28,33 @@
   pointer-events: none;
 }
 
+/* Maps the 171×157 pocket artwork onto the (scaled) folder box from its
+   top-left corner, so the frosted layer lines up with the folder back. */
+.fd__front-scale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 171px;
+  height: 157px;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Frosted-glass folder cover: a translucent, blurred pocket that reveals the
+   invoice tucked behind it. The clip-path (set inline) gives it the folder
+   front silhouette; backdrop-filter blurs whatever is behind (the doc + back). */
+.fd__front-glass {
+  width: 171px;
+  height: 157px;
+  background: rgba(253, 218, 122, 0.42);
+  backdrop-filter: blur(8px) saturate(1.15);
+  -webkit-backdrop-filter: blur(8px) saturate(1.15);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.25),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+}
+
 .fd__invoice {
   z-index: 30; /* overridden inline while tucking (drops to 3, between layers) */
   cursor: grab;

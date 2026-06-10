@@ -24,6 +24,7 @@ const FRONT_PATH =
 
 export default function FileDrop({ play = true, loop = true, loopDelay = 1400 }) {
   const rootRef = useRef(null)
+  const invoiceRef = useRef(null)
   const width = useContainerWidth(rootRef)
   const s = width > 0 ? width / REF_W : 0
   const reduced = useReducedMotion()
@@ -94,6 +95,40 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     run(glow, open ? 1 : 0, { duration: 0.22 })
   }
 
+  // Clip the tucked invoice to the folder silhouette so it can never spill past
+  // the folder edges (especially the bottom) while it slides in. The doc only
+  // translates + uniformly scales here, so mapping the folder's edges into the
+  // doc's local box gives an axis-aligned inset. Top is left free so the doc can
+  // still poke up out of the folder as it's inserted.
+  const lastClip = useRef('')
+  const writeClip = (v) => {
+    if (lastClip.current === v) return
+    lastClip.current = v
+    if (invoiceRef.current) invoiceRef.current.style.clipPath = v
+  }
+  const setClip = () => {
+    if (s === 0) return
+    if (phase.current !== 'busy') {
+      writeClip('')
+      return
+    }
+    const W = INVOICE.w * s
+    const H = INVOICE.w * INVOICE.ratio * s
+    const scale = invScale.get() || 1
+    const cx = INVOICE.cx * s + x.get()
+    const cy = INVOICE.cy * s + y.get()
+    const fScale = folderScale.get()
+    const halfW = (FOLDER.w * s * fScale) / 2
+    const halfH = (FOLDER.w * FOLDER.ratio * s * fScale) / 2
+    const localLeft = W / 2 + (FOLDER.cx * s - halfW - cx) / scale
+    const localRight = W / 2 + (FOLDER.cx * s + halfW - cx) / scale
+    const localBottom = H / 2 + (FOLDER.cy * s + halfH - cy) / scale
+    const l = Math.max(0, localLeft)
+    const r = Math.max(0, W - localRight)
+    const b = Math.max(0, H - localBottom)
+    writeClip(l || r || b ? `inset(0px ${r}px ${b}px ${l}px)` : '')
+  }
+
   // Recompute "over the folder" whenever the invoice moves — one code path
   // covers both the auto demo and real dragging.
   useEffect(() => {
@@ -118,12 +153,26 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s])
 
+  // Keep the folder-clip in sync with every motion that affects it.
+  useEffect(() => {
+    if (s === 0) return undefined
+    const subs = [
+      x.on('change', setClip),
+      y.on('change', setClip),
+      invScale.on('change', setClip),
+      folderScale.on('change', setClip),
+    ]
+    return () => subs.forEach((u) => u())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s])
+
   const resetInvoice = () => {
     x.set(0)
     y.set(0)
     invScale.set(1)
     setInvZ(30)
     phase.current = 'idle'
+    writeClip('')
   }
 
   // The drop: slide the doc between the folder layers, vanish it inside, close
@@ -131,6 +180,7 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
   const drop = async (tok) => {
     phase.current = 'busy'
     setInvZ(3) // tuck between back (2) and front (4)
+    setClip() // clip to the folder so nothing pokes past its edges as it slides in
     run(frontRotate, -24, SPRING_SOFT) // ensure the pocket is open to receive it
     run(folderScale, 1.06, SPRING_SOFT)
     await Promise.all([
@@ -140,9 +190,8 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     ])
     if (tok !== token.current) return
     over.current = false
-    run(frontRotate, 0, SPRING_SOFT) // close pocket over the doc
+    run(frontRotate, 0, SPRING_SOFT) // frosted cover settles over the doc (revealing it through the glass)
     run(glow, 0, { duration: 0.2 })
-    await fin(run(invOpacity, 0, { duration: 0.16 })) // disappears inside
     if (tok !== token.current) return
 
     // Success bounce + soft shadow pulse.
@@ -160,19 +209,27 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     await sleep(620)
     if (tok !== token.current) return
     await fin(run(dotOpacity, 0, { duration: 0.3 }))
-    if (tok !== token.current) return
-
-    // Reset for the next round.
-    resetInvoice()
-    await fin(run(invOpacity, 1, { duration: 0.3 }))
+    // The invoice stays tucked & visible (frosted behind the cover). The demo
+    // loop in runDemo fades it out before bringing in the next one.
   }
 
   // Auto demo: drift the invoice up to the folder, hover (it opens), drop.
   const runDemo = async () => {
     if (tookOver.current || s === 0) return
     const tok = beginRun()
+    // If a doc is still tucked from the previous round, fade it out first so the
+    // reset doesn't snap it back to the rest spot.
+    const wasTucked = phase.current === 'busy'
+    if (wasTucked) {
+      await fin(run(invOpacity, 0, { duration: 0.3 }))
+      if (tok !== token.current) return
+    }
     resetInvoice()
-    invOpacity.set(1)
+    invOpacity.set(wasTucked ? 0 : 1)
+    if (wasTucked) {
+      await fin(run(invOpacity, 1, { duration: 0.3 }))
+      if (tok !== token.current) return
+    }
     await sleep(650)
     if (tok !== token.current) return
     await Promise.all([
@@ -184,8 +241,9 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     if (tok !== token.current) return
     await drop(tok)
     if (tok !== token.current || tookOver.current || !loop) return
-    const t = setTimeout(runDemo, loopDelay)
-    timers.current.add(t)
+    await sleep(loopDelay) // dwell: the folder holds the frosted invoice
+    if (tok !== token.current || tookOver.current) return
+    runDemo()
   }
 
   // Start/stop the demo with the in-view signal (paused offscreen, like the
@@ -215,6 +273,7 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
     invOpacity.set(1)
     invScale.set(1)
     setInvZ(30)
+    writeClip('')
   }
   const onRelease = () => {
     if (phase.current !== 'drag') return
@@ -273,6 +332,7 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
 
       {/* invoice (draggable) */}
       <motion.div
+        ref={invoiceRef}
         className="fd__invoice"
         style={{
           ...centered(INVOICE.cx, INVOICE.cy),
@@ -297,7 +357,8 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
         <InvoiceSVG />
       </motion.div>
 
-      {/* folder front pocket — scales with the back, tilts open from the bottom */}
+      {/* folder front cover — a frosted-glass pocket that reveals the invoice
+          tucked behind it; scales with the back and tilts open from the bottom */}
       <motion.div
         className="fd__front-wrap"
         style={{
@@ -308,13 +369,19 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
           transformOrigin: '50% 50%',
         }}
       >
-        <motion.svg
-          className="fd__svg"
-          viewBox="0 0 171 157"
-          style={{ width: '100%', height: '100%', rotateX: frontRotate, transformPerspective: 620, transformOrigin: '50% 100%' }}
-        >
-          <path d={FRONT_PATH} fill="#FDDA7A" />
-        </motion.svg>
+        {/* map the 171×157 pocket artwork onto the scaled folder box */}
+        <div className="fd__front-scale" style={{ transform: `scale(${(FOLDER.w * s) / 171})` }}>
+          <motion.div
+            className="fd__front-glass"
+            style={{
+              rotateX: frontRotate,
+              transformPerspective: 620,
+              transformOrigin: '50% 100%',
+              clipPath: `path('${FRONT_PATH}')`,
+              WebkitClipPath: `path('${FRONT_PATH}')`,
+            }}
+          />
+        </div>
       </motion.div>
 
       {/* green confirmation dot */}
