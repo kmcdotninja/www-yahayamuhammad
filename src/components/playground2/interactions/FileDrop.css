@@ -40,24 +40,15 @@
   pointer-events: none;
 }
 
-/* The flap carries the folder-front silhouette (clip-path, set inline) and the
-   open/close tilt. Clipping here — on the parent — is what keeps the frosted
-   child's backdrop-filter inside the folder shape instead of a rectangle. */
-.fd__front-flap {
+/* Frosted-glass folder cover: a translucent, blurred pocket that reveals the
+   invoice tucked behind it. The clip-path (set inline) gives it the folder
+   front silhouette; backdrop-filter blurs whatever is behind (the doc + back). */
+.fd__front-glass {
   width: 171px;
   height: 157px;
-  pointer-events: none;
-}
-
-/* Frosted-glass folder cover: a translucent, blurred pocket that reveals the
-   invoice tucked behind it. It fills the flap and is clipped to the folder
-   silhouette by it; backdrop-filter blurs whatever is behind (the doc + back). */
-.fd__front-glass {
-  width: 100%;
-  height: 100%;
-  background: rgba(253, 218, 122, 0.85);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  background: rgba(253, 218, 122, 0.42);
+  backdrop-filter: blur(8px) saturate(1.15);
+  -webkit-backdrop-filter: blur(8px) saturate(1.15);
   box-shadow:
     inset 0 2px 4px rgba(255, 255, 255, 0.25),
     inset 0 -3px 8px rgba(0, 0, 0, 0.06);
