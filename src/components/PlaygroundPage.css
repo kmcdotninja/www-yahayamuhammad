@@ -2,7 +2,9 @@
 .pgp {
   background: var(--bg);
   min-height: 100svh;
-  padding: 132px var(--pad) clamp(60px, 8vw, 120px);
+  /* top distance matches the About page so the header clears the nav by the
+     same amount across pages */
+  padding: 156px var(--pad) clamp(60px, 8vw, 120px);
 }
 
 /* ---- Two-line header ---- */
@@ -51,7 +53,7 @@
 
 @media (max-width: 760px) {
   .pgp {
-    padding-top: 96px;
+    padding-top: 120px;
   }
   .pgp__title {
     font-size: clamp(48px, 13.5vw, 108px);
@@ -64,8 +66,9 @@
     grid-template-columns: 1fr;
     row-gap: 56px;
   }
-  /* Give the demos more vertical room on phones — short/portrait collapse
-     to a comfortable 4:3 so each one stays usable at single-column width. */
+  /* Most demos sit at a comfortable 4:3 on phones. The folder/drag scenes are
+     composed for a wide-ish stage, so forcing them taller leaves the folder
+     small and the pieces spread out (looks scattered). */
   .pgp__demos .pg2-section__stage--wide,
   .pgp__demos .pg2-section__stage--portrait,
   .pgp__demos .pg2-section__stage--card,
@@ -75,6 +78,11 @@
   /* Apple Carousel: square on phones so the slide card sits comfortably
      above its controls. */
   .pgp__demos .pg2-section__stage:has(.pg2-carousel) {
+    aspect-ratio: 1 / 1;
+  }
+  /* The PneumaCare icon set is the one that wants extra height — room for its
+     two rows of icons plus the colour control. */
+  .pgp__demos .pg2-section__stage:has(.li) {
     aspect-ratio: 1 / 1;
   }
 }

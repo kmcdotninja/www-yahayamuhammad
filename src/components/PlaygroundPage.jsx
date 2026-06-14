@@ -5,7 +5,8 @@ import TopNav from './TopNav.jsx'
 
 import PlaygroundSection from './playground2/PlaygroundSection.jsx'
 import PneumaCareIcons from './playground2/interactions/PneumaCareIcons.jsx'
-import FileDrop from './playground2/interactions/FileDrop.jsx'
+// Drag to File temporarily unlinked — re-enable this import + its card below to restore.
+// import FileDrop from './playground2/interactions/FileDrop.jsx'
 import StickerStack from './playground2/interactions/StickerStack.jsx'
 import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
 import NumberFlipCounter from './playground2/interactions/NumberFlipCounter.jsx'
@@ -57,9 +58,12 @@ export default function PlaygroundPage() {
             )}
           </PlaygroundSection>
 
+          {/* Drag to File temporarily unlinked — restore by uncommenting this card
+              and the FileDrop import above.
           <PlaygroundSection title="Drag to File" meta="Drag · Drop" aspect="wide">
             {({ inView }) => <FileDrop play={inView} loop />}
           </PlaygroundSection>
+          */}
 
           <PlaygroundSection title="Image Zoom Story" meta="Camera · Zoom" aspect="wide">
             {() => <ImageZoomStory image={carImage} scenes={carScenes} autoPlay loop />}

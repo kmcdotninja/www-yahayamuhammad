@@ -7,9 +7,12 @@ import { useReducedMotion } from '../../../hooks/useReducedMotion.js'
 // uniformly scaled to the measured stage width, so the scene keeps its
 // proportions at any card size (same approach as StickerStack).
 const REF_W = 560
-// Stage is 16:10, so the reference height is 350 and its centre is (280, 175).
-// The folder is the hero, parked dead-centre; the invoice rests to its right
-// and is dragged in.
+// The scene is composed in a 16:10 reference box (560×350); its centre is
+// (280, 175). The folder is the hero, parked dead-centre; the invoice rests to
+// its right and is dragged in. The box is scaled to *fit* the container and
+// centred on both axes, so the scene stays intact and centred at any container
+// size or aspect ratio (not just a 16:10 one).
+const REF_H = 350
 const FOLDER = { w: 152, cx: 280, cy: 175, ratio: 157 / 171 }
 const INVOICE = { w: 96, cx: 432, cy: 175, ratio: 175 / 116 }
 const OVER_DIST = 112 // how close (ref px) the invoice must get to count as "over"
@@ -25,8 +28,13 @@ const FRONT_PATH =
 export default function FileDrop({ play = true, loop = true, loopDelay = 1400 }) {
   const rootRef = useRef(null)
   const invoiceRef = useRef(null)
-  const width = useContainerWidth(rootRef)
-  const s = width > 0 ? width / REF_W : 0
+  const { width, height } = useContainerSize(rootRef)
+  // Scale the 16:10 box to *fit* the container (contain), then centre it — so the
+  // scene responds to the container's height as well as its width and never
+  // drifts/clips when the card aspect changes.
+  const s = width > 0 && height > 0 ? Math.min(width / REF_W, height / REF_H) : 0
+  const offsetX = (width - REF_W * s) / 2
+  const offsetY = (height - REF_H * s) / 2
   const reduced = useReducedMotion()
 
   // Invoice (the dragged document) — x/y are offsets from its rest center.
@@ -294,7 +302,7 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
 
   if (s === 0) return <div ref={rootRef} className="fd" aria-hidden="true" />
 
-  const centered = (cx, cy) => ({ left: cx * s, top: cy * s, translate: '-50% -50%' })
+  const centered = (cx, cy) => ({ left: cx * s + offsetX, top: cy * s + offsetY, translate: '-50% -50%' })
 
   return (
     <div ref={rootRef} className="fd" aria-label="Drag the invoice into the folder">
@@ -423,14 +431,16 @@ function InvoiceSVG() {
   )
 }
 
-function useContainerWidth(ref) {
-  const [width, setWidth] = useState(0)
+function useContainerSize(ref) {
+  const [size, setSize] = useState({ width: 0, height: 0 })
   useEffect(() => {
     const el = ref.current
     if (!el) return undefined
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width))
+    const observer = new ResizeObserver(([entry]) =>
+      setSize({ width: entry.contentRect.width, height: entry.contentRect.height }),
+    )
     observer.observe(el)
     return () => observer.disconnect()
   }, [ref])
-  return width
+  return size
 }

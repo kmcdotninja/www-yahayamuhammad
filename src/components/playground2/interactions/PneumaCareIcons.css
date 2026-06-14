@@ -14,7 +14,8 @@
 .li__grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 16px 10px;
+  /* a bit more room between the two rows than between columns */
+  gap: 18px 10px;
   width: 100%;
   max-width: 560px;
 }
@@ -40,6 +41,27 @@
 /* Cross-fade fills/strokes when the accent colour changes. */
 .li__svg * {
   transition: fill 0.25s ease, stroke 0.25s ease;
+}
+
+/* Clock hands spin via a compositor CSS animation so the sweep never hitches at
+   the loop seam or on a React re-render. Duration + play-state are set inline
+   per hand (paused when off-screen or under reduced motion). */
+.li__hand {
+  animation-name: li-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes li-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .li__hand {
+    animation: none;
+  }
 }
 
 /* Accent-colour control — same pill treatment as the Apple Carousel dots. */
@@ -84,11 +106,13 @@
     0 0 0 4px #fff;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  /* The card is square on phones (taller) — give the icons clear breathing room
+     above the top row and below the bottom row (which sits over the control). */
   .li {
-    padding: 6% 5% 64px;
+    padding: 12% 6% 80px;
   }
   .li__grid {
-    gap: 12px 6px;
+    gap: 40px 6px;
   }
 }

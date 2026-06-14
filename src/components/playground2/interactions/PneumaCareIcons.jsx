@@ -196,20 +196,26 @@ function HomeIcon({ playing }) {
   )
 }
 
-// One clock hand, drawn from the dial centre. It rotates about its group's
-// box centre (fill-box, which framer honours for SVG); the transparent anchor
-// rect — centred on (32,32) — forces that box centre to be the dial centre, so
-// the hand hinges in place instead of orbiting.
+// One clock hand, drawn from the dial centre. It spins via a compositor-driven
+// CSS animation, which sweeps seamlessly and — unlike a JS/spring loop — never
+// hitches at the loop seam or restarts when the component re-renders (e.g. on a
+// colour change). The transparent anchor rect — centred on (32,32) — makes the
+// group's box centre the dial centre, so fill-box rotation hinges in place.
 function ClockHand({ playing, d, duration }) {
   return (
-    <motion.g
-      style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-      animate={playing ? { rotate: 360 } : { rotate: 0 }}
-      transition={playing ? { duration, repeat: Infinity, ease: 'linear' } : REST}
+    <g
+      className="li__hand"
+      style={{
+        transformBox: 'fill-box',
+        transformOrigin: 'center',
+        animationDuration: `${duration}s`,
+        animationPlayState: playing ? 'running' : 'paused',
+      }}
     >
       <rect x="17" y="17" width="30" height="30" fill="none" />
-      <path d={d} stroke={ACCENT} strokeWidth="5.74895" strokeLinecap="round" />
-    </motion.g>
+      {/* flat (butt) caps + no rounding, matching the original Clock.svg stroke */}
+      <path d={d} stroke={ACCENT} strokeWidth="5.74895" />
+    </g>
   )
 }
 
@@ -219,13 +225,14 @@ function ClockIcon({ playing }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className="li__svg" aria-hidden="true">
       <rect x="11.3994" y="11.3984" width="41.2008" height="41.2008" rx="20.6004" fill="white" />
-      <ClockHand playing={playing} d="M32 32L40.5 32" duration={48} />
+      {/* hand lengths mirror the original artwork's two arms (~11 and ~14) */}
+      <ClockHand playing={playing} d="M32 32L43 32" duration={48} />
       <ClockHand playing={playing} d="M32 32L32 18" duration={4} />
     </svg>
   )
 }
 
-// 9 — Talk: the speech bubble pops in as the smiley "speaks", and the face bobs.
+// 9 — Talk: the face breathes while a speech bubble emerges from its mouth.
 function TalkIcon({ playing }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className="li__svg" aria-hidden="true">
@@ -239,10 +246,13 @@ function TalkIcon({ playing }) {
         <circle cx="46.1079" cy="29.5454" r="4.1587" fill={ACCENT} />
         <path d="M26.3545 37.8633H48.1877V38.3831C48.1877 44.4122 43.3001 49.2997 37.2711 49.2997V49.2997C31.242 49.2997 26.3545 44.4122 26.3545 38.3831V37.8633Z" fill={ACCENT} />
       </motion.g>
+      {/* the bubble emerges from the mouth: it starts tiny down at the mouth
+          (offset ~+20,+29 from its rest spot), grows out to the top-left, holds,
+          then is drawn back in — like speech leaving the character. */}
       <motion.g
         style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-        animate={playing ? { scale: [0, 1.12, 1, 1, 0, 0] } : { scale: 1 }}
-        transition={playing ? { duration: 3, times: [0, 0.1, 0.18, 0.62, 0.72, 1], repeat: Infinity, ease: 'easeInOut' } : REST}
+        animate={playing ? { x: [20, 0, 0, 20], y: [29, 0, 0, 29], scale: [0, 1, 1, 0] } : { x: 0, y: 0, scale: 1 }}
+        transition={playing ? { duration: 3.2, times: [0, 0.18, 0.82, 1], repeat: Infinity, ease: 'easeOut' } : REST}
       >
         <path d="M11.0158 22.4171L10.7822 13.0944L18.7791 17.2502L11.0158 22.4171Z" fill="white" />
         <rect x="8.25" y="7.24219" width="17.5019" height="11.8256" rx="4.06218" fill="white" />
