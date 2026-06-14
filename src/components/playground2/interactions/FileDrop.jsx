@@ -371,8 +371,12 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
       >
         {/* map the 171×157 pocket artwork onto the scaled folder box */}
         <div className="fd__front-scale" style={{ transform: `scale(${(FOLDER.w * s) / 171})` }}>
+          {/* The clip lives on the flap (parent), not on the frosted layer:
+              backdrop-filter ignores clip-path on its own element (blur leaks to
+              the full rectangle), but an ancestor clip constrains it to the
+              folder-front silhouette. The flap also carries the open/close tilt. */}
           <motion.div
-            className="fd__front-glass"
+            className="fd__front-flap"
             style={{
               rotateX: frontRotate,
               transformPerspective: 620,
@@ -380,7 +384,9 @@ export default function FileDrop({ play = true, loop = true, loopDelay = 1400 })
               clipPath: `path('${FRONT_PATH}')`,
               WebkitClipPath: `path('${FRONT_PATH}')`,
             }}
-          />
+          >
+            <div className="fd__front-glass" />
+          </motion.div>
         </div>
       </motion.div>
 
