@@ -4,6 +4,7 @@ import Footer from './Footer.jsx'
 import TopNav from './TopNav.jsx'
 
 import PlaygroundSection from './playground2/PlaygroundSection.jsx'
+import PneumaCareIcons from './playground2/interactions/PneumaCareIcons.jsx'
 import FileDrop from './playground2/interactions/FileDrop.jsx'
 import StickerStack from './playground2/interactions/StickerStack.jsx'
 import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
@@ -40,8 +41,8 @@ export default function PlaygroundPage() {
         </header>
 
         <div className="pgp__demos">
-          <PlaygroundSection title="Drag to File" meta="Drag · Drop" aspect="wide">
-            {({ inView }) => <FileDrop play={inView} loop />}
+          <PlaygroundSection title="PneumaCare Icons" meta="SVG · Loop" aspect="wide">
+            {({ inView }) => <PneumaCareIcons play={inView} />}
           </PlaygroundSection>
 
           <PlaygroundSection title="Sticker Stack" meta="Drag · Spring" aspect="wide">
@@ -54,6 +55,10 @@ export default function PlaygroundPage() {
                 loopDelay={2300}
               />
             )}
+          </PlaygroundSection>
+
+          <PlaygroundSection title="Drag to File" meta="Drag · Drop" aspect="wide">
+            {({ inView }) => <FileDrop play={inView} loop />}
           </PlaygroundSection>
 
           <PlaygroundSection title="Image Zoom Story" meta="Camera · Zoom" aspect="wide">

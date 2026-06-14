@@ -1,0 +1,94 @@
+/* PneumaCare icon set — a 5×2 grid of animated flat icons on the stage's dark
+   background (#1c1c1e, from PlaygroundSection). The `li` class prefix is kept
+   short and is internal-only. The accent colour rides on `color` (inline from
+   state) and every blue element paints with `currentColor`. */
+.li {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 6% 6% 70px; /* bottom room for the colour control */
+  color: #00aaf9; /* fallback accent; overridden inline from state */
+}
+
+.li__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px 10px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.li__tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  cursor: var(--cursor-pointer, pointer);
+}
+
+/* Icons render up to 80px, but shrink to the column when a narrower card can't
+   fit five at full size (so they never overlap). overflow visible keeps the
+   scale/rotate loops from being clipped by the 64-unit svg box. */
+.li__svg {
+  display: block;
+  width: 100%;
+  max-width: 80px;
+  height: auto;
+  overflow: visible;
+}
+
+/* Cross-fade fills/strokes when the accent colour changes. */
+.li__svg * {
+  transition: fill 0.25s ease, stroke 0.25s ease;
+}
+
+/* Accent-colour control — same pill treatment as the Apple Carousel dots. */
+.li__palette {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  padding: 0 16px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.5);
+}
+
+.li__swatch {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: var(--swatch);
+  cursor: var(--cursor-pointer, pointer);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.li__swatch:hover {
+  transform: scale(1.16);
+}
+
+.li__swatch--active {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.55),
+    0 0 0 4px #fff;
+}
+
+@media (max-width: 640px) {
+  .li {
+    padding: 6% 5% 64px;
+  }
+  .li__grid {
+    gap: 12px 6px;
+  }
+}
