@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger)
 const PARAGRAPHS = [
   "From a young age, design has been an intrinsic part of who I am. From designing fake cities to building machines using discarded radio motors, I've always been intrigued how our imagination could change the world. This passion was the driving force behind my education in civil engineering and my decision to transition into a career in design.",
   "Engineering taught me about problem-solving and technical skills, but it was my innate love of design that allowed me to apply those skills to solve pressing problem through my works.",
-  "I love to work for companies that recognise the strategic value of design. Not just as a cosmetic afterthought, but as a crucial tool to deliver connect human, foster customer loyalty, and build market dominance.",
+  "I love to work for companies that recognise the strategic value of design. Not just as a cosmetic afterthought, but as a crucial tool to connect people, foster customer loyalty, and build market dominance.",
 ]
 
 // Photos shown below the signature. Referenced as .webp so <Picture> can
