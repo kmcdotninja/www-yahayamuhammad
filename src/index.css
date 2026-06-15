@@ -173,6 +173,21 @@ button {
   cursor: var(--cursor-pointer);
 }
 
+/* Headings balance their line lengths (no lonely last word); body copy uses
+   pretty to avoid orphans. Applied globally so every page inherits it. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
 /* Respect user motion preferences — silences every transition + animation
    site-wide unless the element explicitly opts back in. Halves jank on
    low-end Android browsers and removes a battery cost on Reduced Motion. */

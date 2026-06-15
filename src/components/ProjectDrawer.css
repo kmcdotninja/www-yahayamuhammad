@@ -157,7 +157,7 @@
 }
 
 .pd__close-float:active {
-  transform: scale(0.94);
+  transform: scale(0.96);
 }
 
 [data-theme='light'] .pd__close-float {

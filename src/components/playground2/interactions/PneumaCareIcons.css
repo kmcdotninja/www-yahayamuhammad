@@ -85,6 +85,7 @@
 }
 
 .li__swatch {
+  position: relative;
   width: 16px;
   height: 16px;
   padding: 0;
@@ -95,8 +96,22 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
+/* The visible dot is only 16px — extend the tap target to the pill's full
+   height and halfway into the gaps so it's comfortably hittable without
+   overlapping the neighbouring swatches. */
+.li__swatch::after {
+  content: '';
+  position: absolute;
+  inset: -10px -6px;
+}
+
 .li__swatch:hover {
   transform: scale(1.16);
+}
+
+/* Tactile press feedback (0.96 — the standard; anything below 0.95 over-shoots). */
+.li__swatch:active {
+  transform: scale(0.96);
 }
 
 .li__swatch--active {
