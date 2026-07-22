@@ -40,11 +40,30 @@
    variant takes over. */
 .introC__sticker {
   position: absolute;
-  pointer-events: none;
+  /* Grabbable: useDraggableSticker moves these around the hero. */
+  pointer-events: auto;
+  cursor: grab;
+  /* The drag is pointer-driven, so the browser must not claim the gesture for
+     panning/zooming on touch. */
+  touch-action: none;
   user-select: none;
   -webkit-user-drag: none;
   z-index: 4;
   height: auto;
+  /* Drag offset (--dx/--dy, written per-frame by the hook) composed with the
+     resting lean (--rot, set per sticker below) — kept as separate custom
+     properties so dragging never overwrites the tilt, and vice versa. */
+  transform: translate3d(var(--dx, 0px), var(--dy, 0px), 0) rotate(var(--rot, 0deg));
+}
+
+.introC__sticker:active,
+.introC__sticker.is-dragging {
+  cursor: grabbing;
+}
+
+/* Lift the one being dragged above its sibling so they can be crossed over. */
+.introC__sticker.is-dragging {
+  z-index: 5;
 }
 
 /* Thumbtack — sits over the "P" of PRODUCT (first line, far left).
@@ -53,7 +72,7 @@
   width: clamp(64px, 7vw, 110px);
   top: clamp(100px, 13vh, 130px);
   left: calc(var(--rail) + clamp(8px, 1vw, 28px));
-  transform: rotate(-12deg);
+  --rot: -12deg;
 }
 
 /* Brain doodle — trails the END of the last headline line rather than sitting
@@ -68,7 +87,7 @@
      112px size (measured), so this clears it with a small gap. Below 1281px
      the media query hands positioning over to `right` instead. */
   left: 930px;
-  transform: rotate(-2deg);
+  --rot: -2deg;
 }
 
 @media (max-width: 1280px) {

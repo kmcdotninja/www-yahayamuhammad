@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import './HeroCentered.css'
 import TopNav from './TopNav.jsx'
 import RevealHeadline from './RevealHeadline.jsx'
 import { useSnd } from '../hooks/useSnd.js'
+import { useDraggableSticker } from '../hooks/useDraggableSticker.js'
 
 // Authored line breaks, not wrapping. Broken on phrase boundaries so the
 // closing phrase lands whole on its own line.
@@ -13,6 +15,13 @@ const HEADLINE_LINES = [
 
 export default function HeroCentered() {
   const { play, SOUNDS } = useSnd()
+
+  // Both stickers can be dragged around the hero. Where you drop one is kept in
+  // localStorage; double-click puts it back where the stylesheet had it.
+  const pinRef = useRef(null)
+  const brainRef = useRef(null)
+  useDraggableSticker(pinRef, 'pin')
+  useDraggableSticker(brainRef, 'brain')
 
   return (
     <section className="introC">
@@ -26,9 +35,10 @@ export default function HeroCentered() {
           playground StickerStack uses (4 = thumbtack pinning the first line,
           8 = brain trailing the end of the last line). Decorative only
           (aria-hidden) and width-gated so they never crowd the headline on
-          tablet. Their positions are tuned to the authored line breaks above,
-          so revisit them if the headline copy changes. */}
+          tablet. The CSS positions are tuned to the authored line breaks above,
+          but both are drag-positionable (see useDraggableSticker). */}
       <img
+        ref={pinRef}
         className="introC__sticker introC__sticker--pin"
         src="/playground/stickers/4.svg"
         alt=""
@@ -40,6 +50,7 @@ export default function HeroCentered() {
         draggable={false}
       />
       <img
+        ref={brainRef}
         className="introC__sticker introC__sticker--brain"
         src="/playground/stickers/8.svg"
         alt=""
