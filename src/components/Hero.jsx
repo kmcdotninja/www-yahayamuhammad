@@ -8,16 +8,15 @@ import { useSnd } from '../hooks/useSnd.js'
 // so large that each word wants its own line, so we author the breaks
 // explicitly. Tablets (768px+) have room for the tighter three-line grouping.
 const PHONE_LINES = [
-  'Product',
-  'designer',
-  'building',
-  'brands, apps',
-  'and websites',
+  'Design, build',
+  'and ship',
+  'products from',
+  'canvas to code',
 ]
 const TABLET_LINES = [
-  'Product designer',
-  'building brands, apps',
-  'and websites',
+  'Design, build',
+  'and ship products',
+  'from canvas to code',
 ]
 
 const PHONE_MQ = '(max-width: 760px)'
@@ -42,7 +41,7 @@ export default function Hero() {
       <TopNav />
 
       <h1 className="sr-only">
-        Yahaya Muhammad — Product Designer & UX Designer
+        Yahaya Muhammad — Product Design Engineer designing and shipping products from canvas to code
       </h1>
       <RevealHeadline className="intro__big" lines={HEADLINE_LINES} />
 

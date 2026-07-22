@@ -36,19 +36,19 @@ export function applySEO({ title, description, path }) {
 
 export const ROUTE_SEO = {
   '/': {
-    title: 'Yahaya Muhammad — Product Designer & UX Designer | Portfolio',
+    title: 'Product Design Engineer — Yahaya Muhammad',
     description:
-      'Yahaya Muhammad is a product designer and UX designer based in Nigeria, currently designing at Kutuby. See selected case studies in healthcare, education and brand.',
+      'Product design engineer who designs, builds and ships products from canvas to code. Based in Nigeria — case studies across edtech, fintech and developer tools.',
   },
   '/about': {
-    title: 'About Yahaya Muhammad — Product Designer & UX Designer in Nigeria',
+    title: 'About Yahaya Muhammad — Product Design Engineer in Nigeria',
     description:
-      'About Yahaya Muhammad: a product designer and UX designer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
+      'Yahaya Muhammad is a product design engineer in Kaduna, Nigeria — from civil engineering to designing, building and shipping products from canvas to code.',
   },
   '/playground': {
-    title: 'Playground — Yahaya Muhammad (Product Designer & UX Designer)',
+    title: 'Playground — Yahaya Muhammad, Product Design Engineer',
     description:
-      'A loose archive of small experiments by Yahaya Muhammad — type tests, colour studies, posters, and screens that never shipped.',
+      'A loose archive of experiments by Yahaya Muhammad, product design engineer — type tests, colour studies, posters and interactions that never shipped.',
   },
   '/404': {
     title: 'Page not found — Yahaya Muhammad',

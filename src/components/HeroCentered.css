@@ -17,11 +17,12 @@
   margin: clamp(40px, 8vh, 88px) 0 0;
   font-family: var(--display);
   font-weight: 400;
-  /* Locked at 112px on every desktop viewport — the previous clamp let
-     it shrink under 6.4vw on narrow desktops, which read smaller than
-     the reference calls for. HeroCentered is desktop-only (the App
-     swaps to <Hero> below 901px) so a fixed pixel value is safe. */
-  font-size: 112px;
+  /* 112px on every real desktop — an earlier clamp at 6.4vw shrank it far
+     below what the reference calls for. The vw term only bites on the narrow
+     sliver just above the <Hero> swap (901–965px), where the longest headline
+     line would otherwise run past the rail and be silently clipped by the
+     body's overflow-x. At >=966px this resolves to the full 112px. */
+  font-size: clamp(92px, 11.6vw, 112px);
   line-height: 1.02;
   letter-spacing: -0.02em;
   color: #fff;
@@ -55,14 +56,18 @@
   transform: rotate(-12deg);
 }
 
-/* Brain doodle — trails the end of "CRAFTING BRANDS," on the second
-   line. Wider native aspect, so it gets a bigger width target. */
+/* Brain doodle — trails the END of the last headline line rather than sitting
+   on top of it. Wider native aspect, so it gets a bigger width target. */
 .introC__sticker--brain {
   width: clamp(140px, 11vw, 20px);
-  top: clamp(380px, 50vh, 500px);
-  /* Positions the brain just past where "BRANDS," ends at the locked
-     112px font-size — slight overlap with the comma. */
-  left: clamp(620px, 6vw, 880px);
+  /* Track the third line down the page: the headline starts at the section's
+     116px padding plus its own top margin, and each line box is 114px
+     (112px x 1.02), so line three begins ~228px into the block. */
+  top: calc(clamp(40px, 8vh, 88px) + 350px);
+  /* "FROM CANVAS TO CODE" ends at ~911px from the section's left edge at the
+     112px size (measured), so this clears it with a small gap. Below 1281px
+     the media query hands positioning over to `right` instead. */
+  left: 930px;
   transform: rotate(-2deg);
 }
 

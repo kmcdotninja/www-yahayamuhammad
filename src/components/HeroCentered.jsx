@@ -3,10 +3,12 @@ import TopNav from './TopNav.jsx'
 import RevealHeadline from './RevealHeadline.jsx'
 import { useSnd } from '../hooks/useSnd.js'
 
+// Authored line breaks, not wrapping. Broken on phrase boundaries so the
+// closing phrase lands whole on its own line.
 const HEADLINE_LINES = [
-  'Product designer',
-  'building brands, apps',
-  'and websites',
+  'Design, build',
+  'and ship products',
+  'from canvas to code',
 ]
 
 export default function HeroCentered() {
@@ -17,13 +19,15 @@ export default function HeroCentered() {
       <TopNav />
 
       <h1 className="sr-only">
-        Yahaya Muhammad — Product Designer & UX Designer
+        Yahaya Muhammad — Product Design Engineer designing and shipping products from canvas to code
       </h1>
 
       {/* Casual stickers anchored to the headline — same SVG set the
-          playground StickerStack uses (4 = thumbtack pinning "PRODUCT",
-          8 = brain trailing "BRANDS,"). Decorative only (aria-hidden)
-          and width-gated so they never crowd the headline on tablet. */}
+          playground StickerStack uses (4 = thumbtack pinning the first line,
+          8 = brain trailing the end of the last line). Decorative only
+          (aria-hidden) and width-gated so they never crowd the headline on
+          tablet. Their positions are tuned to the authored line breaks above,
+          so revisit them if the headline copy changes. */}
       <img
         className="introC__sticker introC__sticker--pin"
         src="/playground/stickers/4.svg"
