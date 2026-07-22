@@ -1,10 +1,14 @@
 .introC {
   position: relative;
-  /* Was 100svh when an absolutely-positioned model / image filled the
-     middle of the section. Text-only hero collapses to a tighter
-     ~60svh — enough to feel deliberate without leaving a void where
-     the visual used to live. */
-  min-height: 60svh;
+  /* Height knob for the hero. Worth knowing: the content (nav + headline +
+     the bio/scroll row + padding) already comes to ~69svh on a 950px-tall
+     window, so anything at or under that does nothing — the old 60svh never
+     actually bound. 88svh sits clear of the content on every common desktop
+     height, so it's this value that sets the height, and .introC__about's
+     `margin-top: auto` spends the extra space as breathing room between the
+     headline and the bottom row. On very short windows the content is still
+     the floor (min-height can only grow the section, never shrink it). */
+  min-height: 88svh;
   display: flex;
   flex-direction: column;
   padding: 116px var(--pad) 28px;
@@ -23,7 +27,7 @@
      line would otherwise run past the rail and be silently clipped by the
      body's overflow-x. At >=966px this resolves to the full 112px. */
   font-size: clamp(92px, 11.6vw, 112px);
-  line-height: 1.02;
+  line-height: .85;
   letter-spacing: -0.02em;
   color: #fff;
   text-transform: uppercase;
