@@ -61,7 +61,7 @@ export default function HeroCentered() {
       <TopNav />
 
       <h1 className="sr-only">
-        Yahaya Muhammad — Product Design Engineer designing and shipping products from canvas to code
+        Yahaya Muhammad — Product Designer & Engineer
       </h1>
 
       {/* Casual stickers from the same SVG set the playground StickerStack uses.
