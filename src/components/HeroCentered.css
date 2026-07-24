@@ -94,12 +94,50 @@
   --rot: -2deg;
 }
 
+/* "I'm a designer" — parks in the empty gutter to the right of the headline's
+   short first line, well clear of where line two ends. */
+.introC__sticker--designer {
+  width: clamp(140px, 13vw, 200px);
+  top: clamp(96px, 13vh, 150px);
+  right: clamp(var(--rail), 7vw, 130px);
+  --rot: 7deg;
+}
+
+/* The lower two hang off the section's BOTTOM rather than a fixed offset from
+   the top: the hero is sized in svh, so bottom-anchoring keeps them a constant
+   distance above the bio/scroll row at any window height. */
+
+/* "Portfolio website" — wide wordmark filling the band under the headline. */
+.introC__sticker--portfolio {
+  width: clamp(180px, 19vw, 280px);
+  bottom: clamp(110px, 16vh, 190px);
+  left: calc(var(--rail) + clamp(8px, 3vw, 60px));
+  --rot: -5deg;
+}
+
+/* Open book — balances the wordmark on the opposite side. */
+.introC__sticker--book {
+  width: clamp(100px, 9vw, 140px);
+  bottom: clamp(130px, 19vh, 220px);
+  right: clamp(var(--rail), 11vw, 200px);
+  --rot: 9deg;
+}
+
 @media (max-width: 1280px) {
   .introC__sticker--brain {
     /* Headline column gets tighter; pin brain to a percentage instead
        of pixel target so it tracks the shrinking line length. */
     left: auto;
     right: clamp(var(--rail), 12vw, 18vw);
+  }
+}
+
+@media (max-width: 1180px) {
+  /* Not enough room for the full collage once the headline eats the width —
+     drop the two decorative extras and keep the identity one. */
+  .introC__sticker--portfolio,
+  .introC__sticker--book {
+    display: none;
   }
 }
 
