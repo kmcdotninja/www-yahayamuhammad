@@ -133,10 +133,13 @@ export function useStickerPhysics(sectionRef) {
       // Upright bodies settle to a subtle, per-load lean; everything else can
       // land at any angle.
       b.uprightTarget = b.upright ? rand(-7, 7) : 0
-      if (reduced) {
-        // Reduced motion: no drop, no bounce. Rest them in a tidy spread near
-        // the shelf; they're still draggable, just without autonomous motion.
-        b.cx = clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
+      if (reduced || b.isInput) {
+        // The input starts already settled at the bottom — a stable, always-
+        // reachable control that the rest of the pile rests on top of (it's
+        // still draggable/tossable). Reduced-motion rests everything this way.
+        b.cx = b.isInput
+          ? clamp(W * 0.6, b.hw, W - b.hw)
+          : clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
         b.cy = clamp(floorY - b.hh, b.hh, H - b.hh)
         b.vx = b.vy = b.spin = 0
         b.angle = b.upright ? b.uprightTarget : rand(-6, 6)
@@ -291,8 +294,10 @@ export function useStickerPhysics(sectionRef) {
       const nx = dx / dist
       const ny = dy / dist
       const overlap = min - dist
-      const aMov = !a.dragging && !a.frozen
-      const bMov = !b.dragging && !b.frozen
+      // The input is an immovable platform: stickers bounce off / rest on it,
+      // but it never gets shoved around (keeping its face reachable).
+      const aMov = !a.dragging && !a.frozen && !a.isInput
+      const bMov = !b.dragging && !b.frozen && !b.isInput
       if (!aMov && !bMov) return
       // Positional correction split by mobility.
       if (aMov && bMov) {

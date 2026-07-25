@@ -60,42 +60,22 @@
    the body from this box and drives its transform. Pill-shaped like the input,
    sized so a typed word reads big in the pile. */
 .hero-sticker--text {
-  /* A "selected object" box: sharp white rectangle, thin outline, and a square
-     node straddling each corner (like transform / bezier handles). nowrap keeps
-     it one line; length is capped in StickerInput. */
+  /* A die-cut sticker: the typed word in chunky Jaro, black, wrapped in a thick
+     white contour drawn BEHIND the fill (paint-order + text-stroke) — no box.
+     Padding leaves room for the stroke so the physics box wraps the whole
+     visible sticker. nowrap keeps it one line; length is capped in StickerInput. */
   position: absolute;
-  padding: 22px 32px;
-  border-radius: 0;
-  background: #ffffff;
-  color: #000000;
-  border: 2px solid #000000;
-  font-family: var(--sans);
-  font-size: 36px;
-  font-weight: 600;
-  line-height: 1.2;
+  padding: 0.22em 0.3em;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 75px;
+  line-height: 1;
+  color: #000;
+  text-transform: uppercase;
   white-space: nowrap;
-}
-
-/* The four corner nodes. ::before draws the top pair, ::after the bottom pair —
-   each is a full-width strip with a square at both ends (em-sized so they scale
-   with the font on mobile). Negative insets straddle the corners. */
-.hero-sticker--text::before,
-.hero-sticker--text::after {
-  content: '';
-  position: absolute;
-  left: -0.3em;
-  right: -0.3em;
-  height: 0.6em;
-  pointer-events: none;
-  background:
-    linear-gradient(#000 0 0) left center / 0.6em 0.6em no-repeat,
-    linear-gradient(#000 0 0) right center / 0.6em 0.6em no-repeat;
-}
-.hero-sticker--text::before {
-  top: -0.3em;
-}
-.hero-sticker--text::after {
-  bottom: -0.3em;
+  -webkit-text-stroke: 0.34em #fff;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
 }
 
 /* ---- Input pill sticker ---- */
@@ -166,8 +146,7 @@
 
 @media (max-width: 900px) {
   .hero-sticker--text {
-    font-size: 26px;
-    padding: 18px 26px;
+    font-size: 51px;
   }
   .hero-input__field {
     width: clamp(120px, 44vw, 180px);
