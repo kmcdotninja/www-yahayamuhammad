@@ -25,7 +25,7 @@ export default function StickerInput({ onSubmit }) {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Type something…"
           aria-label="Type to add a sticker"
-          maxLength={48}
+          maxLength={20}
           autoComplete="off"
           spellCheck={false}
         />

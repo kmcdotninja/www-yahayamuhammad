@@ -54,25 +54,47 @@
   .hero-sticker--face { width: clamp(64px, 18vw, 88px); }
 }
 
-/* ---- Text box stickers (typed via the input) ---- */
+/* ---- Text pill stickers (typed via the input) ---- */
 /* Absolutely positioned so it shrink-wraps its text; the physics engine sizes
-   the body from this box and drives its transform. */
+   the body from this box and drives its transform. Pill-shaped like the input,
+   sized so a typed word reads big in the pile. */
 .hero-sticker--text {
-  max-width: 260px;
-  padding: 12px 18px;
-  border-radius: 14px;
-  background: #f5f3ee;
-  color: #17150f;
+  /* A "selected object" box: sharp white rectangle, thin outline, and a square
+     node straddling each corner (like transform / bezier handles). nowrap keeps
+     it one line; length is capped in StickerInput. */
+  position: absolute;
+  padding: 22px 32px;
+  border-radius: 0;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
   font-family: var(--sans);
-  font-size: 18px;
+  font-size: 36px;
   font-weight: 600;
-  line-height: 1.25;
-  text-align: center;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.5) inset,
-    0 8px 24px rgba(0, 0, 0, 0.35);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* The four corner nodes. ::before draws the top pair, ::after the bottom pair —
+   each is a full-width strip with a square at both ends (em-sized so they scale
+   with the font on mobile). Negative insets straddle the corners. */
+.hero-sticker--text::before,
+.hero-sticker--text::after {
+  content: '';
+  position: absolute;
+  left: -0.3em;
+  right: -0.3em;
+  height: 0.6em;
+  pointer-events: none;
+  background:
+    linear-gradient(#000 0 0) left center / 0.6em 0.6em no-repeat,
+    linear-gradient(#000 0 0) right center / 0.6em 0.6em no-repeat;
+}
+.hero-sticker--text::before {
+  top: -0.3em;
+}
+.hero-sticker--text::after {
+  bottom: -0.3em;
 }
 
 /* ---- Input pill sticker ---- */
@@ -134,9 +156,8 @@
 
 @media (max-width: 900px) {
   .hero-sticker--text {
-    max-width: 200px;
-    font-size: 15px;
-    padding: 10px 14px;
+    font-size: 26px;
+    padding: 18px 26px;
   }
   .hero-input__field {
     width: clamp(120px, 44vw, 180px);

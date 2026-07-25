@@ -1,9 +1,8 @@
 .intro {
-  /* Was 100svh when the section hosted the 3D model / hero image.
-     Text-only hero only needs enough height to seat the headline at
-     the top and the bio/scroll cue at the bottom with breathing room
-     between — 60svh keeps presence without stranding empty space. */
-  min-height: 60svh;
+  /* Mobile-only hero (the app swaps to .introC at >=901px). Kept tall (85svh)
+     so there's a generous band between the headline and the bio for the physics
+     stickers to fall into and spread out. */
+  min-height: 85svh;
   display: flex;
   flex-direction: column;
   padding: 116px var(--pad) 28px;
