@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useReducedMotion } from './useReducedMotion.js'
 
 // Turns the hero stickers into physical objects: they drop in from above the
@@ -33,6 +33,9 @@ const rand = (lo, hi) => lo + Math.random() * (hi - lo)
 
 export function useStickerPhysics(sectionRef) {
   const reduced = useReducedMotion()
+  // The live effect writes its spawn function here; the returned API forwards to
+  // it so callers get a stable reference that survives the effect re-running.
+  const spawnRef = useRef(null)
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -67,10 +70,10 @@ export function useStickerPhysics(sectionRef) {
     }
     let obstacles = measureObstacles()
 
-    // Build a body per sticker. offsetWidth/Height are the laid-out size and
-    // don't depend on the transform we're about to drive, so they're safe to
-    // read now (and the size comes from CSS, not the yet-to-decode image).
-    const bodies = els.map((el) => {
+    // Build a body from a sticker element. offsetWidth/Height are the laid-out
+    // size and don't depend on the transform we're about to drive, so they're
+    // safe to read now (and the size comes from CSS, not the yet-to-decode art).
+    const makeBody = (el) => {
       el.style.left = '0px'
       el.style.top = '0px'
       el.style.right = 'auto'
@@ -89,10 +92,13 @@ export function useStickerPhysics(sectionRef) {
         hw: w / 2,
         hh: h / 2,
         r: Math.min(w, h) * 0.46, // collision circle radius
-        // Upright bodies (the face) never tumble — they self-right to a small
-        // lean instead of resting at whatever angle they land.
+        // Upright bodies (the face, the input) never tumble — they self-right to
+        // a small lean instead of resting at whatever angle they land.
         upright: el.hasAttribute('data-upright'),
         uprightTarget: 0,
+        // Frozen bodies (the input while you're typing in it) don't move and act
+        // immovable in collisions, so the pile can't shove them mid-type.
+        frozen: false,
         cx: 0,
         cy: 0,
         vx: 0,
@@ -109,7 +115,11 @@ export function useStickerPhysics(sectionRef) {
         tvx: 0,
         tvy: 0,
       }
-    })
+    }
+    const bodies = els.map(makeBody)
+    // Text boxes created at runtime via spawnText — tracked so cleanup can
+    // detach and remove them (the initial `els` are owned by React).
+    const dynamicEls = []
 
     const spawn = (b, i) => {
       b.hw = b.w / 2
@@ -158,7 +168,7 @@ export function useStickerPhysics(sectionRef) {
     }
 
     const integrate = (b, dt) => {
-      if (b.dragging || b.sleeping) return
+      if (b.dragging || b.sleeping || b.frozen) return
       const g = reduced ? 0 : GRAVITY
       b.vy += g * dt
       const drag = 1 - AIR * dt
@@ -260,8 +270,8 @@ export function useStickerPhysics(sectionRef) {
       const nx = dx / dist
       const ny = dy / dist
       const overlap = min - dist
-      const aMov = !a.dragging
-      const bMov = !b.dragging
+      const aMov = !a.dragging && !a.frozen
+      const bMov = !b.dragging && !b.frozen
       if (!aMov && !bMov) return
       // Positional correction split by mobility.
       if (aMov && bMov) {
@@ -317,6 +327,8 @@ export function useStickerPhysics(sectionRef) {
     }
 
     const onDown = (e) => {
+      // Clicks on the input's own controls focus/submit instead of dragging.
+      if (e.target.closest?.('input, textarea, button, select, a')) return
       const b = bodies.find((body) => body.el === e.currentTarget)
       if (!b) return
       const p = local(e)
@@ -370,6 +382,47 @@ export function useStickerPhysics(sectionRef) {
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onUp)
     window.addEventListener('pointercancel', onUp)
+
+    // Spawn a text box into the pile — a real physics body that drops in,
+    // bounces, and is draggable like any other sticker.
+    const spawnText = (text) => {
+      const t = String(text || '').trim().slice(0, 48)
+      if (!t) return
+      const el = document.createElement('div')
+      el.className = 'hero-sticker hero-sticker--text'
+      el.setAttribute('aria-hidden', 'true')
+      el.textContent = t
+      section.appendChild(el)
+      const b = makeBody(el)
+      spawn(b, bodies.length)
+      bodies.push(b)
+      dynamicEls.push(el)
+      el.addEventListener('pointerdown', onDown)
+      render(b) // place at its spawn point before the next frame (no 0,0 flash)
+      if (!started) start() // in case the drop was still gated on decode
+    }
+    spawnRef.current = spawnText
+
+    // Freeze a body while you're typing in its input, so the pile can't drift or
+    // shove it away mid-type; releasing focus lets it be knocked around again.
+    const freezeHandlers = []
+    els.forEach((el) => {
+      const input = el.querySelector('input, textarea')
+      if (!input) return
+      const b = bodies.find((body) => body.el === el)
+      if (!b) return
+      const onFocus = () => {
+        b.frozen = true
+        b.vx = b.vy = b.spin = 0
+      }
+      const onBlur = () => {
+        b.frozen = false
+        b.restFrames = 0
+      }
+      input.addEventListener('focus', onFocus)
+      input.addEventListener('blur', onBlur)
+      freezeHandlers.push([input, onFocus, onBlur])
+    })
 
     const onResize = () => {
       W = section.clientWidth
@@ -425,9 +478,18 @@ export function useStickerPhysics(sectionRef) {
 
     return () => {
       started = true // no-op a late decode callback after unmount
+      spawnRef.current = null
       clearTimeout(startTimer)
       cancelAnimationFrame(raf)
       els.forEach((el) => el.removeEventListener('pointerdown', onDown))
+      dynamicEls.forEach((el) => {
+        el.removeEventListener('pointerdown', onDown)
+        el.remove()
+      })
+      freezeHandlers.forEach(([input, f, g]) => {
+        input.removeEventListener('focus', f)
+        input.removeEventListener('blur', g)
+      })
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
       window.removeEventListener('pointercancel', onUp)
@@ -435,4 +497,7 @@ export function useStickerPhysics(sectionRef) {
       els.forEach((el) => el.classList.remove('is-dragging'))
     }
   }, [sectionRef, reduced])
+
+  // Stable API — forwards to the live effect's spawnText via the ref.
+  return useMemo(() => ({ spawnText: (text) => spawnRef.current?.(text) }), [])
 }

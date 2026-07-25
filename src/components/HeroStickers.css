@@ -53,3 +53,98 @@
   .hero-sticker--designer { width: clamp(74px, 21vw, 108px); }
   .hero-sticker--face { width: clamp(64px, 18vw, 88px); }
 }
+
+/* ---- Text box stickers (typed via the input) ---- */
+/* Absolutely positioned so it shrink-wraps its text; the physics engine sizes
+   the body from this box and drives its transform. */
+.hero-sticker--text {
+  max-width: 260px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #f5f3ee;
+  color: #17150f;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- Input pill sticker ---- */
+/* Kept above the rest of the pile so it stays reachable, and it's not
+   width-gated away on any breakpoint — it's the interactive control. */
+.hero-sticker--input {
+  z-index: 6;
+}
+
+.hero-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 7px 7px 18px;
+  border-radius: 999px;
+  background: #14120d;
+  border: 1px solid var(--pill-border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.hero-input__field {
+  width: clamp(150px, 18vw, 210px);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 18px;
+  /* Re-enable text interaction the .hero-sticker base turns off for dragging. */
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: auto;
+}
+
+.hero-input__field::placeholder {
+  color: var(--text-dim);
+}
+
+.hero-input__go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #14120d;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.hero-input__go:active {
+  transform: scale(0.92);
+}
+
+@media (max-width: 900px) {
+  .hero-sticker--text {
+    max-width: 200px;
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+  .hero-input__field {
+    width: clamp(120px, 44vw, 180px);
+    font-size: 16px;
+  }
+  .hero-input__go {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+}

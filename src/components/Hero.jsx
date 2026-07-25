@@ -3,7 +3,7 @@ import './Hero.css'
 import TopNav from './TopNav.jsx'
 import RevealHeadline from './RevealHeadline.jsx'
 import HeroStickers from './HeroStickers.jsx'
-import { useSnd } from '../hooks/useSnd.js'
+import StickerInput from './StickerInput.jsx'
 import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 
 // On phones (≤760px — the same cutoff the headline font uses) the display is
@@ -24,8 +24,6 @@ const TABLET_LINES = [
 const PHONE_MQ = '(max-width: 760px)'
 
 export default function Hero() {
-  const { play, SOUNDS } = useSnd()
-
   const [isPhone, setIsPhone] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(PHONE_MQ).matches,
   )
@@ -39,9 +37,9 @@ export default function Hero() {
   const HEADLINE_LINES = isPhone ? PHONE_LINES : TABLET_LINES
 
   // Same drop-in physics as the desktop hero, tuned smaller via the mobile
-  // sticker sizes in HeroStickers.css.
+  // sticker sizes in HeroStickers.css. spawnText adds a typed text box.
   const sectionRef = useRef(null)
-  useStickerPhysics(sectionRef)
+  const { spawnText } = useStickerPhysics(sectionRef)
 
   return (
     <section className="intro" ref={sectionRef}>
@@ -51,9 +49,10 @@ export default function Hero() {
         Yahaya Muhammad — Product Designer & Engineer
       </h1>
 
-      {/* Physics stickers — fall in and bounce on load, grab-and-throwable.
-          data-sticker-keepout marks the text they rest above rather than cover. */}
+      {/* Physics stickers — fall in and bounce on load, grab-and-throwable. The
+          input pill is itself a tossable sticker; typing drops a text box in. */}
       <HeroStickers />
+      <StickerInput onSubmit={spawnText} />
 
       <RevealHeadline className="intro__big" lines={HEADLINE_LINES} />
 
@@ -61,6 +60,7 @@ export default function Hero() {
         <p className="intro__bio" data-sticker-keepout>
           Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
+        {/* Scroll cue hidden for now.
         <a
           href="#work"
           className="intro__scroll"
@@ -69,6 +69,7 @@ export default function Hero() {
         >
           ↓ SCROLL FOR MORE
         </a>
+        */}
       </div>
     </section>
   )
