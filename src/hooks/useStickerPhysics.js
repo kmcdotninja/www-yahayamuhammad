@@ -27,6 +27,7 @@ const MAX_SPEED = 3600 // clamp so a violent fling can't tunnel through a wall
 const REST_SPEED = 14 // below this on the floor, start settling
 const SLEEP_FRAMES = 22 // frames at rest before a body sleeps (stops jittering)
 const SUBSTEPS = 2 // integration substeps per frame (wall stability)
+const PLATFORM_SETTLE = 40 // input acts as a platform only once its bottom is this close to the floor
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v)
 const rand = (lo, hi) => lo + Math.random() * (hi - lo)
@@ -96,6 +97,9 @@ export function useStickerPhysics(sectionRef) {
         // a small lean instead of resting at whatever angle they land.
         upright: el.hasAttribute('data-upright'),
         uprightTarget: 0,
+        // The input pill is a platform: other stickers rest on TOP of it (never
+        // over its face) so it stays clickable, and it doesn't bounce them.
+        isInput: !!el.querySelector('input, textarea'),
         // Frozen bodies (the input while you're typing in it) don't move and act
         // immovable in collisions, so the pile can't shove them mid-type.
         frozen: false,
@@ -117,6 +121,8 @@ export function useStickerPhysics(sectionRef) {
       }
     }
     const bodies = els.map(makeBody)
+    // The input pill acts as a platform the rest of the pile rests on.
+    const inputBody = bodies.find((b) => b.isInput) || null
     // Text boxes created at runtime via spawnText — tracked so cleanup can
     // detach and remove them (the initial `els` are owned by React).
     const dynamicEls = []
@@ -232,6 +238,21 @@ export function useStickerPhysics(sectionRef) {
       for (let k = 0; k < obstacles.length; k++) {
         const o = obstacles[k]
         if (b.cx + ex > o.left && b.cx - ex < o.right) supportY = Math.min(supportY, o.top)
+      }
+      // The input pill is a platform other stickers rest on top of — but ONLY
+      // once it has settled near the floor. While it's still falling in from
+      // above, it must not raise the support (that pinned stickers mid-air near
+      // the top); collision alone handles it during the drop.
+      if (
+        inputBody &&
+        b !== inputBody &&
+        inputBody.cy + inputBody.hh > floorY - PLATFORM_SETTLE
+      ) {
+        const ie = extents(inputBody)
+        const iLeft = inputBody.cx - ie.ex - OBSTACLE_PAD
+        const iRight = inputBody.cx + ie.ex + OBSTACLE_PAD
+        const iTop = inputBody.cy - ie.ey - OBSTACLE_PAD
+        if (b.cx + ex > iLeft && b.cx - ex < iRight) supportY = Math.min(supportY, iTop)
       }
       if (b.cy + ey > supportY) {
         b.cy = supportY - ey

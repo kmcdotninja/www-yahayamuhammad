@@ -338,7 +338,11 @@
   .intro__about {
     grid-template-columns: 1fr;
     gap: 14px;
-    padding-top: clamp(16px, 3.5vh, 40px);
+    padding-top: clamp(16px, 3vh, 28px);
+    /* Sit the bio just under the headline (not pushed to the bottom), so the
+       whole lower half of the hero is free for the stickers to seat on the
+       bottom line. */
+    margin-top: 0;
   }
   .intro__scroll {
     justify-self: start;

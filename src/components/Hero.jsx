@@ -56,8 +56,10 @@ export default function Hero() {
 
       <RevealHeadline className="intro__big" lines={HEADLINE_LINES} />
 
+      {/* No data-sticker-keepout here: the bio sits up under the headline on
+          mobile, so stickers fall past it and seat on the bottom line below. */}
       <div className="intro__about" data-reveal>
-        <p className="intro__bio" data-sticker-keepout>
+        <p className="intro__bio">
           Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
         {/* Scroll cue hidden for now.
