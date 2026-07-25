@@ -44,10 +44,10 @@ export function useStickerPhysics(sectionRef) {
 
     let W = section.clientWidth
     let H = section.clientHeight
-    // Rest the pile on the shelf just above the bio/scroll row so it stays
-    // readable, and treat that as the floor. Falls back to the true bottom.
-    const aboutEl = section.querySelector('.introC__about')
-    let floorY = aboutEl ? aboutEl.offsetTop - 6 : H
+    // Floor = the section's bottom edge (the horizontal divider line), so the
+    // pile settles right down on that line rather than floating mid-hero.
+    const FLOOR_INSET = 2 // sit a hair above the 1px border, not through it
+    let floorY = H - FLOOR_INSET
 
     // Build a body per sticker. offsetWidth/Height are the laid-out size and
     // don't depend on the transform we're about to drive, so they're safe to
@@ -121,6 +121,16 @@ export function useStickerPhysics(sectionRef) {
       b.restFrames = 0
     }
 
+    // Half-extents of a body's rotated bounding box: how far its farthest corner
+    // reaches along x and y. Used for every wall/line contact so the visible
+    // card — not an unrotated proxy — is what stays inside the box.
+    const extents = (b) => {
+      const rad = (b.angle * Math.PI) / 180
+      const c = Math.abs(Math.cos(rad))
+      const s = Math.abs(Math.sin(rad))
+      return { ex: b.hw * c + b.hh * s, ey: b.hw * s + b.hh * c }
+    }
+
     const integrate = (b, dt) => {
       if (b.dragging || b.sleeping) return
       const g = reduced ? 0 : GRAVITY
@@ -143,14 +153,19 @@ export function useStickerPhysics(sectionRef) {
 
       const bounce = reduced ? 0 : WALL_BOUNCE
 
+      // Half-extents of the ROTATED card along each axis (how far its farthest
+      // corner reaches). Colliding against these — not the unrotated hw/hh —
+      // is what keeps a tilted sticker's corner from crossing a wall/the line.
+      const { ex, ey } = extents(b)
+
       // Left / right walls
-      if (b.cx - b.hw < 0) {
-        b.cx = b.hw
+      if (b.cx - ex < 0) {
+        b.cx = ex
         b.vx = -b.vx * bounce
         b.vy *= WALL_FRICTION
         wake(b)
-      } else if (b.cx + b.hw > W) {
-        b.cx = W - b.hw
+      } else if (b.cx + ex > W) {
+        b.cx = W - ex
         b.vx = -b.vx * bounce
         b.vy *= WALL_FRICTION
         wake(b)
@@ -159,17 +174,17 @@ export function useStickerPhysics(sectionRef) {
       // Top wall — only active once the body has fully dropped in, so the
       // initial fall from above isn't bounced back out.
       if (!b.enteredTop) {
-        if (b.cy - b.hh >= 0) b.enteredTop = true
-      } else if (b.cy - b.hh < 0) {
-        b.cy = b.hh
+        if (b.cy - ey >= 0) b.enteredTop = true
+      } else if (b.cy - ey < 0) {
+        b.cy = ey
         b.vy = -b.vy * bounce
         b.vx *= WALL_FRICTION
         wake(b)
       }
 
       // Floor
-      if (b.cy + b.hh > floorY) {
-        b.cy = floorY - b.hh
+      if (b.cy + ey > floorY) {
+        b.cy = floorY - ey
         b.vy = -b.vy * bounce
         b.vx *= FLOOR_FRICTION
         b.spin = b.spin * 0.6 - b.vx * SPIN_FROM_SLIDE
@@ -278,8 +293,9 @@ export function useStickerPhysics(sectionRef) {
     const onMove = (e) => {
       if (!dragged) return
       const p = local(e)
-      const nx = clamp(p.x + dragged.grabX, dragged.hw, W - dragged.hw)
-      const ny = clamp(p.y + dragged.grabY, dragged.hh, H - dragged.hh)
+      const { ex, ey } = extents(dragged)
+      const nx = clamp(p.x + dragged.grabX, ex, W - ex)
+      const ny = clamp(p.y + dragged.grabY, ey, H - ey)
       const now = performance.now()
       const dt = (now - lastT) / 1000
       if (dt > 0) {
@@ -315,7 +331,7 @@ export function useStickerPhysics(sectionRef) {
     const onResize = () => {
       W = section.clientWidth
       H = section.clientHeight
-      floorY = aboutEl ? aboutEl.offsetTop - 6 : H
+      floorY = H - FLOOR_INSET
       bodies.forEach((b) => {
         b.cx = clamp(b.cx, b.hw, W - b.hw)
         b.cy = clamp(b.cy, b.hh, H - b.hh)
