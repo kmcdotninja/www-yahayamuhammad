@@ -49,6 +49,24 @@ export function useStickerPhysics(sectionRef) {
     const FLOOR_INSET = 2 // sit a hair above the 1px border, not through it
     let floorY = H - FLOOR_INSET
 
+    // Keep-out boxes: the bio blurb + the scroll link. Stickers rest on top of
+    // these rather than covering the text (see the raised support surface in
+    // integrate). Measured with a little padding so nothing sits flush on words.
+    const OBSTACLE_PAD = 12
+    const measureObstacles = () => {
+      const secRect = section.getBoundingClientRect()
+      return [...section.querySelectorAll('.introC__bio, .introC__scroll')].map((el) => {
+        const r = el.getBoundingClientRect()
+        return {
+          left: r.left - secRect.left - OBSTACLE_PAD,
+          top: r.top - secRect.top - OBSTACLE_PAD,
+          right: r.right - secRect.left + OBSTACLE_PAD,
+          bottom: r.bottom - secRect.top + OBSTACLE_PAD,
+        }
+      })
+    }
+    let obstacles = measureObstacles()
+
     // Build a body per sticker. offsetWidth/Height are the laid-out size and
     // don't depend on the transform we're about to drive, so they're safe to
     // read now (and the size comes from CSS, not the yet-to-decode image).
@@ -61,6 +79,7 @@ export function useStickerPhysics(sectionRef) {
       el.style.transition = 'none'
       el.style.transformOrigin = '50% 50%'
       el.style.willChange = 'transform'
+      el.style.backfaceVisibility = 'hidden' // keep the promoted layer stable
       const w = el.offsetWidth
       const h = el.offsetHeight
       return {
@@ -70,6 +89,10 @@ export function useStickerPhysics(sectionRef) {
         hw: w / 2,
         hh: h / 2,
         r: Math.min(w, h) * 0.46, // collision circle radius
+        // Upright bodies (the face) never tumble — they self-right to a small
+        // lean instead of resting at whatever angle they land.
+        upright: el.hasAttribute('data-upright'),
+        uprightTarget: 0,
         cx: 0,
         cy: 0,
         vx: 0,
@@ -91,13 +114,16 @@ export function useStickerPhysics(sectionRef) {
     const spawn = (b, i) => {
       b.hw = b.w / 2
       b.hh = b.h / 2
+      // Upright bodies settle to a subtle, per-load lean; everything else can
+      // land at any angle.
+      b.uprightTarget = b.upright ? rand(-7, 7) : 0
       if (reduced) {
         // Reduced motion: no drop, no bounce. Rest them in a tidy spread near
         // the shelf; they're still draggable, just without autonomous motion.
         b.cx = clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
         b.cy = clamp(floorY - b.hh, b.hh, H - b.hh)
         b.vx = b.vy = b.spin = 0
-        b.angle = rand(-6, 6)
+        b.angle = b.upright ? b.uprightTarget : rand(-6, 6)
         b.enteredTop = true
         b.sleeping = true
       } else {
@@ -107,8 +133,8 @@ export function useStickerPhysics(sectionRef) {
         b.cy = -b.hh - rand(40, 40 + H * 0.7)
         b.vx = rand(-140, 140)
         b.vy = rand(0, 160)
-        b.angle = rand(-25, 25)
-        b.spin = rand(-300, 300)
+        b.angle = b.upright ? b.uprightTarget : rand(-25, 25)
+        b.spin = b.upright ? 0 : rand(-300, 300)
         b.enteredTop = false
         b.sleeping = false
       }
@@ -151,6 +177,13 @@ export function useStickerPhysics(sectionRef) {
       b.cy += b.vy * dt
       b.angle += b.spin * dt
 
+      // Upright bodies (the face) don't spin — they continuously ease back to
+      // their small resting lean, so no bounce or shove can leave one inverted.
+      if (b.upright) {
+        b.spin = 0
+        b.angle += (b.uprightTarget - b.angle) * Math.min(1, dt * 7)
+      }
+
       const bounce = reduced ? 0 : WALL_BOUNCE
 
       // Half-extents of the ROTATED card along each axis (how far its farthest
@@ -182,12 +215,19 @@ export function useStickerPhysics(sectionRef) {
         wake(b)
       }
 
-      // Floor
-      if (b.cy + ey > floorY) {
-        b.cy = floorY - ey
+      // Support surface: the bottom line, but raised to the TOP of a keep-out
+      // box (the bio / scroll text) wherever the body's width overlaps one — so
+      // the pile settles on a ledge above the words instead of covering them.
+      let supportY = floorY
+      for (let k = 0; k < obstacles.length; k++) {
+        const o = obstacles[k]
+        if (b.cx + ex > o.left && b.cx - ex < o.right) supportY = Math.min(supportY, o.top)
+      }
+      if (b.cy + ey > supportY) {
+        b.cy = supportY - ey
         b.vy = -b.vy * bounce
         b.vx *= FLOOR_FRICTION
-        b.spin = b.spin * 0.6 - b.vx * SPIN_FROM_SLIDE
+        if (!b.upright) b.spin = b.spin * 0.6 - b.vx * SPIN_FROM_SLIDE
         // Settle: once slow on the floor, bleed off the last motion and sleep
         // so the pile doesn't shiver forever.
         if (Math.abs(b.vy) < REST_SPEED && Math.abs(b.vx) < REST_SPEED) {
@@ -253,14 +293,17 @@ export function useStickerPhysics(sectionRef) {
         wake(b)
       }
       const tangential = rvx * -ny + rvy * nx
-      if (aMov) a.spin += tangential * 0.02
-      if (bMov) b.spin -= tangential * 0.02
+      if (aMov && !a.upright) a.spin += tangential * 0.02
+      if (bMov && !b.upright) b.spin -= tangential * 0.02
     }
 
     const render = (b) => {
-      b.el.style.transform = `translate(${(b.cx - b.hw).toFixed(2)}px, ${(
+      // translate3d (not translate) keeps each sticker on its own compositor
+      // layer, so a move is a cheap GPU transform instead of repainting it and
+      // the headline underneath it every frame — that repaint was the lag.
+      b.el.style.transform = `translate3d(${(b.cx - b.hw).toFixed(2)}px, ${(
         b.cy - b.hh
-      ).toFixed(2)}px) rotate(${b.angle.toFixed(2)}deg)`
+      ).toFixed(2)}px, 0) rotate(${b.angle.toFixed(2)}deg)`
     }
     bodies.forEach(render)
 
@@ -317,7 +360,7 @@ export function useStickerPhysics(sectionRef) {
       b.enteredTop = true
       b.vx = clamp(b.tvx, -MAX_SPEED, MAX_SPEED)
       b.vy = clamp(b.tvy, -MAX_SPEED, MAX_SPEED)
-      b.spin += clamp(b.vx * 0.08, -420, 420)
+      if (!b.upright) b.spin += clamp(b.vx * 0.08, -420, 420)
       b.restFrames = 0
       b.el.classList.remove('is-dragging')
       dragged = null
@@ -332,16 +375,22 @@ export function useStickerPhysics(sectionRef) {
       W = section.clientWidth
       H = section.clientHeight
       floorY = H - FLOOR_INSET
+      obstacles = measureObstacles()
       bodies.forEach((b) => {
         b.cx = clamp(b.cx, b.hw, W - b.hw)
         b.cy = clamp(b.cy, b.hh, H - b.hh)
       })
     }
     window.addEventListener('resize', onResize)
+    // The bio uses a web font (Instrument Sans); its box shifts when that swaps
+    // in, so re-measure the keep-out zones once fonts are ready.
+    document.fonts?.ready.then(() => {
+      obstacles = measureObstacles()
+    })
 
     // ---- Loop ----
     let raf = 0
-    let prev = performance.now()
+    let prev = 0
     const frame = (now) => {
       let dt = (now - prev) / 1000
       prev = now
@@ -355,9 +404,28 @@ export function useStickerPhysics(sectionRef) {
       for (let i = 0; i < bodies.length; i++) render(bodies[i])
       raf = requestAnimationFrame(frame)
     }
-    raf = requestAnimationFrame(frame)
+
+    // Hold the drop until the sticker art has decoded, so the browser isn't
+    // rasterizing heavy SVGs (the traced portrait especially) on the same
+    // frames the fall animates — that decode contention is what stutters the
+    // first second. The stickers wait off-screen above the top edge until then,
+    // so nothing visibly freezes; a short timeout caps the wait for slow assets.
+    let started = false
+    const start = () => {
+      if (started) return
+      started = true
+      clearTimeout(startTimer)
+      prev = performance.now() // reset so the first dt isn't the whole decode wait
+      raf = requestAnimationFrame(frame)
+    }
+    Promise.allSettled(els.map((el) => (el.decode ? el.decode() : Promise.resolve()))).then(
+      start,
+    )
+    const startTimer = setTimeout(start, 300)
 
     return () => {
+      started = true // no-op a late decode callback after unmount
+      clearTimeout(startTimer)
       cancelAnimationFrame(raf)
       els.forEach((el) => el.removeEventListener('pointerdown', onDown))
       window.removeEventListener('pointermove', onMove)

@@ -36,28 +36,22 @@
   z-index: 1;
 }
 
-/* ---- Decorative stickers ---- */
-/* Anchored to the headline's first line on desktop; the small angles
-   give them that "tossed onto the page" feel. z-index sits above the
-   headline so the stickers read as physically placed on top of the
-   words. Hidden under the 901px breakpoint where the mobile Hero
-   variant takes over. */
+/* ---- Physics stickers ---- */
+/* Grab-and-throwable objects that drop in and bounce on load. useStickerPhysics
+   owns their placement (an inline transform written each frame), so the rules
+   below only set each sticker's rendered size; height stays auto from the
+   intrinsic ratio. They sit above the headline and hide under 901px where the
+   mobile <Hero> variant takes over. */
 .introC__sticker {
   position: absolute;
-  /* Grab-and-throwable: useStickerPhysics simulates them and owns placement. */
   pointer-events: auto;
   cursor: grab;
-  /* The drag is pointer-driven, so the browser must not claim the gesture for
-     panning/zooming on touch. */
+  /* Pointer-driven drag — the browser must not claim the gesture for pan/zoom. */
   touch-action: none;
   user-select: none;
   -webkit-user-drag: none;
   z-index: 4;
   height: auto;
-  /* Drag offset (--dx/--dy, written per-frame by the hook) composed with the
-     resting lean (--rot, set per sticker below) — kept as separate custom
-     properties so dragging never overwrites the tilt, and vice versa. */
-  transform: translate3d(var(--dx, 0px), var(--dy, 0px), 0) rotate(var(--rot, 0deg));
 }
 
 .introC__sticker:active,
@@ -65,97 +59,32 @@
   cursor: grabbing;
 }
 
-/* Lift the one being dragged above its sibling so they can be crossed over. */
+/* Lift the one being dragged above its siblings so they can be crossed over. */
 .introC__sticker.is-dragging {
   z-index: 5;
 }
 
-/* Thumbtack — sits over the "P" of PRODUCT (first line, far left).
-   Tilted to feel like it was actually pressed into the page. */
-.introC__sticker--pin {
-  width: clamp(64px, 7vw, 110px);
-  top: clamp(100px, 13vh, 130px);
-  left: calc(var(--rail) + clamp(8px, 1vw, 28px));
-  --rot: -12deg;
-}
-
-/* Brain doodle — trails the END of the last headline line rather than sitting
-   on top of it. Wider native aspect, so it gets a bigger width target. */
-.introC__sticker--brain {
-  width: clamp(140px, 11vw, 20px);
-  /* Track the third line down the page: the headline starts at the section's
-     116px padding plus its own top margin, and each line box is 114px
-     (112px x 1.02), so line three begins ~228px into the block. */
-  top: calc(clamp(40px, 8vh, 88px) + 350px);
-  /* "FROM CANVAS TO CODE" ends at ~911px from the section's left edge at the
-     112px size (measured), so this clears it with a small gap. Below 1281px
-     the media query hands positioning over to `right` instead. */
-  left: 930px;
-  --rot: -2deg;
-}
-
-/* "I'm a designer" — parks in the empty gutter to the right of the headline's
-   short first line, well clear of where line two ends. */
-.introC__sticker--designer {
-  width: clamp(140px, 13vw, 200px);
-  top: clamp(96px, 13vh, 150px);
-  right: clamp(var(--rail), 7vw, 130px);
-  --rot: 7deg;
-}
-
-/* The lower two hang off the section's BOTTOM rather than a fixed offset from
-   the top: the hero is sized in svh, so bottom-anchoring keeps them a constant
-   distance above the bio/scroll row at any window height. */
-
-/* "Portfolio website" — wide wordmark filling the band under the headline. */
-.introC__sticker--portfolio {
-  width: clamp(180px, 19vw, 280px);
-  bottom: clamp(110px, 16vh, 190px);
-  left: calc(var(--rail) + clamp(8px, 3vw, 60px));
-  --rot: -5deg;
-}
-
-/* Open book — balances the wordmark on the opposite side. */
-.introC__sticker--book {
-  width: clamp(100px, 9vw, 140px);
-  bottom: clamp(130px, 19vh, 220px);
-  right: clamp(var(--rail), 11vw, 200px);
-  --rot: 9deg;
-}
-
-@media (max-width: 1280px) {
-  .introC__sticker--brain {
-    /* Headline column gets tighter; pin brain to a percentage instead
-       of pixel target so it tracks the shrinking line length. */
-    left: auto;
-    right: clamp(var(--rail), 12vw, 18vw);
-  }
-}
+/* Per-sticker size only. */
+.introC__sticker--pin { width: clamp(52px, 5.5vw, 88px); }
+.introC__sticker--brain { width: clamp(118px, 10vw, 150px); }
+.introC__sticker--designer { width: clamp(150px, 12.5vw, 190px); }
+.introC__sticker--kudi { width: clamp(150px, 13vw, 200px); }
+.introC__sticker--portfolio { width: clamp(170px, 17vw, 250px); }
+.introC__sticker--book { width: clamp(96px, 8.5vw, 128px); }
+.introC__sticker--face { width: clamp(104px, 9.5vw, 148px); }
 
 @media (max-width: 1180px) {
-  /* Not enough room for the full collage once the headline eats the width —
-     drop the two decorative extras and keep the identity one. */
+  /* A crowd once the headline eats the width — thin the pile to the core
+     identity stickers so it doesn't jam. */
+  .introC__sticker--kudi,
   .introC__sticker--portfolio,
   .introC__sticker--book {
     display: none;
   }
 }
 
-@media (max-width: 1100px) {
-  .introC__sticker--pin {
-    width: clamp(54px, 6vw, 84px);
-    left: clamp(var(--rail), 2vw, 24px);
-  }
-  .introC__sticker--brain {
-    width: clamp(110px, 11vw, 160px);
-    top: clamp(320px, 43vh, 420px);
-    right: clamp(var(--rail), 6vw, 64px);
-  }
-}
-
 @media (max-width: 900px) {
-  /* Below 901px the App swaps to the left-aligned <Hero> variant — these
-     centered stickers would be misaligned with that layout. */
+  /* Below 901px the App swaps to the left-aligned <Hero> variant. */
   .introC__sticker {
     display: none;
   }
