@@ -3,7 +3,6 @@ import './Hero.css'
 import TopNav from './TopNav.jsx'
 import RevealHeadline from './RevealHeadline.jsx'
 import HeroStickers from './HeroStickers.jsx'
-import StickerInput from './StickerInput.jsx'
 import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 
 // On phones (≤760px — the same cutoff the headline font uses) the display is
@@ -37,9 +36,9 @@ export default function Hero() {
   const HEADLINE_LINES = isPhone ? PHONE_LINES : TABLET_LINES
 
   // Same drop-in physics as the desktop hero, tuned smaller via the mobile
-  // sticker sizes in HeroStickers.css. spawnText adds a typed text box.
+  // sticker sizes in HeroStickers.css. No typed-sticker input on mobile.
   const sectionRef = useRef(null)
-  const { spawnText } = useStickerPhysics(sectionRef)
+  useStickerPhysics(sectionRef)
 
   return (
     <section className="intro" ref={sectionRef}>
@@ -49,10 +48,9 @@ export default function Hero() {
         Yahaya Muhammad — Product Designer & Engineer
       </h1>
 
-      {/* Physics stickers — fall in and bounce on load, grab-and-throwable. The
-          input pill is itself a tossable sticker; typing drops a text box in. */}
+      {/* Physics stickers — fall in and bounce on load, grab-and-throwable.
+          (The typed-sticker input pill is desktop-only.) */}
       <HeroStickers />
-      <StickerInput onSubmit={spawnText} />
 
       <RevealHeadline className="intro__big" lines={HEADLINE_LINES} />
 
