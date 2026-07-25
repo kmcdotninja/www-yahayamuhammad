@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './Hero.css'
 import TopNav from './TopNav.jsx'
 import RevealHeadline from './RevealHeadline.jsx'
+import HeroStickers from './HeroStickers.jsx'
 import { useSnd } from '../hooks/useSnd.js'
+import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 
 // On phones (≤760px — the same cutoff the headline font uses) the display is
 // so large that each word wants its own line, so we author the breaks
@@ -36,22 +38,33 @@ export default function Hero() {
 
   const HEADLINE_LINES = isPhone ? PHONE_LINES : TABLET_LINES
 
+  // Same drop-in physics as the desktop hero, tuned smaller via the mobile
+  // sticker sizes in HeroStickers.css.
+  const sectionRef = useRef(null)
+  useStickerPhysics(sectionRef)
+
   return (
-    <section className="intro">
+    <section className="intro" ref={sectionRef}>
       <TopNav />
 
       <h1 className="sr-only">
         Yahaya Muhammad — Product Designer & Engineer
       </h1>
+
+      {/* Physics stickers — fall in and bounce on load, grab-and-throwable.
+          data-sticker-keepout marks the text they rest above rather than cover. */}
+      <HeroStickers />
+
       <RevealHeadline className="intro__big" lines={HEADLINE_LINES} />
 
       <div className="intro__about" data-reveal>
-        <p className="intro__bio">
+        <p className="intro__bio" data-sticker-keepout>
           Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
         </p>
         <a
           href="#work"
           className="intro__scroll"
+          data-sticker-keepout
           onClick={() => play(SOUNDS.BUTTON)}
         >
           ↓ SCROLL FOR MORE

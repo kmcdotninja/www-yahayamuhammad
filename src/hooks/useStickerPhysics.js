@@ -37,7 +37,7 @@ export function useStickerPhysics(sectionRef) {
   useLayoutEffect(() => {
     const section = sectionRef.current
     if (!section) return
-    const els = [...section.querySelectorAll('.introC__sticker')].filter(
+    const els = [...section.querySelectorAll('.hero-sticker')].filter(
       (el) => getComputedStyle(el).display !== 'none',
     )
     if (!els.length) return
@@ -55,7 +55,7 @@ export function useStickerPhysics(sectionRef) {
     const OBSTACLE_PAD = 12
     const measureObstacles = () => {
       const secRect = section.getBoundingClientRect()
-      return [...section.querySelectorAll('.introC__bio, .introC__scroll')].map((el) => {
+      return [...section.querySelectorAll('[data-sticker-keepout]')].map((el) => {
         const r = el.getBoundingClientRect()
         return {
           left: r.left - secRect.left - OBSTACLE_PAD,

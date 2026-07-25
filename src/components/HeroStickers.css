@@ -1,0 +1,55 @@
+/* ---- Physics stickers ---- */
+/* Grab-and-throwable objects that drop in and bounce on load, shared by the
+   desktop and mobile heroes. useStickerPhysics owns their placement (an inline
+   transform written each frame), so the rules below only set each sticker's
+   rendered size; height stays auto from the intrinsic ratio. They sit above the
+   headline. */
+.hero-sticker {
+  position: absolute;
+  pointer-events: auto;
+  cursor: grab;
+  /* Pointer-driven drag — the browser must not claim the gesture for pan/zoom. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  z-index: 4;
+  height: auto;
+}
+
+.hero-sticker:active,
+.hero-sticker.is-dragging {
+  cursor: grabbing;
+}
+
+/* Lift the one being dragged above its siblings so they can be crossed over. */
+.hero-sticker.is-dragging {
+  z-index: 5;
+}
+
+/* Per-sticker size (desktop). */
+.hero-sticker--pin { width: clamp(52px, 5.5vw, 88px); }
+.hero-sticker--brain { width: clamp(118px, 10vw, 150px); }
+.hero-sticker--designer { width: clamp(150px, 12.5vw, 190px); }
+.hero-sticker--kudi { width: clamp(150px, 13vw, 200px); }
+.hero-sticker--portfolio { width: clamp(170px, 17vw, 250px); }
+.hero-sticker--book { width: clamp(96px, 8.5vw, 128px); }
+.hero-sticker--face { width: clamp(104px, 9.5vw, 148px); }
+
+@media (max-width: 1180px) {
+  /* A crowd once the headline eats the width — thin the pile to the core
+     identity stickers so it doesn't jam. This also carries down to mobile. */
+  .hero-sticker--kudi,
+  .hero-sticker--portfolio,
+  .hero-sticker--book {
+    display: none;
+  }
+}
+
+/* Mobile: the four remaining stickers, scaled down so they seat in the short
+   band between the headline and the bio without crowding either. */
+@media (max-width: 900px) {
+  .hero-sticker--pin { width: clamp(34px, 9vw, 46px); }
+  .hero-sticker--brain { width: clamp(62px, 17vw, 92px); }
+  .hero-sticker--designer { width: clamp(74px, 21vw, 108px); }
+  .hero-sticker--face { width: clamp(64px, 18vw, 88px); }
+}

@@ -10,6 +10,8 @@
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   gap: 32px;
+  /* Containing block for the absolutely-positioned physics stickers. */
+  position: relative;
 }
 
 /* ============ STICKY NAV ============ */

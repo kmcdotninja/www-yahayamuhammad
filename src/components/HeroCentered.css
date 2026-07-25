@@ -36,59 +36,7 @@
   z-index: 1;
 }
 
-/* ---- Physics stickers ---- */
-/* Grab-and-throwable objects that drop in and bounce on load. useStickerPhysics
-   owns their placement (an inline transform written each frame), so the rules
-   below only set each sticker's rendered size; height stays auto from the
-   intrinsic ratio. They sit above the headline and hide under 901px where the
-   mobile <Hero> variant takes over. */
-.introC__sticker {
-  position: absolute;
-  pointer-events: auto;
-  cursor: grab;
-  /* Pointer-driven drag — the browser must not claim the gesture for pan/zoom. */
-  touch-action: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  z-index: 4;
-  height: auto;
-}
-
-.introC__sticker:active,
-.introC__sticker.is-dragging {
-  cursor: grabbing;
-}
-
-/* Lift the one being dragged above its siblings so they can be crossed over. */
-.introC__sticker.is-dragging {
-  z-index: 5;
-}
-
-/* Per-sticker size only. */
-.introC__sticker--pin { width: clamp(52px, 5.5vw, 88px); }
-.introC__sticker--brain { width: clamp(118px, 10vw, 150px); }
-.introC__sticker--designer { width: clamp(150px, 12.5vw, 190px); }
-.introC__sticker--kudi { width: clamp(150px, 13vw, 200px); }
-.introC__sticker--portfolio { width: clamp(170px, 17vw, 250px); }
-.introC__sticker--book { width: clamp(96px, 8.5vw, 128px); }
-.introC__sticker--face { width: clamp(104px, 9.5vw, 148px); }
-
-@media (max-width: 1180px) {
-  /* A crowd once the headline eats the width — thin the pile to the core
-     identity stickers so it doesn't jam. */
-  .introC__sticker--kudi,
-  .introC__sticker--portfolio,
-  .introC__sticker--book {
-    display: none;
-  }
-}
-
-@media (max-width: 900px) {
-  /* Below 901px the App swaps to the left-aligned <Hero> variant. */
-  .introC__sticker {
-    display: none;
-  }
-}
+/* Sticker styles live in HeroStickers.css (shared with the mobile hero). */
 
 .introC__about {
   display: flex;
