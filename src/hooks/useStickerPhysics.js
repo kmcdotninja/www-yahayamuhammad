@@ -1,0 +1,354 @@
+import { useLayoutEffect } from 'react'
+import { useReducedMotion } from './useReducedMotion.js'
+
+// Turns the hero stickers into physical objects: they drop in from above the
+// top edge on every load, bounce off the four walls of the section, collide
+// with each other, and can be grabbed and flung — the throw carries the
+// pointer's velocity so a hard toss ricochets off the walls before settling.
+//
+// It's a small hand-rolled solver rather than a physics library: five bodies in
+// a box is cheap, and a dependency (matter.js is ~85KB) isn't worth it on the
+// home hero. Bodies are AABBs for wall contact and approximated as circles for
+// body-to-body contact — plenty for stickers.
+//
+// Positions are driven entirely by an inline `transform` written each frame, so
+// the CSS anchor rules (--pin/--brain/…) only decide the intrinsic size here;
+// the solver owns the placement.
+
+const GRAVITY = 3000 // px/s²
+const WALL_BOUNCE = 0.62 // energy kept on a wall hit (0 = dead, 1 = perfect)
+const BODY_BOUNCE = 0.4 // energy kept when two stickers collide
+const WALL_FRICTION = 0.9 // tangential speed kept on a side/top hit
+const FLOOR_FRICTION = 0.84 // horizontal speed kept per floor hit (drag to rest)
+const AIR = 0.12 // linear drag per second
+const SPIN_AIR = 0.9 // angular drag per second
+const SPIN_FROM_SLIDE = 0.06 // floor sliding → roll
+const MAX_SPEED = 3600 // clamp so a violent fling can't tunnel through a wall
+const REST_SPEED = 14 // below this on the floor, start settling
+const SLEEP_FRAMES = 22 // frames at rest before a body sleeps (stops jittering)
+const SUBSTEPS = 2 // integration substeps per frame (wall stability)
+
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v)
+const rand = (lo, hi) => lo + Math.random() * (hi - lo)
+
+export function useStickerPhysics(sectionRef) {
+  const reduced = useReducedMotion()
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+    const els = [...section.querySelectorAll('.introC__sticker')].filter(
+      (el) => getComputedStyle(el).display !== 'none',
+    )
+    if (!els.length) return
+
+    let W = section.clientWidth
+    let H = section.clientHeight
+    // Rest the pile on the shelf just above the bio/scroll row so it stays
+    // readable, and treat that as the floor. Falls back to the true bottom.
+    const aboutEl = section.querySelector('.introC__about')
+    let floorY = aboutEl ? aboutEl.offsetTop - 6 : H
+
+    // Build a body per sticker. offsetWidth/Height are the laid-out size and
+    // don't depend on the transform we're about to drive, so they're safe to
+    // read now (and the size comes from CSS, not the yet-to-decode image).
+    const bodies = els.map((el) => {
+      el.style.left = '0px'
+      el.style.top = '0px'
+      el.style.right = 'auto'
+      el.style.bottom = 'auto'
+      el.style.margin = '0'
+      el.style.transition = 'none'
+      el.style.transformOrigin = '50% 50%'
+      el.style.willChange = 'transform'
+      const w = el.offsetWidth
+      const h = el.offsetHeight
+      return {
+        el,
+        w,
+        h,
+        hw: w / 2,
+        hh: h / 2,
+        r: Math.min(w, h) * 0.46, // collision circle radius
+        cx: 0,
+        cy: 0,
+        vx: 0,
+        vy: 0,
+        angle: 0,
+        spin: 0,
+        enteredTop: false,
+        dragging: false,
+        sleeping: false,
+        restFrames: 0,
+        // throw estimation while dragging
+        grabX: 0,
+        grabY: 0,
+        tvx: 0,
+        tvy: 0,
+      }
+    })
+
+    const spawn = (b, i) => {
+      b.hw = b.w / 2
+      b.hh = b.h / 2
+      if (reduced) {
+        // Reduced motion: no drop, no bounce. Rest them in a tidy spread near
+        // the shelf; they're still draggable, just without autonomous motion.
+        b.cx = clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
+        b.cy = clamp(floorY - b.hh, b.hh, H - b.hh)
+        b.vx = b.vy = b.spin = 0
+        b.angle = rand(-6, 6)
+        b.enteredTop = true
+        b.sleeping = true
+      } else {
+        b.cx = clamp(rand(b.hw, W - b.hw), b.hw, W - b.hw)
+        // Stagger start heights above the top edge so they arrive in a loose
+        // sequence rather than a single curtain.
+        b.cy = -b.hh - rand(40, 40 + H * 0.7)
+        b.vx = rand(-140, 140)
+        b.vy = rand(0, 160)
+        b.angle = rand(-25, 25)
+        b.spin = rand(-300, 300)
+        b.enteredTop = false
+        b.sleeping = false
+      }
+      b.restFrames = 0
+    }
+    bodies.forEach(spawn)
+
+    const wake = (b) => {
+      b.sleeping = false
+      b.restFrames = 0
+    }
+
+    const integrate = (b, dt) => {
+      if (b.dragging || b.sleeping) return
+      const g = reduced ? 0 : GRAVITY
+      b.vy += g * dt
+      const drag = 1 - AIR * dt
+      b.vx *= drag
+      b.vy *= drag
+      b.spin *= 1 - SPIN_AIR * dt
+
+      // Clamp speed to stop a hard fling from tunnelling a wall in one step.
+      const sp = Math.hypot(b.vx, b.vy)
+      if (sp > MAX_SPEED) {
+        b.vx *= MAX_SPEED / sp
+        b.vy *= MAX_SPEED / sp
+      }
+
+      b.cx += b.vx * dt
+      b.cy += b.vy * dt
+      b.angle += b.spin * dt
+
+      const bounce = reduced ? 0 : WALL_BOUNCE
+
+      // Left / right walls
+      if (b.cx - b.hw < 0) {
+        b.cx = b.hw
+        b.vx = -b.vx * bounce
+        b.vy *= WALL_FRICTION
+        wake(b)
+      } else if (b.cx + b.hw > W) {
+        b.cx = W - b.hw
+        b.vx = -b.vx * bounce
+        b.vy *= WALL_FRICTION
+        wake(b)
+      }
+
+      // Top wall — only active once the body has fully dropped in, so the
+      // initial fall from above isn't bounced back out.
+      if (!b.enteredTop) {
+        if (b.cy - b.hh >= 0) b.enteredTop = true
+      } else if (b.cy - b.hh < 0) {
+        b.cy = b.hh
+        b.vy = -b.vy * bounce
+        b.vx *= WALL_FRICTION
+        wake(b)
+      }
+
+      // Floor
+      if (b.cy + b.hh > floorY) {
+        b.cy = floorY - b.hh
+        b.vy = -b.vy * bounce
+        b.vx *= FLOOR_FRICTION
+        b.spin = b.spin * 0.6 - b.vx * SPIN_FROM_SLIDE
+        // Settle: once slow on the floor, bleed off the last motion and sleep
+        // so the pile doesn't shiver forever.
+        if (Math.abs(b.vy) < REST_SPEED && Math.abs(b.vx) < REST_SPEED) {
+          b.vx *= 0.7
+          b.vy = 0
+          if (Math.abs(b.vx) < 4 && Math.abs(b.spin) < 12) {
+            b.restFrames++
+            if (b.restFrames > SLEEP_FRAMES) {
+              b.vx = 0
+              b.spin = 0
+              b.sleeping = true
+            }
+          } else {
+            b.restFrames = 0
+          }
+        } else {
+          b.restFrames = 0
+        }
+      }
+    }
+
+    // Body-to-body: circle approximation. A dragged body is treated as
+    // immovable so you can shove the others around with it.
+    const collide = (a, b) => {
+      const dx = b.cx - a.cx
+      const dy = b.cy - a.cy
+      const min = a.r + b.r
+      let dist = Math.hypot(dx, dy)
+      if (dist >= min || dist === 0) return
+      const nx = dx / dist
+      const ny = dy / dist
+      const overlap = min - dist
+      const aMov = !a.dragging
+      const bMov = !b.dragging
+      if (!aMov && !bMov) return
+      // Positional correction split by mobility.
+      if (aMov && bMov) {
+        a.cx -= nx * overlap * 0.5
+        a.cy -= ny * overlap * 0.5
+        b.cx += nx * overlap * 0.5
+        b.cy += ny * overlap * 0.5
+      } else if (aMov) {
+        a.cx -= nx * overlap
+        a.cy -= ny * overlap
+      } else {
+        b.cx += nx * overlap
+        b.cy += ny * overlap
+      }
+      // Impulse along the normal if they're approaching.
+      const rvx = b.vx - a.vx
+      const rvy = b.vy - a.vy
+      const vn = rvx * nx + rvy * ny
+      if (vn > 0) return
+      const j = -(1 + BODY_BOUNCE) * vn * 0.5
+      if (aMov) {
+        a.vx -= j * nx
+        a.vy -= j * ny
+        wake(a)
+      }
+      if (bMov) {
+        b.vx += j * nx
+        b.vy += j * ny
+        wake(b)
+      }
+      const tangential = rvx * -ny + rvy * nx
+      if (aMov) a.spin += tangential * 0.02
+      if (bMov) b.spin -= tangential * 0.02
+    }
+
+    const render = (b) => {
+      b.el.style.transform = `translate(${(b.cx - b.hw).toFixed(2)}px, ${(
+        b.cy - b.hh
+      ).toFixed(2)}px) rotate(${b.angle.toFixed(2)}deg)`
+    }
+    bodies.forEach(render)
+
+    // ---- Drag + throw ----
+    let dragged = null
+    let lastT = 0
+
+    const local = (e) => {
+      const rect = section.getBoundingClientRect()
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    }
+
+    const onDown = (e) => {
+      const b = bodies.find((body) => body.el === e.currentTarget)
+      if (!b) return
+      const p = local(e)
+      dragged = b
+      b.dragging = true
+      b.sleeping = false
+      b.grabX = b.cx - p.x
+      b.grabY = b.cy - p.y
+      b.tvx = 0
+      b.tvy = 0
+      lastT = performance.now()
+      b.el.classList.add('is-dragging')
+      b.el.setPointerCapture?.(e.pointerId)
+      e.preventDefault()
+    }
+
+    const onMove = (e) => {
+      if (!dragged) return
+      const p = local(e)
+      const nx = clamp(p.x + dragged.grabX, dragged.hw, W - dragged.hw)
+      const ny = clamp(p.y + dragged.grabY, dragged.hh, H - dragged.hh)
+      const now = performance.now()
+      const dt = (now - lastT) / 1000
+      if (dt > 0) {
+        // Smoothed pointer velocity → becomes the throw on release.
+        const ivx = (nx - dragged.cx) / dt
+        const ivy = (ny - dragged.cy) / dt
+        dragged.tvx = dragged.tvx * 0.6 + ivx * 0.4
+        dragged.tvy = dragged.tvy * 0.6 + ivy * 0.4
+      }
+      lastT = now
+      dragged.cx = nx
+      dragged.cy = ny
+    }
+
+    const onUp = () => {
+      if (!dragged) return
+      const b = dragged
+      b.dragging = false
+      b.enteredTop = true
+      b.vx = clamp(b.tvx, -MAX_SPEED, MAX_SPEED)
+      b.vy = clamp(b.tvy, -MAX_SPEED, MAX_SPEED)
+      b.spin += clamp(b.vx * 0.08, -420, 420)
+      b.restFrames = 0
+      b.el.classList.remove('is-dragging')
+      dragged = null
+    }
+
+    els.forEach((el) => el.addEventListener('pointerdown', onDown))
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+
+    const onResize = () => {
+      W = section.clientWidth
+      H = section.clientHeight
+      floorY = aboutEl ? aboutEl.offsetTop - 6 : H
+      bodies.forEach((b) => {
+        b.cx = clamp(b.cx, b.hw, W - b.hw)
+        b.cy = clamp(b.cy, b.hh, H - b.hh)
+      })
+    }
+    window.addEventListener('resize', onResize)
+
+    // ---- Loop ----
+    let raf = 0
+    let prev = performance.now()
+    const frame = (now) => {
+      let dt = (now - prev) / 1000
+      prev = now
+      if (dt > 0.05) dt = 0.05 // clamp after a tab switch / long frame
+      const sdt = dt / SUBSTEPS
+      for (let s = 0; s < SUBSTEPS; s++) {
+        for (let i = 0; i < bodies.length; i++) integrate(bodies[i], sdt)
+        for (let i = 0; i < bodies.length; i++)
+          for (let j = i + 1; j < bodies.length; j++) collide(bodies[i], bodies[j])
+      }
+      for (let i = 0; i < bodies.length; i++) render(bodies[i])
+      raf = requestAnimationFrame(frame)
+    }
+    raf = requestAnimationFrame(frame)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      els.forEach((el) => el.removeEventListener('pointerdown', onDown))
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      window.removeEventListener('resize', onResize)
+      els.forEach((el) => el.classList.remove('is-dragging'))
+    }
+  }, [sectionRef, reduced])
+}

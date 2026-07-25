@@ -44,7 +44,7 @@
    variant takes over. */
 .introC__sticker {
   position: absolute;
-  /* Grabbable: useDraggableSticker moves these around the hero. */
+  /* Grab-and-throwable: useStickerPhysics simulates them and owns placement. */
   pointer-events: auto;
   cursor: grab;
   /* The drag is pointer-driven, so the browser must not claim the gesture for
