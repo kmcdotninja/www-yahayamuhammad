@@ -450,22 +450,26 @@ export function useStickerPhysics(sectionRef) {
       freezeHandlers.push([input, onFocus, onBlur])
     })
 
-    const onResize = () => {
+    // Re-measure the box + floor and pull every body back inside using its
+    // ROTATED extents against the floor line. Runs on resize AND after late
+    // layout settles (window load, fonts) — on mobile the hero's svh height and
+    // the Jaro headline resolve after the first paint, which shifts the bottom
+    // border line; a sticker settled to the old line would otherwise dip past
+    // the new one. Clamping to floorY - ey keeps the tilted corner above it.
+    const remeasure = () => {
       W = section.clientWidth
       H = section.clientHeight
       floorY = H - FLOOR_INSET
       obstacles = measureObstacles()
       bodies.forEach((b) => {
-        b.cx = clamp(b.cx, b.hw, W - b.hw)
-        b.cy = clamp(b.cy, b.hh, H - b.hh)
+        const { ex, ey } = extents(b)
+        b.cx = clamp(b.cx, ex, Math.max(ex, W - ex))
+        b.cy = clamp(b.cy, ey, Math.max(ey, floorY - ey))
       })
     }
-    window.addEventListener('resize', onResize)
-    // The bio uses a web font (Instrument Sans); its box shifts when that swaps
-    // in, so re-measure the keep-out zones once fonts are ready.
-    document.fonts?.ready.then(() => {
-      obstacles = measureObstacles()
-    })
+    window.addEventListener('resize', remeasure)
+    window.addEventListener('load', remeasure)
+    document.fonts?.ready.then(remeasure)
 
     // ---- Loop ----
     let raf = 0
@@ -519,7 +523,8 @@ export function useStickerPhysics(sectionRef) {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onUp)
       window.removeEventListener('pointercancel', onUp)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', remeasure)
+      window.removeEventListener('load', remeasure)
       els.forEach((el) => el.classList.remove('is-dragging'))
     }
   }, [sectionRef, reduced])
