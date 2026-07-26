@@ -171,7 +171,8 @@
 
 .ab2__exp-period {
   font-family: var(--sans);
-  font-size: var(--fs-caption);
+  font-size: 20px;
+  font-weight: 500;
   line-height: 1.5;
   color: var(--text-dim);
 }
@@ -185,14 +186,15 @@
 .ab2__exp-role-title {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: var(--fs-h3);
+  font-size: 20px;
   line-height: 1.4;
   color: var(--text);
 }
 
 .ab2__exp-company {
   font-family: var(--sans);
-  font-size: var(--fs-caption);
+  font-size: 20px;
+  font-weight: 400;
   line-height: 1.4;
   color: var(--text-dim);
 }
@@ -201,7 +203,8 @@
   margin: 0;
   max-width: 62ch;
   font-family: var(--sans);
-  font-size: var(--fs-body);
+  font-size: 20px;
+  font-weight: 400;
   line-height: 1.6;
   color: var(--text-dim);
 }
