@@ -48,7 +48,7 @@ const EXPERIENCE = [
   },
 ]
 
-// Life gallery –every remaining photo, shown at its native aspect ratio in a
+// Life gallery: every remaining photo, shown at its native aspect ratio in a
 // masonry so sizes vary naturally instead of being cropped to a uniform box.
 // Referenced as .webp so <Picture> derives the .avif sibling.
 const GALLERY = [
@@ -90,7 +90,7 @@ const APPROACH = [
     w: 433,
     h: 360,
     title: 'Learn & give back',
-    body: 'I keep learning across design and engineering, and mentor the next wave of designers at Friends of Figma, Kano.',
+    body: 'I keep learning across design and engineering, and give back by mentoring the designers coming up behind me.',
   },
 ]
 
@@ -138,7 +138,7 @@ export default function AboutPage2() {
     let raf = 0
     let last = 0
     let groupWidth = 0
-    const SPEED = reduced ? 0 : 42 // px/s –gentle drift
+    const SPEED = reduced ? 0 : 42 // px/s, gentle drift
 
     // Two identical halves, so one group is exactly half the track.
     const measure = () => {
