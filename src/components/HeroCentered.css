@@ -27,8 +27,8 @@
      >=966px it resolves to the full 112px. About + Playground heads share this
      token so all page heroes match. */
   font-size: var(--fs-hero);
-  line-height: 0.85;
-  letter-spacing: -0.02em;
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-display);
   color: #fff;
   text-transform: uppercase;
   text-align: left;

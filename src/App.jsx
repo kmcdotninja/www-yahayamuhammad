@@ -22,6 +22,12 @@ const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 // Loader (and its 3D dependency) is gated behind a runtime flag — only
 // pull it into the bundle when we actually decide to mount it.
 const Loader = lazy(() => import('./components/Loader.jsx'))
+// Dev design panel — only its chunk loads, and only when ?panel / the flag is set.
+const DesignPanel = lazy(() => import('./components/DesignPanel.jsx'))
+const PANEL_ON =
+  typeof window !== 'undefined' &&
+  (new URLSearchParams(window.location.search).has('panel') ||
+    localStorage.getItem('design-panel') === '1')
 
 // Lightweight @vercel/speed-insights wrapper that defers the import until
 // the page is idle, so the analytics script doesn't fight for the main
@@ -168,6 +174,11 @@ export default function App() {
       {analyticsReady && (
         <Suspense fallback={null}>
           <SpeedInsightsLazy />
+        </Suspense>
+      )}
+      {PANEL_ON && (
+        <Suspense fallback={null}>
+          <DesignPanel />
         </Suspense>
       )}
     </div>

@@ -19,8 +19,8 @@
   font-family: var(--display);
   font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  line-height: 0.85;
+  letter-spacing: var(--ls-display);
+  line-height: var(--lh-hero);
   color: #fff;
   /* Shared page-hero size — same as the home hero and Playground. */
   font-size: var(--fs-hero);
@@ -32,7 +32,7 @@
   margin: clamp(28px, 4vw, 56px) 0 0 auto;
   max-width: 460px;
   font-family: var(--sans);
-  font-size: 18px;
+  font-size: var(--fs-body);
   line-height: 1.55;
   color: var(--text);
 }
@@ -90,7 +90,7 @@
   letter-spacing: -0.02em;
   line-height: 1.04;
   color: #fff;
-  font-size: clamp(30px, 4.8vw, 68px);
+  font-size: var(--fs-h2);
 }
 
 /* ---- My approach ---- */
@@ -126,7 +126,7 @@
   margin: 0;
   font-family: var(--sans);
   font-weight: 600;
-  font-size: 22px;
+  font-size: var(--fs-h3);
   line-height: 1.3;
   color: var(--text);
 }
@@ -134,7 +134,7 @@
 .ab2__approach-card-body {
   margin: 0;
   font-family: var(--sans);
-  font-size: 18px;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text-dim);
 }
@@ -171,7 +171,7 @@
 
 .ab2__exp-period {
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: var(--fs-caption);
   line-height: 1.5;
   color: var(--text-dim);
 }
@@ -185,14 +185,14 @@
 .ab2__exp-role-title {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: 18px;
+  font-size: var(--fs-h3);
   line-height: 1.4;
   color: var(--text);
 }
 
 .ab2__exp-company {
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: var(--fs-caption);
   line-height: 1.4;
   color: var(--text-dim);
 }
@@ -201,7 +201,7 @@
   margin: 0;
   max-width: 62ch;
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text-dim);
 }
@@ -257,7 +257,7 @@
   margin: 0;
   font-family: 'Doto', var(--sans);
   font-weight: 900;
-  font-size: 14px;
+  font-size: var(--fs-caption);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
@@ -340,11 +340,14 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
+  /* Stack the two portraits on mobile. */
   .ab2__portraits {
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
   }
   .ab2__portrait {
-    width: 48%;
+    width: 100%;
   }
 }

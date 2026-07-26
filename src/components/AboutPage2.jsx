@@ -9,11 +9,10 @@ import { useReducedMotion } from '../hooks/useReducedMotion.js'
 // /about-old for later use.
 
 const HEADLINE =
-  "I'm a product designer and engineer from Nigeria, designing and buiding digital products for the world."
+  "I'm a product designer and engineer building digital products for the world."
 
 const LEDE =
-  'I’ve designed digital products across healthcare, fintech, retail, and enterprise, from research and interaction design to shipping alongside engineering teams. I came to design from civil engineering, so I treat design both as sum of aesthetics and as a way to solve real problems, connect people, and grow businesses. I also lead and mentor designers at Friends of Figma, Kano.'
-
+  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'
 // Real experience, sourced from the LinkedIn profile export (Profile.pdf).
 const EXPERIENCE = [
   {

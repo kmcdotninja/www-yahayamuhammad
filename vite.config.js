@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'node:child_process'
+import designPanelSave from './plugins/design-panel-save.js'
 
 function getLastCommitDate() {
   try {
@@ -13,7 +14,7 @@ function getLastCommitDate() {
 }
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), designPanelSave()],
   define: {
     __LAST_COMMIT_DATE__: JSON.stringify(getLastCommitDate()),
   },

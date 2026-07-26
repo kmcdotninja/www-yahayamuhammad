@@ -17,8 +17,8 @@
   font-weight: 400;
   /* Shared page-hero size — same as the home hero and About. */
   font-size: var(--fs-hero);
-  line-height: 0.85;
-  letter-spacing: -0.02em;
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-display);
   text-transform: uppercase;
   color: #fff;
   margin: 0;

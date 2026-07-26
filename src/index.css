@@ -93,12 +93,17 @@
   --display: 'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --serif: var(--display);
 
-  /* Canonical page-hero heading size. Every page's top heading (home hero,
-     About, Playground) uses this so they stay identical. Matches the desktop
-     home hero exactly (11.6vw, capped 112px) with a mobile-safe floor. Pair it
-     with the Jaro hero recipe: weight 400, line-height 1.02, letter-spacing
-     -0.02em, UPPERCASE, #fff on dark. */
-  --fs-hero: clamp(34px, 11.6vw, 112px);
+  /* ---- Type scale (see TYPOGRAPHY.md) ----
+     Canonical page-hero size. Home, About and Playground heads all consume it so
+     they match at every breakpoint; it's redefined at the two mobile breakpoints
+     below to track the mobile home hero. */
+  --fs-hero: clamp(92px, 11.6vw, 112px);  /* page hero */
+  --fs-h2: clamp(53px, 6.4vw, 68px);      /* section titles — min 53 on mobile */
+  --fs-h3: clamp(20px, 1.8vw, 28px);      /* card / role titles (sit above body) */
+  --fs-body: clamp(18px, 1.4vw, 24px);    /* paragraphs / body — 18→24, never < 18 */
+  --fs-caption: 16px;                     /* captions / meta — never < 16 */
+  --lh-hero: 1.02;                        /* display line-height (matches hero) */
+  --ls-display: -0.02em;                  /* Jaro tracking */
 
   /* Custom SVG cursors live in /public/Cursors. Each SVG is white-fill
      with a thick black stroke, so they remain visible on both the dark
@@ -118,6 +123,15 @@
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--sans);
   cursor: var(--cursor-default);
+}
+
+/* --fs-hero tracks the mobile home hero so About/Playground match it on phones
+   (they render on all widths; the home swaps to <Hero> at <=900). */
+@media (max-width: 900px) {
+  :root { --fs-hero: clamp(28px, 9vw, 72px); }
+}
+@media (max-width: 760px) {
+  :root { --fs-hero: max(58px, 15vw); }
 }
 
 * {

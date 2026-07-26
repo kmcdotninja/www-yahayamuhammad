@@ -275,8 +275,9 @@
   font-weight: 400;
   /* Locked at 112px on tablet/desktop. The two mobile breakpoints below
      (max-width: 900px / 760px) still scale it down for phone-sized
-     viewports where 112px would overflow the rail. */
-  font-size: 112px;
+     viewports where 112px would overflow the rail. Size is the shared
+     --fs-hero token (responsive), so About/Playground match this on mobile. */
+  font-size: var(--fs-hero);
   line-height: 1.02;
   letter-spacing: -0.02em;
   color: #fff;
@@ -332,9 +333,6 @@
     gap: 14px;
     flex-wrap: wrap;
   }
-  .intro__big {
-    font-size: clamp(28px, 9vw, 72px);
-  }
   .intro__about {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -377,7 +375,6 @@
     padding-top: 80px;
   }
   .intro__big {
-    font-size: 15vw;
     margin-top: clamp(16px, 3vh, 32px);
   }
 }

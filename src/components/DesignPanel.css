@@ -1,0 +1,312 @@
+/* Design Panel — dev control surface. All values hardcoded (never token-driven)
+   so editing the site's tokens can't restyle the panel itself. */
+
+.dpanel,
+.dpanel * {
+  box-sizing: border-box;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.dpanel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 328px;
+  max-width: calc(100vw - 32px);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  background: #14120d;
+  color: #ece9e2;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Collapsed launcher — a prominent floating pill. */
+.dpanel-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 100000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px 0 14px;
+  border-radius: 999px;
+  border: 0;
+  background: #f5f3ee;
+  color: #14120d;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.dpanel-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55);
+}
+.dpanel-fab:active {
+  transform: translateY(0) scale(0.98);
+}
+.dpanel-fab__dot {
+  min-width: 18px;
+  height: 18px;
+  margin-left: 2px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #12c988;
+  color: #042418;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.dpanel__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dpanel__title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dpanel__theme {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9a968c;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+.dpanel__x {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: #ece9e2;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.dpanel__x:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dpanel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.dpanel__group {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.dpanel__group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 0;
+  color: #ece9e2;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.dpanel__group-head:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.dpanel__badge {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #b8b4aa;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+.dpanel__chev {
+  margin-left: auto;
+  color: #9a968c;
+  font-size: 10px;
+}
+
+.dpanel__rows {
+  padding: 2px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dpanel__row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.dpanel__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #cfccC4;
+}
+.dpanel__name {
+  color: #cfccc4;
+}
+.dpanel__row.is-changed .dpanel__name {
+  color: #34e5a4;
+}
+.dpanel__revert {
+  background: transparent;
+  border: 0;
+  color: #9a968c;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0 2px;
+}
+.dpanel__revert:hover {
+  color: #fff;
+}
+
+.dpanel__text {
+  width: 100%;
+  background: #0c0b08;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 7px 9px;
+  color: #ece9e2;
+  font-size: 12px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+.dpanel__text:focus {
+  outline: none;
+  border-color: rgba(52, 229, 164, 0.6);
+}
+
+.dpanel__color {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dpanel__color input[type='color'] {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+.dpanel__color .dpanel__text {
+  flex: 1;
+}
+
+.dpanel__range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dpanel__range input[type='range'] {
+  flex: 1;
+  accent-color: #12c988;
+}
+.dpanel__val {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 11px;
+  color: #b8b4aa;
+  min-width: 54px;
+  text-align: right;
+}
+
+.dpanel__note {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #8f8b81;
+}
+
+.dpanel__foot {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+}
+.dpanel__count {
+  font-size: 11px;
+  color: #9a968c;
+}
+.dpanel__actions {
+  display: flex;
+  gap: 8px;
+}
+.dpanel__btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: #ece9e2;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dpanel__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.dpanel__btn--primary {
+  background: #f5f3ee;
+  color: #14120d;
+  border-color: #f5f3ee;
+}
+.dpanel__btn--primary:hover {
+  background: #fff;
+}
+.dpanel__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.dpanel__err {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #f0a1a1;
+}
+.dpanel__disable {
+  background: transparent;
+  border: 0;
+  color: #6f6b61;
+  font-size: 11px;
+  cursor: pointer;
+  justify-self: start;
+  padding: 0;
+}
+.dpanel__disable:hover {
+  color: #cf6f6f;
+}
+
+@media (max-width: 520px) {
+  .dpanel {
+    top: auto;
+    height: 70vh;
+  }
+}
