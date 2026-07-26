@@ -18,7 +18,7 @@
   font-family: var(--display);
   font-weight: 400;
   font-size: clamp(56px, 8.4vw, 100px);
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   line-height: 0.9;
   margin: 0 0 56px;
   padding: 0 var(--pad);

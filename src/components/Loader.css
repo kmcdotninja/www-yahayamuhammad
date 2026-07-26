@@ -119,7 +119,7 @@
   font-family: var(--display);
   color: #fff;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.02em;
 }
 
 .loader__label {

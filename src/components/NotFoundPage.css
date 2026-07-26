@@ -26,7 +26,7 @@
   font-weight: 400;
   font-size: clamp(56px, 9vw, 144px);
   line-height: 0.95;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   color: #fff;
   margin: 0 0 clamp(20px, 2.5vw, 32px);

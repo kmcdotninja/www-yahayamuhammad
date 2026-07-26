@@ -75,6 +75,7 @@
   position: absolute;
   padding: 0.12em 0.16em;
   font-family: var(--display);
+  letter-spacing: -0.02em;
   font-weight: 400;
   font-size: 75px;
   line-height: 1;
