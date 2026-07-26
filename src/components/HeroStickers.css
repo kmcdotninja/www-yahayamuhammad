@@ -115,6 +115,15 @@
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
+/* A little "received" pop when a dissolving sticker's pixels stream back in. */
+@keyframes hero-input-pop {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.07); }
+}
+.hero-input.is-receiving {
+  animation: hero-input-pop 0.34s ease;
+}
+
 .hero-input__field {
   width: clamp(150px, 18vw, 210px);
   background: transparent;

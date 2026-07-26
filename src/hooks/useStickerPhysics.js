@@ -28,6 +28,7 @@ const REST_SPEED = 14 // below this on the floor, start settling
 const SLEEP_FRAMES = 22 // frames at rest before a body sleeps (stops jittering)
 const SUBSTEPS = 2 // integration substeps per frame (wall stability)
 const PLATFORM_SETTLE = 40 // input acts as a platform only once its bottom is this close to the floor
+const TEXT_TTL = 6000 // ms a typed sticker lives before it disintegrates
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v)
 const rand = (lo, hi) => lo + Math.random() * (hi - lo)
@@ -126,6 +127,8 @@ export function useStickerPhysics(sectionRef) {
     // Text boxes created at runtime via spawnText — tracked so cleanup can
     // detach and remove them (the initial `els` are owned by React).
     const dynamicEls = []
+    const vanishTimers = new Set() // pending text-sticker disintegration timers
+    const activeFX = new Set() // running disintegration animations ({ cancel })
 
     const spawn = (b, i) => {
       b.hw = b.w / 2
@@ -409,8 +412,167 @@ export function useStickerPhysics(sectionRef) {
     window.addEventListener('pointerup', onUp)
     window.addEventListener('pointercancel', onUp)
 
+    // Dissolve a sticker like an "add to cart": redraw its word to a canvas,
+    // break it into pixel particles, then fling them along arcs that stream and
+    // trail into the input pill (the "cart"), shrinking + fading as they're
+    // absorbed — with a little receive-pop on the pill.
+    const disintegrate = (b) => {
+      const el = b.el
+      const cs = getComputedStyle(el)
+      const fontSize = parseFloat(cs.fontSize) || 60
+      const strokeW = parseFloat(cs.webkitTextStrokeWidth) || fontSize * 0.16
+      let text = el.textContent || ''
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase()
+
+      const { ex, ey } = extents(b)
+      const pad = 18
+      const dpr = Math.min(1.5, window.devicePixelRatio || 1)
+
+      // Section-sized canvas so the trail can travel all the way to the input.
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.max(1, Math.round(W * dpr))
+      canvas.height = Math.max(1, Math.round(H * dpr))
+      canvas.style.cssText =
+        `position:absolute;left:0;top:0;width:${W}px;height:${H}px;pointer-events:none;z-index:9`
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        el.remove()
+        return
+      }
+
+      // Draw the word where the sticker is (rotated), then sample its region.
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.save()
+      ctx.translate(b.cx, b.cy)
+      ctx.rotate((b.angle * Math.PI) / 180)
+      ctx.font = `400 ${fontSize}px ${cs.fontFamily}`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.lineJoin = 'round'
+      ctx.lineWidth = strokeW
+      ctx.strokeStyle = '#fff'
+      ctx.strokeText(text, 0, 0)
+      ctx.fillStyle = '#000'
+      ctx.fillText(text, 0, 0)
+      ctx.restore()
+
+      const rl = clamp(Math.floor((b.cx - ex - pad) * dpr), 0, canvas.width)
+      const rt = clamp(Math.floor((b.cy - ey - pad) * dpr), 0, canvas.height)
+      const rw = Math.min(canvas.width - rl, Math.ceil((2 * ex + 2 * pad) * dpr))
+      const rh = Math.min(canvas.height - rt, Math.ceil((2 * ey + 2 * pad) * dpr))
+      if (rw <= 0 || rh <= 0) {
+        el.remove()
+        return
+      }
+      const data = ctx.getImageData(rl, rt, rw, rh).data
+
+      // Target: the input pill (the cart). No input → gentle upward drift target.
+      const tx = inputBody ? inputBody.cx : b.cx
+      const ty = inputBody ? inputBody.cy : -80
+
+      const gap = Math.max(2, Math.round(5 * dpr))
+      const cssGap = gap / dpr
+      const parts = []
+      for (let y = 0; y < rh; y += gap) {
+        for (let x = 0; x < rw; x += gap) {
+          const idx = (y * rw + x) * 4
+          if (data[idx + 3] < 40) continue
+          const sx = rl / dpr + x / dpr
+          const sy = rt / dpr + y / dpr
+          parts.push({
+            sx,
+            sy,
+            // Control point: bowed up between the sticker and the pill, so the
+            // pixels arc like something tossed into a cart.
+            mx: (sx + tx) / 2 + (Math.random() - 0.5) * 50,
+            my: (sy + ty) / 2 - 70 - Math.random() * 70,
+            r: data[idx],
+            g: data[idx + 1],
+            bl: data[idx + 2],
+            delay: Math.random() * 0.26, // spread the departure into a stream
+            dur: 0.6 + Math.random() * 0.32,
+            size: cssGap + Math.random() * 1.2,
+          })
+        }
+      }
+
+      section.appendChild(canvas)
+      el.remove()
+
+      // Pop the pill a beat after the stream sets off (the "received" feedback).
+      const pill = section.querySelector('.hero-sticker--input .hero-input')
+      if (pill) {
+        setTimeout(() => {
+          pill.classList.add('is-receiving')
+          setTimeout(() => pill.classList.remove('is-receiving'), 340)
+        }, 460)
+      }
+
+      const easeIn = (u) => u * u // accelerate toward the cart
+      let t0 = 0
+      let raf2 = 0
+      const fx = {
+        cancel: () => {
+          cancelAnimationFrame(raf2)
+          canvas.remove()
+        },
+      }
+      activeFX.add(fx)
+      const tick = (now) => {
+        if (!t0) t0 = now
+        const t = (now - t0) / 1000
+        ctx.clearRect(0, 0, W, H)
+        let alive = false
+        for (let i = 0; i < parts.length; i++) {
+          const p = parts[i]
+          const lt = t - p.delay
+          if (lt < 0) {
+            // waiting to depart — sit at rest so the word reads until it goes
+            alive = true
+            ctx.globalAlpha = 1
+            ctx.fillStyle = `rgb(${p.r},${p.g},${p.bl})`
+            ctx.fillRect(p.sx, p.sy, p.size, p.size)
+            continue
+          }
+          if (lt >= p.dur) continue
+          alive = true
+          const k = lt / p.dur
+          const u = easeIn(k)
+          const iu = 1 - u
+          // quadratic bezier: start → control → target
+          const x = iu * iu * p.sx + 2 * iu * u * p.mx + u * u * tx
+          const y = iu * iu * p.sy + 2 * iu * u * p.my + u * u * ty
+          ctx.globalAlpha = k > 0.55 ? Math.max(0, 1 - (k - 0.55) / 0.45) : 1
+          ctx.fillStyle = `rgb(${p.r},${p.g},${p.bl})`
+          const s = p.size * (1 - k * 0.75)
+          ctx.fillRect(x, y, s, s)
+        }
+        ctx.globalAlpha = 1
+        if (alive) {
+          raf2 = requestAnimationFrame(tick)
+        } else {
+          activeFX.delete(fx)
+          canvas.remove()
+        }
+      }
+      raf2 = requestAnimationFrame(tick)
+    }
+
+    // Retire a text sticker: drop its body from the sim, then disintegrate it.
+    const vanish = (b) => {
+      const idx = bodies.indexOf(b)
+      if (idx === -1) return
+      bodies.splice(idx, 1)
+      if (dragged === b) dragged = null
+      const di = dynamicEls.indexOf(b.el)
+      if (di !== -1) dynamicEls.splice(di, 1)
+      b.el.removeEventListener('pointerdown', onDown)
+      disintegrate(b) // reads the element's styles, then removes it
+    }
+
     // Spawn a text box into the pile — a real physics body that drops in,
-    // bounces, and is draggable like any other sticker.
+    // bounces, and is draggable like any other sticker. It disintegrates
+    // TEXT_TTL later.
     const spawnText = (text) => {
       const t = String(text || '').trim().slice(0, 48)
       if (!t) return
@@ -426,6 +588,11 @@ export function useStickerPhysics(sectionRef) {
       el.addEventListener('pointerdown', onDown)
       render(b) // place at its spawn point before the next frame (no 0,0 flash)
       if (!started) start() // in case the drop was still gated on decode
+      const timer = setTimeout(() => {
+        vanishTimers.delete(timer)
+        vanish(b)
+      }, TEXT_TTL)
+      vanishTimers.add(timer)
     }
     spawnRef.current = spawnText
 
@@ -511,6 +678,8 @@ export function useStickerPhysics(sectionRef) {
       spawnRef.current = null
       clearTimeout(startTimer)
       cancelAnimationFrame(raf)
+      vanishTimers.forEach(clearTimeout)
+      activeFX.forEach((fx) => fx.cancel())
       els.forEach((el) => el.removeEventListener('pointerdown', onDown))
       dynamicEls.forEach((el) => {
         el.removeEventListener('pointerdown', onDown)

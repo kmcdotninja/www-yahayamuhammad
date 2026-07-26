@@ -23,8 +23,8 @@ export default function StickerInput({ onSubmit }) {
           className="hero-input__field"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="Type something…"
-          aria-label="Type to add a sticker"
+          placeholder="Type your sticker"
+          aria-label="Type your sticker"
           maxLength={20}
           autoComplete="off"
           spellCheck={false}
