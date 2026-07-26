@@ -136,10 +136,8 @@ export function useStickerPhysics(sectionRef) {
       // Upright bodies settle to a subtle, per-load lean; everything else can
       // land at any angle.
       b.uprightTarget = b.upright ? rand(-7, 7) : 0
-      if (reduced || b.isInput) {
-        // The input starts already settled at the bottom — a stable, always-
-        // reachable control that the rest of the pile rests on top of (it's
-        // still draggable/tossable). Reduced-motion rests everything this way.
+      if (reduced) {
+        // Reduced motion: no drop — rest everything at the bottom.
         b.cx = b.isInput
           ? clamp(W * 0.6, b.hw, W - b.hw)
           : clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
@@ -148,6 +146,18 @@ export function useStickerPhysics(sectionRef) {
         b.angle = b.upright ? b.uprightTarget : rand(-6, 6)
         b.enteredTop = true
         b.sleeping = true
+      } else if (b.isInput) {
+        // The input drops in from above like the rest, but straight down onto a
+        // fixed, reachable spot — it's immovable in collisions, so it lands
+        // there rather than getting knocked into a corner — and stays upright.
+        b.cx = clamp(W * 0.6, b.hw, W - b.hw)
+        b.cy = -b.hh - rand(40, 140)
+        b.vx = 0
+        b.vy = 40
+        b.angle = b.uprightTarget
+        b.spin = 0
+        b.enteredTop = false
+        b.sleeping = false
       } else {
         b.cx = clamp(rand(b.hw, W - b.hw), b.hw, W - b.hw)
         // Stagger start heights above the top edge so they arrive in a loose
