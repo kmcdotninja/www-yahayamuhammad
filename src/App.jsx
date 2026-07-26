@@ -14,6 +14,9 @@ import { applySEO, ROUTE_SEO } from './lib/seo.js'
 // in their own chunks so users on /playground or /about don't download the
 // home-page graph and vice-versa.
 const PlaygroundPage = lazy(() => import('./components/PlaygroundPage.jsx'))
+// Live About page.
+const AboutPage2 = lazy(() => import('./components/AboutPage2.jsx'))
+// Original About page — kept for later use, parked at /about-old.
 const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
 const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 // Loader (and its 3D dependency) is gated behind a runtime flag — only
@@ -110,6 +113,12 @@ export default function App() {
       </Suspense>
     )
   } else if (renderPath === '/about') {
+    body = (
+      <Suspense fallback={null}>
+        <AboutPage2 />
+      </Suspense>
+    )
+  } else if (renderPath === '/about-old') {
     body = (
       <Suspense fallback={null}>
         <AboutPage />

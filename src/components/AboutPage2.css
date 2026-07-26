@@ -1,0 +1,349 @@
+/* About page layout (rendered at /about; original parked at /about-old).
+   Consumes the design tokens (see DESIGN.md / portfolio-design skill):
+   Jaro display type is UPPERCASE + letter-spacing:-0.02em + #fff on dark. */
+
+.ab2 {
+  background: var(--bg);
+  min-height: 100svh;
+  /* Clear the fixed TopNav (matches .about), rail-aligned side padding. */
+  padding: 156px var(--pad) clamp(80px, 10vw, 160px);
+}
+
+/* ---- Hero statement ---- */
+.ab2__hero {
+  margin-bottom: clamp(56px, 9vw, 132px);
+}
+
+.ab2__headline {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: #fff;
+  font-size: clamp(34px, 7.6vw, 116px);
+  /* Echo the reference: the first line sits indented from the left rail. */
+  text-indent: clamp(0px, 16vw, 280px);
+}
+
+.ab2__lede {
+  margin: clamp(28px, 4vw, 56px) 0 0 auto;
+  max-width: 460px;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* ---- Double portrait ---- */
+.ab2__portraits {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(10px, 1.4vw, 20px);
+  margin-bottom: clamp(52px, 8vw, 120px);
+}
+
+.ab2__portrait {
+  margin: 0;
+  width: min(340px, 42%);
+  aspect-ratio: 4 / 5;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ab2__portrait-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+/* ---- Divider ---- */
+/* Full-bleed (100vw) so it crosses the page's vertical guide rails and forms a
+   "+" at each intersection — like .hr-full and the footer/nav borders. The
+   global overflow-x:hidden on html/body clips the viewport-wide bleed. */
+.ab2__rule {
+  border: 0;
+  height: 1px;
+  width: 100vw;
+  background: var(--border);
+  margin: 0 0 clamp(40px, 6vw, 80px) 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* ---- Work experience ---- */
+.ab2__work {
+  margin-bottom: clamp(64px, 9vw, 128px);
+}
+
+.ab2__work-title,
+.ab2__approach-title {
+  margin: 0 0 clamp(24px, 3.5vw, 48px);
+  font-family: var(--display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  color: #fff;
+  font-size: clamp(30px, 4.8vw, 68px);
+}
+
+/* ---- My approach ---- */
+.ab2__approach {
+  margin-bottom: clamp(64px, 9vw, 128px);
+}
+
+.ab2__approach-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(24px, 3vw, 44px);
+}
+
+.ab2__approach-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* Sticker used as an icon — uniform height, native ratio (no border per the
+   design rule; the die-cut white contour is part of the art). */
+.ab2__approach-icon {
+  height: clamp(74px, 6.8vw, 98px);
+  width: auto;
+  object-fit: contain;
+}
+
+.ab2__approach-card-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.ab2__approach-card-body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.ab2__exp {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ab2__exp-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(96px, 0.9fr) minmax(150px, 1.3fr) minmax(0, 2.4fr);
+  gap: clamp(16px, 2vw, 32px);
+  align-items: start;
+  padding: clamp(20px, 2.6vw, 34px) 0;
+}
+
+/* A single full-bleed line closes the list below the last role (crossing the
+   vertical rails, see .ab2__rule). No line between the heading and the first
+   role, and none between individual roles. */
+.ab2__exp-row:last-child::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.ab2__exp-period {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.ab2__exp-role {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab2__exp-role-title {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.ab2__exp-company {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text-dim);
+}
+
+.ab2__exp-body {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+/* ---- Life gallery (marquee) ---- */
+/* An auto-scrolling marquee: the track drifts left forever (JS-driven transform)
+   and loops seamlessly because the photos are rendered twice. Grab to drag —
+   drift pauses while held and resumes on release. Every photo keeps its native
+   aspect ratio at a shared height (width:auto), so nothing is cropped/upscaled.
+   The container clips; the inner track carries the motion. */
+.ab2__gallery {
+  overflow: hidden;
+  cursor: var(--cursor-grab);
+  user-select: none;
+  /* Horizontal drag is ours; let vertical page scroll pass through on touch. */
+  touch-action: pan-y;
+}
+
+.ab2__gallery.is-dragging {
+  cursor: var(--cursor-grabbing);
+}
+
+.ab2__gallery-track {
+  display: flex;
+  gap: clamp(10px, 1.2vw, 18px);
+  width: max-content;
+  will-change: transform;
+}
+
+.ab2__gallery-item {
+  position: relative;
+  flex: 0 0 auto;
+  height: clamp(320px, 44vw, 560px);
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ab2__gallery-img {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+/* Doto "label-printer" caption overlaid on each photo (same face as the polaroid
+   captions), white with a soft shadow so it reads over any image. */
+.ab2__gallery-cap {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  margin: 0;
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* ---- "Drag me" cursor pill (mirrors the project grid's "Open" pill) ---- */
+.ab2__drag-pill {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  pointer-events: none;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0) translate(-50%, -50%);
+  transition: opacity 0.18s ease;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.ab2__drag-pill--visible {
+  opacity: 1;
+}
+
+[data-theme='light'] .ab2__drag-pill {
+  background: #0a0a0a;
+  color: #f5f3ee;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Jaro renders #fff on dark; swap to the ink token in light mode. */
+[data-theme='light'] .ab2__headline,
+[data-theme='light'] .ab2__work-title,
+[data-theme='light'] .ab2__approach-title {
+  color: var(--text);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .ab2__headline {
+    text-indent: 0;
+  }
+  .ab2__lede {
+    margin-left: 0;
+    max-width: 56ch;
+  }
+  .ab2__approach-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(24px, 4vw, 40px);
+  }
+}
+
+@media (max-width: 760px) {
+  .ab2 {
+    padding-top: 120px;
+  }
+  .ab2__headline {
+    font-size: clamp(30px, 11vw, 60px);
+  }
+  /* Stack each experience row: period, role, description. */
+  .ab2__exp-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .ab2__approach-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ab2__portraits {
+    gap: 8px;
+  }
+  .ab2__portrait {
+    width: 48%;
+  }
+}

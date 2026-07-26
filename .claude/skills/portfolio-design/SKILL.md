@@ -35,6 +35,14 @@ values.
 ## Layout & responsive
 - Left-align to the `--pad` rail; keep the vertical rails (`.page::before/::after`,
   z-index 4) unbroken, or put full-bleed art above them.
+- **Horizontal lines cross the rails.** Every section divider / horizontal rule
+  must be full-bleed (`width: 100vw`, centered) so it passes through the two
+  vertical guide rails and forms a `+` at each intersection — exactly like
+  `.hr-full` and the footer/nav borders. Never clip a horizontal line to the
+  `--pad` content box. Recipe: a block `<hr>` uses `width:100vw; margin-left:50%;
+  transform:translateX(-50%)`; a row separator uses an absolute `::before`/`::after`
+  with `left:50%; transform:translateX(-50%); width:100vw`. The global
+  `overflow-x:hidden` on `html,body` clips the bleed (no horizontal scroll).
 - Breakpoints in use: `1180` (thin sticker pile), `1024` (nav→drawer), **`901`
   (app swaps desktop `HeroCentered`→mobile `Hero`)**, `900`, `760`, `700`, `600`,
   `480`. Design mobile-first.

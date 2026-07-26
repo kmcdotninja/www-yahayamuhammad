@@ -87,6 +87,20 @@ These are deliberately fixed regardless of theme — they belong to physical
 - Content left-aligns to the `--pad` rail; the page has vertical guide rails at
   `--rail` (`.page::before/::after`, `z-index: 4`). Full-bleed elements that cross
   a rail must sit **above** it (see the hero stickers at `z-index: 7`).
+- **Horizontal lines cross the rails (form a `+`).** Every section divider or
+  horizontal rule is full-bleed — `width: 100vw`, centered — so it passes through
+  both vertical guide rails and reads as a `+` at each intersection, matching
+  `.hr-full`, `.footer::before`, and the nav border. Do **not** clip a horizontal
+  line to the `--pad` content box. Two equivalent recipes:
+  - **Block rule:** `width:100vw; margin-left:50%; transform:translateX(-50%)`
+    (this is `.hr-full`).
+  - **Row separator:** an absolute `::before`/`::after` on a `position:relative`
+    row — `left:50%; transform:translateX(-50%); width:100vw; height:1px;
+    background:var(--border)`.
+
+  The global `overflow-x:hidden` on `html,body` clips the viewport-wide bleed, so
+  these never introduce horizontal scroll. Both the line and the rail use
+  `var(--border)`, so the crossing pixel reads as one clean `+`.
 - **Breakpoints in use:** `1180` (thin the sticker pile), `1024` (nav → drawer),
   `901` (**app swaps desktop `HeroCentered` → mobile `Hero`**), `900` (mobile
   sticker sizes), `760` (phone headline), `700`, `600`, `480`.
