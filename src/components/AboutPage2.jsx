@@ -76,7 +76,7 @@ const APPROACH = [
     w: 284,
     h: 239,
     title: 'Sweat the craft',
-    body: 'Clear, human, and a little joyful. The details are where trust is earned, so I obsess over them.',
+    body: 'Clear, human, and joyful. The details are where trust is earned, so I obsess over them.',
   },
   {
     icon: '/playground/stickers/Door.svg',
