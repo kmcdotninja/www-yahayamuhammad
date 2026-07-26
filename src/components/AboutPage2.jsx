@@ -281,17 +281,19 @@ export default function AboutPage2() {
           <ul className="ab2__approach-grid" data-reveal-stagger>
             {APPROACH.map((a) => (
               <li className="ab2__approach-card" key={a.title}>
-                <img
-                  className="ab2__approach-icon"
-                  src={a.icon}
-                  alt=""
-                  aria-hidden="true"
-                  width={a.w}
-                  height={a.h}
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                />
+                <span className="ab2__approach-icon-wrap">
+                  <img
+                    className="ab2__approach-icon"
+                    src={a.icon}
+                    alt=""
+                    aria-hidden="true"
+                    width={a.w}
+                    height={a.h}
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                  />
+                </span>
                 <h3 className="ab2__approach-card-title">{a.title}</h3>
                 <p className="ab2__approach-card-body">{a.body}</p>
               </li>
