@@ -90,7 +90,7 @@ const APPROACH = [
     w: 433,
     h: 360,
     title: 'Learn & give back',
-    body: 'I keep learning across design and engineering, and mentor the next wave at Friends of Figma, Kano.',
+    body: 'I keep learning across design and engineering, and mentor the next wave of designers at Friends of Figma, Kano.',
   },
 ]
 
