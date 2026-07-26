@@ -15,7 +15,13 @@ const LS_ENABLED = 'design-panel'
 const LS_OVERRIDES = 'design-panel-overrides'
 
 const isEnabled = () => {
+  // Always on in dev. Otherwise localhost-only (preview) behind ?panel / a saved
+  // flag. Never on a real deployed domain, so visitors can never see it.
+  if (import.meta.env.DEV) return true
   if (typeof window === 'undefined') return false
+  const host = window.location.hostname
+  const local = /^(localhost|127\.0\.0\.1|\[?::1\]?|0\.0\.0\.0)$/.test(host)
+  if (!local) return false
   const params = new URLSearchParams(window.location.search)
   if (params.has('panel')) {
     localStorage.setItem(LS_ENABLED, '1')

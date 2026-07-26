@@ -24,10 +24,15 @@ const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 const Loader = lazy(() => import('./components/Loader.jsx'))
 // Dev design panel — only its chunk loads, and only when ?panel / the flag is set.
 const DesignPanel = lazy(() => import('./components/DesignPanel.jsx'))
-const PANEL_ON =
+// Local machine only — never on the deployed domain, so visitors can't see it.
+const IS_LOCALHOST =
   typeof window !== 'undefined' &&
-  (new URLSearchParams(window.location.search).has('panel') ||
-    localStorage.getItem('design-panel') === '1')
+  /^(localhost|127\.0\.0\.1|\[?::1\]?|0\.0\.0\.0)$/.test(window.location.hostname)
+const PANEL_ON =
+  import.meta.env.DEV ||
+  (IS_LOCALHOST &&
+    (new URLSearchParams(window.location.search).has('panel') ||
+      localStorage.getItem('design-panel') === '1'))
 
 // Lightweight @vercel/speed-insights wrapper that defers the import until
 // the page is idle, so the analytics script doesn't fight for the main
