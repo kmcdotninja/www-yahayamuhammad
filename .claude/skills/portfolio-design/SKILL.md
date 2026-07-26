@@ -26,6 +26,14 @@ values.
 - **Jaro (`var(--display)`) is UPPERCASE and always `letter-spacing: -0.02em`** —
   on every block that sets `font-family: var(--display)`. It's em-based so the
   tracking is proportional at any size.
+- **Every page's top hero heading is identical.** Home (`.introC__big`), About
+  (`.ab2__headline`), and Playground (`.pgp__title`) all use the **same recipe**:
+  `font-size: var(--fs-hero)` (`clamp(34px, 11.6vw, 112px)` — the home hero size,
+  mobile-safe), `line-height: 0.85`, `font-weight: 400`, `letter-spacing: -0.02em`,
+  UPPERCASE, `var(--display)`, `#fff` on dark. Don't give a page hero its own
+  font-size or per-breakpoint size override — consume `--fs-hero` so they never
+  drift apart. (The mobile sticker hero `.intro__big` is the one deliberate
+  exception.)
 - **On dark backgrounds, Jaro text is `#fff`** (not `var(--text)`); use a
   `[data-theme='light']` override for the light swap. Sole exception: the die-cut
   text sticker (black fill + white contour).
@@ -55,9 +63,15 @@ values.
 - Hero stickers: `useStickerPhysics.js` (hand-rolled solver, inline `translate3d`
   each frame, rotated-extent wall clamps). One "show-off" animation per view max.
 
+## Copy / writing
+- **No em dashes (`—`) in user-facing copy.** Restructure with commas, periods,
+  or parentheses instead. For ranges (e.g. dates) use an en dash (`–`), never an
+  em dash. Keep the voice plain, human, and first-person.
+
 ## Don't
 - Don't hardcode theme colors (use the tokens); don't use Jaro without `-0.02em`
   or as `var(--text)` on dark.
+- **Don't use em dashes in copy** (see Copy / writing).
 - **Don't put borders/outlines on images** (`<img>` / photo cards) — ever.
 - Don't ship animation without a reduced-motion fallback; don't stack multiple
   attention-grabbing animations in one view.

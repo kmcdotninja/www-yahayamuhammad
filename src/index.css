@@ -93,6 +93,13 @@
   --display: 'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --serif: var(--display);
 
+  /* Canonical page-hero heading size. Every page's top heading (home hero,
+     About, Playground) uses this so they stay identical. Matches the desktop
+     home hero exactly (11.6vw, capped 112px) with a mobile-safe floor. Pair it
+     with the Jaro hero recipe: weight 400, line-height 1.02, letter-spacing
+     -0.02em, UPPERCASE, #fff on dark. */
+  --fs-hero: clamp(34px, 11.6vw, 112px);
+
   /* Custom SVG cursors live in /public/Cursors. Each SVG is white-fill
      with a thick black stroke, so they remain visible on both the dark
      default theme and the light theme without needing separate files.

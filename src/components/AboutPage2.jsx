@@ -12,43 +12,43 @@ const HEADLINE =
   "I'm a product designer and engineer from Nigeria, designing and buiding digital products for the world."
 
 const LEDE =
-  'I’ve designed digital products across healthcare, fintech, retail, and enterprise — from research and interaction design through to shipping alongside engineering teams. I came to design from civil engineering, so I treat design both as sum of aesthetics and as a way to solve real problems, connect people, and grow businesses. I also lead and mentor designers at Friends of Figma, Kano.'
+  'I’ve designed digital products across healthcare, fintech, retail, and enterprise, from research and interaction design to shipping alongside engineering teams. I came to design from civil engineering, so I treat design both as sum of aesthetics and as a way to solve real problems, connect people, and grow businesses. I also lead and mentor designers at Friends of Figma, Kano.'
 
 // Real experience, sourced from the LinkedIn profile export (Profile.pdf).
 const EXPERIENCE = [
   {
-    period: 'Jul 2025 — Present',
+    period: 'Jul 2025 – Present',
     role: 'Senior Product Designer',
     company: 'Kutuby',
-    body: 'Led the design strategy — the brand, Arabic lessons & games UI, and onboarding — to make the app more engaging and functional.',
+    body: 'Led the design strategy across the brand, Arabic lessons & games UI, and onboarding, making the app more engaging and functional.',
   },
   {
-    period: 'Jan 2025 — Mar 2025',
+    period: 'Jan 2025 – Mar 2025',
     role: 'Product Designer',
     company: "Cuvris (Techstars '24)",
     body: 'Designed an AI platform to automate manual care-transition workflows.',
   },
   {
-    period: 'Apr 2022 — May 2024',
-    role: 'Product Designer',
-    company: 'PneumaCare',
-    body: 'End-to-end feature design for healthcare-provider dashboards — from requirements and user needs through prototyping, testing, and implementation with developers; grew patient booking to a 40% conversion rate.',
-  },
-  {
-    period: 'Jun 2023 — May 2026',
+    period: 'Jun 2023 – May 2026',
     role: 'UI/UX Designer',
     company: 'eHealth Africa',
     body: 'Designed user-centric interfaces for healthcare providers accessing vaccine data, turning complex datasets into interactive prototypes and contributing to the design system and component libraries.',
   },
   {
-    period: 'Mar 2020 — Dec 2021',
+    period: 'Apr 2022 – May 2024',
+    role: 'Product Designer',
+    company: 'PneumaCare',
+    body: 'End-to-end feature design for healthcare-provider dashboards, from requirements and user needs through prototyping, testing, and implementation with developers; grew patient booking to a 40% conversion rate.',
+  },
+  {
+    period: 'Mar 2020 – Dec 2021',
     role: 'Visual Designer',
     company: 'Yoda Box',
-    body: 'Visual and UI design across mobile, tablet, TV, and web for Yoda Box for kids — plus growth workshops and design-curriculum books.',
+    body: 'Visual and UI design across mobile, tablet, TV, and web for Yoda Box for kids, plus growth workshops and design-curriculum books.',
   },
 ]
 
-// Life gallery — every remaining photo, shown at its native aspect ratio in a
+// Life gallery –every remaining photo, shown at its native aspect ratio in a
 // masonry so sizes vary naturally instead of being cropped to a uniform box.
 // Referenced as .webp so <Picture> derives the .avif sibling.
 const GALLERY = [
@@ -57,7 +57,7 @@ const GALLERY = [
   { src: '/about/big-blue-sky.webp', alt: 'Under a big blue sky', cap: 'Big Blue Sky' },
   { src: '/about/madina.webp', alt: 'In Madina', cap: 'Madina' },
   { src: '/about/transit.webp', alt: 'In transit', cap: 'In Transit' },
-  { src: '/about/singapore-street-1.webp', alt: 'On a street in Singapore', cap: 'Street of Singapore' },
+  { src: '/about/singapore-street-1.webp', alt: 'On a street in Singapore', cap: 'North Bridge Singapore' },
   { src: '/about/ai-build.webp', alt: 'Building with AI', cap: 'AI coding' },
 ]
 
@@ -76,7 +76,7 @@ const APPROACH = [
     w: 284,
     h: 239,
     title: 'Sweat the craft',
-    body: 'Clear, human, and a little joyful — the details are where trust is earned, so I obsess over them.',
+    body: 'Clear, human, and a little joyful. The details are where trust is earned, so I obsess over them.',
   },
   {
     icon: '/playground/stickers/Door.svg',
@@ -138,7 +138,7 @@ export default function AboutPage2() {
     let raf = 0
     let last = 0
     let groupWidth = 0
-    const SPEED = reduced ? 0 : 42 // px/s — gentle drift
+    const SPEED = reduced ? 0 : 42 // px/s –gentle drift
 
     // Two identical halves, so one group is exactly half the track.
     const measure = () => {
@@ -258,6 +258,7 @@ export default function AboutPage2() {
               decoding="async"
               draggable={false}
             />
+            <figcaption className="ab2__portrait-cap">Headshot</figcaption>
           </figure>
           <figure className="ab2__portrait">
             <Picture
@@ -268,6 +269,7 @@ export default function AboutPage2() {
               decoding="async"
               draggable={false}
             />
+            <figcaption className="ab2__portrait-cap">At the studio</figcaption>
           </figure>
         </section>
 

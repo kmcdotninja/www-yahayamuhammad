@@ -51,6 +51,7 @@ These are deliberately fixed regardless of theme — they belong to physical
 | `--sans` | `'BDO Grotesk', 'Instrument Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif` |
 | `--display` | `'Jaro', 'Helvetica Neue', Helvetica, Arial, sans-serif` |
 | `--serif` | alias of `--display` |
+| `--fs-hero` | `clamp(34px, 11.6vw, 112px)` — the shared page-hero heading size (see Sizing patterns) |
 
 ### Cursors (custom SVGs, white-fill + black-stroke so they read on both themes)
 
@@ -76,9 +77,21 @@ These are deliberately fixed regardless of theme — they belong to physical
 
 ### Sizing patterns
 
-- Heroes/statements: locked large px on desktop (e.g. `112px`), `clamp()` down for
-  mobile. The mobile hero headline is `15vw` at ≤760px.
-- Line-height ~`1.02` for display, ~`1.5` for body. Bio copy is `18px`.
+- **Page hero headings are one shared size.** The top heading on every page —
+  home (`.introC__big`), About (`.ab2__headline`), Playground (`.pgp__title`) —
+  uses the **`--fs-hero`** token (`clamp(34px, 11.6vw, 112px)`) plus the shared
+  recipe: `line-height: 0.85`, `font-weight: 400`, `letter-spacing: -0.02em`,
+  UPPERCASE, `var(--display)`, `#fff` on dark (`var(--text)` in light). Never set
+  a page hero's `font-size` directly or override it per breakpoint — the token is
+  the single source of truth so headings never drift. Since hero headings are
+  uppercase (no descenders), the tight `0.85` line-height doesn't clash.
+  - The **mobile sticker hero** (`.intro__big`, the `<Hero>` shown ≤900px) is the
+    one deliberate exception — it's tuned larger (`15vw`) for the physics-collage
+    landing.
+- Section sub-headings (e.g. About's "Work Experience" / "My Approach") are their
+  own smaller display size (`clamp(30px, 4.8vw, 68px)`) — they are **not** hero
+  headings and don't use `--fs-hero`.
+- Line-height ~`1.5` for body. Bio copy is `18px`.
 
 ---
 
@@ -158,3 +171,10 @@ These are deliberately fixed regardless of theme — they belong to physical
   attention-grabbing animations in one view.
 - **Don't drive scroll-linked animation off `window.scrollTo`** — Lenis owns the
   scroll; use its scroll events / real wheel input.
+- **Don't use em dashes (`—`) in user-facing copy.** See Copy / writing below.
+
+### Copy / writing
+- **No em dashes (`—`).** Restructure the sentence with commas, periods, or
+  parentheses instead. For ranges (e.g. dates) use an en dash (`–`), never an em
+  dash. Applies to all user-facing text (headings, body, captions, labels).
+- Voice is plain, human, and first-person; no filler.

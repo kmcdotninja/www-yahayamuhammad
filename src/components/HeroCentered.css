@@ -21,13 +21,13 @@
   margin: clamp(40px, 8vh, 88px) 0 0;
   font-family: var(--display);
   font-weight: 400;
-  /* 112px on every real desktop — an earlier clamp at 6.4vw shrank it far
-     below what the reference calls for. The vw term only bites on the narrow
-     sliver just above the <Hero> swap (901–965px), where the longest headline
-     line would otherwise run past the rail and be silently clipped by the
-     body's overflow-x. At >=966px this resolves to the full 112px. */
-  font-size: clamp(92px, 11.6vw, 112px);
-  line-height: .85;
+  /* Canonical page-hero size (--fs-hero): 112px on every real desktop. The vw
+     term only bites on the narrow sliver just above the <Hero> swap (901–965px),
+     where the longest headline line would otherwise run past the rail; at
+     >=966px it resolves to the full 112px. About + Playground heads share this
+     token so all page heroes match. */
+  font-size: var(--fs-hero);
+  line-height: 0.85;
   letter-spacing: -0.02em;
   color: #fff;
   text-transform: uppercase;
