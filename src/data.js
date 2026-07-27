@@ -7,8 +7,9 @@ export const projects = [
     team: [
       { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Oselu Irabor', role: 'Illustrator' },
-      { name: 'Dave Joseph', role: 'Motion' },
-      { name: 'Mohammad Ghayen', role: 'Developer' },
+      { name: 'David Odinegun', role: 'Motion Designer' },
+      { name: 'Mohammad Ghayen', role: 'Mobile Engineer' },
+      { name: 'Surafel Haimanot', role: 'Fullstack Engineer' },
     ],
     // Flat array drives the horizontal scroller on the works page.
     images: [
