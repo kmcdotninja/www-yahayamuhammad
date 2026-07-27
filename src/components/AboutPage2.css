@@ -76,14 +76,21 @@
   pointer-events: none;
 }
 
-/* ---- Work experience ---- */
+/* ---- My approach + Work experience: heading in a left column, content in a
+   wider right column (cleaner + scannable). Both collapse to a single column at
+   ≤900px. ---- */
+.ab2__approach,
 .ab2__work {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(0, 1.6fr);
+  gap: clamp(24px, 4vw, 72px);
+  align-items: start;
   margin-bottom: clamp(64px, 9vw, 128px);
 }
 
 .ab2__work-title,
 .ab2__approach-title {
-  margin: 0 0 clamp(24px, 3.5vw, 48px);
+  margin: 0;
   font-family: var(--display);
   font-weight: 400;
   text-transform: uppercase;
@@ -93,18 +100,13 @@
   font-size: var(--fs-h2);
 }
 
-/* ---- My approach ---- */
-.ab2__approach {
-  margin-bottom: clamp(64px, 9vw, 128px);
-}
-
 .ab2__approach-grid {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(24px, 3vw, 44px);
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(44px, 6vw, 88px) clamp(24px, 3vw, 48px);
 }
 
 .ab2__approach-card {
@@ -184,35 +186,16 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.5vw, 44px);
 }
 
+/* Each role stacks: title + company, then the date below it. */
 .ab2__exp-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(96px, 0.9fr) minmax(150px, 1.3fr) minmax(0, 2.4fr);
-  gap: clamp(16px, 2vw, 32px);
-  align-items: start;
-  padding: clamp(20px, 2.6vw, 34px) 0;
-}
-
-/* Extra breathing room under the final role before the closing line. */
-.ab2__exp-row:last-child {
-  padding-bottom: clamp(52px, 6vw, 88px);
-}
-
-/* A single full-bleed line closes the list below the last role (crossing the
-   vertical rails, see .ab2__rule). No line between the heading and the first
-   role, and none between individual roles. */
-.ab2__exp-row:last-child::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  height: 1px;
-  background: var(--border);
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .ab2__exp-period {
@@ -242,16 +225,6 @@
   font-size: 20px;
   font-weight: 400;
   line-height: 1.4;
-  color: var(--text-dim);
-}
-
-.ab2__exp-body {
-  margin: 0;
-  max-width: 62ch;
-  font-family: var(--sans);
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.6;
   color: var(--text-dim);
 }
 
@@ -366,20 +339,24 @@
     margin-left: 0;
     max-width: 56ch;
   }
+  /* Sections stack: heading on top, content below. */
+  .ab2__approach,
+  .ab2__work {
+    grid-template-columns: 1fr;
+    gap: clamp(24px, 5vw, 40px);
+  }
+  .ab2__work-title,
+  .ab2__approach-title {
+    margin-bottom: clamp(4px, 2vw, 16px);
+  }
   .ab2__approach-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(24px, 4vw, 40px);
+    gap: clamp(28px, 5vw, 44px) clamp(24px, 4vw, 40px);
   }
 }
 
 @media (max-width: 760px) {
   .ab2 {
     padding-top: 120px;
-  }
-  /* Stack each experience row: period, role, description. */
-  .ab2__exp-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
   }
 }
 

@@ -310,12 +310,11 @@ export default function AboutPage2() {
           <ul className="ab2__exp">
             {EXPERIENCE.map((x) => (
               <li className="ab2__exp-row" key={x.company} data-reveal>
-                <span className="ab2__exp-period">{x.period}</span>
                 <span className="ab2__exp-role">
                   <span className="ab2__exp-role-title">{x.role}</span>
                   <span className="ab2__exp-company">{x.company}</span>
                 </span>
-                <p className="ab2__exp-body">{x.body}</p>
+                <span className="ab2__exp-period">{x.period}</span>
               </li>
             ))}
           </ul>

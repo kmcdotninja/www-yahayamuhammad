@@ -37,15 +37,9 @@ export default function Footer() {
       >
         <div className="footer-art__cta">
           <p className="footer-art__bio">
-            {'Always up for new '}
-            <br />
-            {"collaborations. Let’s "}
-            <br className="footer-art__br--mobile" />
-            {'create '}
+            {'Let’s build something '}
             <br className="footer-art__br--desktop" />
-            {'something or '}
-            <br className="footer-art__br--mobile" />
-            {'chat about design.'}
+            {'or talk about design.'}
           </p>
           <div className="footer-art__contact">
             <a

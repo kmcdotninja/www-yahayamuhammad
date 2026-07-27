@@ -31,10 +31,11 @@
 
 .footer-art__bio {
   font-family: var(--display);
-  font-size: 56px;
+  /* Section-title token — 68px desktop, 53px mobile (see TYPOGRAPHY.md). */
+  font-size: var(--fs-h2);
   line-height: 1.02;
   /* Match the hero heading's tracking. */
-  letter-spacing: -0.02em;
+  letter-spacing: var(--ls-display);
   color: #fff;
   text-transform: uppercase;
   margin: 0;
@@ -50,9 +51,6 @@
 }
 
 @media (max-width: 760px) {
-  .footer-art__bio {
-    font-size: 34px;
-  }
   .footer-art__br--desktop {
     display: none;
   }
@@ -78,10 +76,11 @@
   background: #f5f3ee;
   color: #0a0a0a;
   border: 0;
-  padding: 9px 18px;
+  /* 48px tall: 18px text + 15px top/bottom padding. */
+  padding: 15px 26px;
   border-radius: 999px;
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   text-decoration: none;
   cursor: var(--cursor-pointer);
@@ -96,7 +95,7 @@
    mobile yanks the button up next to the email and snaps it back when
    the label reverts. */
 .footer-art__copy {
-  min-width: 132px;
+  min-width: 152px;
 }
 
 .footer-art__email:hover {
