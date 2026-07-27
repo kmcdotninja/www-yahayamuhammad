@@ -9,7 +9,7 @@ export const projects = [
       { name: 'Oselu Irabor', role: 'Illustrator' },
       { name: 'David Odinegun', role: 'Motion Designer' },
       { name: 'Mohammad Ghayen', role: 'Mobile Engineer' },
-      { name: 'Surafel Haimanot', role: 'Fullstack Engineer' },
+      { name: 'Surafel Haimanot', role: 'Fulltack Engineer' },
     ],
     // Flat array drives the horizontal scroller on the works page.
     images: [
