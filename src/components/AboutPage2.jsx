@@ -243,8 +243,12 @@ export default function AboutPage2() {
 
       <main className="ab2">
         <section className="ab2__hero">
-          <h1 className="ab2__headline">{HEADLINE}</h1>
-          <p className="ab2__lede">{LEDE}</p>
+          <h1 className="ab2__headline" data-reveal>
+            {HEADLINE}
+          </h1>
+          <p className="ab2__lede" data-reveal>
+            {LEDE}
+          </p>
         </section>
 
         <section className="ab2__portraits" data-reveal>

@@ -30,6 +30,9 @@ const loadLenis = () => {
   return lenisModulePromise
 }
 
+const REVEAL_SELECTOR = '[data-reveal], [data-reveal-stagger], [data-reveal-card]'
+const TARGET_WAIT_MS = 4000
+
 const isTouchOnly = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(hover: none) and (pointer: coarse)').matches
@@ -145,8 +148,35 @@ export function useScrollAnimations(pathname) {
   useLayoutEffect(() => {
     let cancelled = false
     let ctx = null
+    let observer = null
+    let waitTimer = 0
 
-    loadGsap().then(({ gsap, ScrollTrigger }) => {
+    // /about and /playground are lazy routes: when this effect runs, Suspense
+    // has rendered null and their markup isn't in the DOM yet, so arming
+    // straight away finds nothing and those pages scroll with no reveals at
+    // all. (Home only worked because it ships in the initial chunk.) Wait for
+    // the first target to land — bounded, so a route that genuinely has none
+    // doesn't hold an observer open, and resolving either way keeps the
+    // app:reveal-ready dispatch below unconditional for the hash-scroll path.
+    const whenTargetsExist = () =>
+      new Promise((resolve) => {
+        if (document.querySelector(REVEAL_SELECTOR)) return resolve()
+        observer = new MutationObserver(() => {
+          if (!document.querySelector(REVEAL_SELECTOR)) return
+          observer.disconnect()
+          observer = null
+          clearTimeout(waitTimer)
+          resolve()
+        })
+        observer.observe(document.body, { childList: true, subtree: true })
+        waitTimer = setTimeout(() => {
+          observer?.disconnect()
+          observer = null
+          resolve()
+        }, TARGET_WAIT_MS)
+      })
+
+    Promise.all([loadGsap(), whenTargetsExist()]).then(([{ gsap, ScrollTrigger }]) => {
       if (cancelled) return
 
       ctx = gsap.context(() => {
@@ -240,6 +270,8 @@ export function useScrollAnimations(pathname) {
 
     return () => {
       cancelled = true
+      observer?.disconnect()
+      clearTimeout(waitTimer)
       if (ctxRef.current) {
         clearTimeout(ctxRef.current.__t1)
         ctxRef.current.revert?.()

@@ -9,15 +9,18 @@ export default function PlaygroundSection({
   aspect = 'wide',
   children,
 }) {
-  // No scroll-reveal on the stage itself — cards just appear in their final
-  // state. `useInView` is kept because the interactive children still want
-  // the signal (StickerStack pauses, NeonTicker pauses, ThinkingStream
-  // pauses when out of view).
+  // The card fades and rises in on scroll like the rest of the site
+  // (data-reveal, driven by useScrollAnimations). That's separate from
+  // `useInView`, which the interactive children use for their own signal —
+  // StickerStack, NeonTicker and ThinkingStream all pause when out of view.
   const stageRef = useRef(null)
   const inView = useInView(stageRef, { amount: 0.3, once: false })
 
   return (
-    <figure className={`pg2-section ${span === 'full' ? 'pg2-section--full' : ''}`}>
+    <figure
+      className={`pg2-section ${span === 'full' ? 'pg2-section--full' : ''}`}
+      data-reveal
+    >
       <div
         ref={stageRef}
         className={`pg2-section__stage pg2-section__stage--${aspect}`}
