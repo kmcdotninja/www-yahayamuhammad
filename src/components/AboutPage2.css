@@ -121,11 +121,13 @@
    gentle idle float; the image pops with a bounce on card hover (the two
    transforms compose). */
 .ab2__approach-icon-wrap {
+  position: relative;
   display: inline-block;
   transform-origin: 50% 92%;
   animation: ab2-sticker-float 3.8s ease-in-out infinite;
   will-change: transform;
 }
+
 /* Offset each so they don't bob in unison. */
 .ab2__approach-card:nth-child(2) .ab2__approach-icon-wrap {
   animation-delay: -0.95s;

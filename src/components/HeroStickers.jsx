@@ -41,5 +41,11 @@ function Sticker({ mod, src, w, h, upright }) {
 // Renders the stickers as bare siblings so they drop straight into whichever
 // hero <section> hosts them; that section calls useStickerPhysics on its ref.
 export default function HeroStickers() {
-  return STICKERS.map((sticker) => <Sticker key={sticker.id} {...sticker} />)
+  return (
+    <>
+      {STICKERS.map((sticker) => (
+        <Sticker key={sticker.id} {...sticker} />
+      ))}
+    </>
+  )
 }
