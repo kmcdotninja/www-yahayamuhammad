@@ -254,9 +254,11 @@ export default function AboutPage2() {
         <section className="ab2__portraits" data-reveal>
           <figure className="ab2__portrait">
             <Picture
-              src="/images/polaroid-kaduna.webp"
+              src="/images/headshot.webp"
               alt="Yahaya Muhammad"
               className="ab2__portrait-img"
+              width={1100}
+              height={1956}
               loading="eager"
               decoding="async"
               draggable={false}

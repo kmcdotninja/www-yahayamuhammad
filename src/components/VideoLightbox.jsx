@@ -109,7 +109,7 @@ function morph(player, origin, dir) {
 // context, and kept mounted (hidden) so the backdrop can fade both ways. The
 // <Player> only exists while open — nothing buffers in the background, and a
 // reopen gets a fresh element with fresh state rather than a rewind.
-export default function VideoLightbox({ open, src, title, meta, getOrigin, onClose }) {
+export default function VideoLightbox({ open, src, poster, title, meta, getOrigin, onClose }) {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
   const closeRef = useRef(null)
@@ -209,6 +209,7 @@ export default function VideoLightbox({ open, src, title, meta, getOrigin, onClo
         {open && (
           <Player
             src={src}
+            poster={poster}
             videoRef={videoRef}
             playerRef={playerRef}
             onToggle={toggle}
@@ -225,9 +226,35 @@ export default function VideoLightbox({ open, src, title, meta, getOrigin, onClo
 // clip is silent, so muted autoplay isn't blocked in practice) without an
 // effect having to reset anything. onCanPlay is the safety net: if a browser
 // did refuse to autoplay, show the play glyph rather than a frozen frame.
-function Player({ src, videoRef, playerRef, onToggle, closing }) {
+function Player({ src, poster, videoRef, playerRef, onToggle, closing }) {
   const [playing, setPlaying] = useState(true)
   const [progress, setProgress] = useState(0)
+  // The clip has to arrive over the network. The poster covers the frame from
+  // the first paint, and this drives a spinner over it so the wait reads as
+  // loading rather than as a stalled player.
+  const [ready, setReady] = useState(false)
+  const stall = useRef(0)
+
+  // A mid-playback rebuffer fires `waiting` constantly on a weak connection —
+  // showing the spinner on each one strobes it. Only surface a stall that
+  // actually lasts.
+  const markWaiting = () => {
+    clearTimeout(stall.current)
+    stall.current = setTimeout(() => setReady(false), 260)
+  }
+  const markReady = () => {
+    clearTimeout(stall.current)
+    setReady(true)
+  }
+  useEffect(() => () => clearTimeout(stall.current), [])
+
+  // Kick playback off explicitly rather than trusting the autoPlay attribute
+  // alone — it doesn't always fire when the element mounts with an empty
+  // buffer. The clip is silent so muted autoplay is never blocked in practice;
+  // if a browser refuses anyway, fall back to showing the play glyph.
+  useEffect(() => {
+    videoRef.current?.play?.().catch(() => setPlaying(false))
+  }, [videoRef])
 
   // timeupdate only fires ~4×/s, which makes the bar stutter — drive it from
   // the frame loop instead, and only while something is actually playing.
@@ -249,6 +276,7 @@ function Player({ src, videoRef, playerRef, onToggle, closing }) {
         ref={videoRef}
         className="vlb__video"
         src={src}
+        poster={poster}
         autoPlay
         muted
         playsInline
@@ -256,7 +284,12 @@ function Player({ src, videoRef, playerRef, onToggle, closing }) {
         disablePictureInPicture
         controlsList="nodownload noplaybackrate noremoteplayback"
         onContextMenu={(e) => e.preventDefault()}
-        onCanPlay={() => setPlaying(!videoRef.current?.paused)}
+        onCanPlay={() => {
+          markReady()
+          setPlaying(!videoRef.current?.paused)
+        }}
+        onPlaying={markReady}
+        onWaiting={markWaiting}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => {
@@ -264,6 +297,8 @@ function Player({ src, videoRef, playerRef, onToggle, closing }) {
           setProgress(100)
         }}
       />
+
+      {!ready && <span className="vlb__spinner" aria-label="Loading video" role="status" />}
 
       {/* The whole frame is the play/pause control — that's the only transport
           there is. Muted while it morphs shut so a stray click can't pause the
