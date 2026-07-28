@@ -28,7 +28,7 @@ const REST_SPEED = 14 // below this on the floor, start settling
 const SLEEP_FRAMES = 22 // frames at rest before a body sleeps (stops jittering)
 const SUBSTEPS = 2 // integration substeps per frame (wall stability)
 const PLATFORM_SETTLE = 40 // a platform only holds up the pile once its bottom is this close to the floor
-const ANCHOR_PAD = 16 // gap between a corner-anchored platform and the wall
+const ANCHOR_GAP = 8 // breathing room between a corner-anchored platform and the rail
 const TEXT_TTL = 6000 // ms a typed sticker lives before it disintegrates
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v)
@@ -72,6 +72,21 @@ export function useStickerPhysics(sectionRef) {
       })
     }
     let obstacles = measureObstacles()
+
+    // A corner-anchored body stops at the page's vertical guide rail, not at the
+    // raw viewport edge — the video card crossing that line reads as a layout
+    // bug. --rail is a clamp(), which a custom property hands back unresolved,
+    // so measure it off a throwaway element that positions itself on the rail.
+    const measureRail = () => {
+      const probe = document.createElement('div')
+      probe.style.cssText =
+        'position:absolute;left:var(--rail);top:0;width:0;height:0;visibility:hidden'
+      section.appendChild(probe)
+      const x = probe.offsetLeft
+      probe.remove()
+      return x
+    }
+    let anchorPad = measureRail() + ANCHOR_GAP
 
     // Build a body from a sticker element. offsetWidth/Height are the laid-out
     // size and don't depend on the transform we're about to drive, so they're
@@ -146,7 +161,14 @@ export function useStickerPhysics(sectionRef) {
     // right of centre — but never so far right that they'd land on top of an
     // anchored one, since two immovable bodies can't push each other apart.
     const homeX = (b) => {
-      if (b.anchor === 'bottom-right') return W - b.hw - ANCHOR_PAD
+      if (b.anchor === 'bottom-right') {
+        // Measured from the card's RESTING extent, not its half-width: it sits
+        // at a slight lean, and a tilted corner poking past the rail is exactly
+        // what we're avoiding.
+        const rad = ((b.upright ? b.uprightTarget : 0) * Math.PI) / 180
+        const ex = b.hw * Math.abs(Math.cos(rad)) + b.hh * Math.abs(Math.sin(rad))
+        return W - anchorPad - ex
+      }
       const limit = freeX(b, 28)
       return Math.min(W * 0.6, limit)
     }
@@ -158,7 +180,7 @@ export function useStickerPhysics(sectionRef) {
     const freeX = (b, gap) => {
       const corner = platforms.find((p) => p.anchor === 'bottom-right')
       if (!corner || b === corner) return W - b.hw
-      return Math.max(b.hw, W - corner.w - ANCHOR_PAD - b.hw - gap)
+      return Math.max(b.hw, W - corner.w - anchorPad - b.hw - gap)
     }
     // Text boxes created at runtime via spawnText — tracked so cleanup can
     // detach and remove them (the initial `els` are owned by React).
@@ -379,6 +401,39 @@ export function useStickerPhysics(sectionRef) {
       const tangential = rvx * -ny + rvy * nx
       if (aMov && !a.upright) a.spin += tangential * 0.02
       if (bMov && !b.upright) b.spin -= tangential * 0.02
+    }
+
+    const cornerBody = platforms.find((p) => p.anchor === 'bottom-right') || null
+
+    // Run after the collision pass, which resolves overlap by moving bodies and
+    // so can leave one somewhere the walls don't allow.
+    const contain = (b) => {
+      if (b.dragging) return
+
+      // The video card owns its corner outright: once it has settled, nothing
+      // sits in its column below its top edge. The circle used for body-to-body
+      // contact is narrower than the card, so without this a sticker can come
+      // to rest tucked behind it, peeking out — which reads as a bug, not a
+      // pile. Shoving it clear to the left is the only option; the gap between
+      // the card and the wall is too small to hold anything.
+      if (
+        cornerBody &&
+        b !== cornerBody &&
+        cornerBody.cy + cornerBody.hh > floorY - PLATFORM_SETTLE
+      ) {
+        const ce = extents(cornerBody)
+        const { ex, ey } = extents(b)
+        const cLeft = cornerBody.cx - ce.ex
+        if (b.cy + ey > cornerBody.cy - ce.ey && b.cx + ex > cLeft) {
+          b.cx = Math.max(ex, cLeft - ex)
+          if (b.vx > 0) b.vx = -b.vx * 0.3
+        }
+      }
+
+      // x only: the drop-in starts above the top edge, and the floor is handled
+      // during integration.
+      const { ex } = extents(b)
+      b.cx = clamp(b.cx, ex, Math.max(ex, W - ex))
     }
 
     const render = (b) => {
@@ -672,6 +727,7 @@ export function useStickerPhysics(sectionRef) {
       W = section.clientWidth
       H = section.clientHeight
       floorY = H - FLOOR_INSET
+      anchorPad = measureRail() + ANCHOR_GAP
       obstacles = measureObstacles()
       bodies.forEach((b) => {
         // A corner-anchored platform belongs to its corner, not to wherever the
@@ -698,6 +754,7 @@ export function useStickerPhysics(sectionRef) {
         for (let i = 0; i < bodies.length; i++) integrate(bodies[i], sdt)
         for (let i = 0; i < bodies.length; i++)
           for (let j = i + 1; j < bodies.length; j++) collide(bodies[i], bodies[j])
+        for (let i = 0; i < bodies.length; i++) contain(bodies[i])
       }
       for (let i = 0; i < bodies.length; i++) render(bodies[i])
       raf = requestAnimationFrame(frame)

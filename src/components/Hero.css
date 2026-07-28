@@ -9,10 +9,10 @@
   /* The bottom padding is that band, reserved rather than borrowed: on a short
      phone (a 667px-tall SE, say) the headline and bio already fill the screen,
      so an svh-based height gives the pile nothing and the stickers end up over
-     the copy. Reserving ~170px guarantees the video card (~130px tall here)
+     the copy. Reserving ~180px guarantees the video card (~140px tall here)
      plus clearance on every phone; the hero simply runs a little past the fold
      on the shortest ones. */
-  padding: 116px var(--pad) clamp(160px, 20vh, 210px);
+  padding: 116px var(--pad) clamp(170px, 21vh, 215px);
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   gap: 32px;

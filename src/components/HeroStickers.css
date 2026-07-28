@@ -41,16 +41,21 @@
   }
 }
 
-/* Mobile: the band under the bio is only ~220px tall and the video card takes
-   the right of it, so the rest of the pile is sized to sit BESIDE the card on
-   the bottom line rather than stack on top of it — a stack that tall would run
-   back up into the bio copy. Three small stickers (~215px together) against
-   ~230px of free floor is what keeps the band from cluttering. The book stays
-   dropped here (the 1180px rule hides it) for the same reason. */
+/* Mobile: the band under the bio is only ~170px tall and the video card takes
+   the right of it, so the four stickers are sized to sit BESIDE the card in a
+   single row on the bottom line rather than stack — a stack two or three deep
+   runs back up into the bio copy. Their collision circles come to ~170px
+   together on a 343px phone, which is exactly the free floor left of the card.
+   Sizing them up means dropping one. (The 1180px rule hides the book for the
+   desktop pile; it comes back here, where there's no input pill.) */
 @media (max-width: 900px) {
-  .hero-sticker--pin { width: clamp(36px, 9.5vw, 50px); }
-  .hero-sticker--brain { width: clamp(70px, 18vw, 98px); }
-  .hero-sticker--face { width: clamp(58px, 17vw, 82px); }
+  .hero-sticker--pin { width: clamp(32px, 8.5vw, 46px); }
+  .hero-sticker--brain { width: clamp(62px, 16vw, 88px); }
+  .hero-sticker--face { width: clamp(54px, 15.5vw, 76px); }
+  .hero-sticker--book {
+    display: block;
+    width: clamp(50px, 14vw, 72px);
+  }
 }
 
 /* ---- Text pill stickers (typed via the input) ---- */

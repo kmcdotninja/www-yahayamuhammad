@@ -88,6 +88,9 @@
      load would leave the physics body measured at the wrong size. */
   height: 30px;
   padding: 0 3px;
+  /* nowrap + space-between will happily spill past the card if the two labels
+     ever outgrow it — clip rather than bleed over the frame edge. */
+  overflow: hidden;
   /* Doto — the same label-printer face the polaroid captions use. */
   font-family: 'Doto', var(--sans);
   font-size: 12px;
@@ -117,15 +120,18 @@
    in HeroStickers.css). */
 @media (max-width: 900px) {
   .hero-sticker--video {
-    width: clamp(132px, 37vw, 175px);
+    width: clamp(150px, 43vw, 200px);
     padding: 6px 6px 0;
   }
   .hero-video__play {
-    width: clamp(32px, 9vw, 42px);
+    width: clamp(36px, 10vw, 48px);
   }
   .hero-video__cap {
-    height: 22px;
-    font-size: 9px;
-    letter-spacing: 0.06em;
+    height: 24px;
+    gap: 6px;
+    /* Tracks the card's own 43vw width so "BUILDING REDNOXX · JUL '26" always
+       fits between the frame edges, from a 343px phone up. */
+    font-size: clamp(7.6px, 2.3vw, 11px);
+    letter-spacing: 0.04em;
   }
 }
