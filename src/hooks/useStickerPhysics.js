@@ -27,7 +27,8 @@ const MAX_SPEED = 3600 // clamp so a violent fling can't tunnel through a wall
 const REST_SPEED = 14 // below this on the floor, start settling
 const SLEEP_FRAMES = 22 // frames at rest before a body sleeps (stops jittering)
 const SUBSTEPS = 2 // integration substeps per frame (wall stability)
-const PLATFORM_SETTLE = 40 // input acts as a platform only once its bottom is this close to the floor
+const PLATFORM_SETTLE = 40 // a platform only holds up the pile once its bottom is this close to the floor
+const ANCHOR_PAD = 16 // gap between a corner-anchored platform and the wall
 const TEXT_TTL = 6000 // ms a typed sticker lives before it disintegrates
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v)
@@ -87,6 +88,8 @@ export function useStickerPhysics(sectionRef) {
       el.style.backfaceVisibility = 'hidden' // keep the promoted layer stable
       const w = el.offsetWidth
       const h = el.offsetHeight
+      const isInput = !!el.querySelector('input, textarea')
+      const anchor = el.dataset.anchor || null
       return {
         el,
         w,
@@ -98,9 +101,20 @@ export function useStickerPhysics(sectionRef) {
         // a small lean instead of resting at whatever angle they land.
         upright: el.hasAttribute('data-upright'),
         uprightTarget: 0,
-        // The input pill is a platform: other stickers rest on TOP of it (never
-        // over its face) so it stays clickable, and it doesn't bounce them.
-        isInput: !!el.querySelector('input, textarea'),
+        // Platforms (the input pill, the video card) keep their spot: other
+        // stickers rest on TOP of them rather than over their faces, so they
+        // stay usable, and the pile can't shove them out of reach.
+        isInput,
+        // Where a platform lives, e.g. 'bottom-right' for the video card.
+        // Without one it takes the default reachable spot (60% across).
+        anchor,
+        isPlatform: isInput || !!anchor,
+        // Only the input pill is a SHELF (the pile rests on its top edge), and
+        // only because its face has to stay typeable. The video card keeps its
+        // face clear by sitting above the stickers in z instead — a shelf as
+        // tall as the card would park the pile a card-height up, which on a
+        // phone band lands it right back over the bio copy.
+        isShelf: isInput,
         // Frozen bodies (the input while you're typing in it) don't move and act
         // immovable in collisions, so the pile can't shove them mid-type.
         frozen: false,
@@ -122,8 +136,30 @@ export function useStickerPhysics(sectionRef) {
       }
     }
     const bodies = els.map(makeBody)
-    // The input pill acts as a platform the rest of the pile rests on.
+    // Platforms hold their spot; shelves also hold up the pile.
+    const platforms = bodies.filter((b) => b.isPlatform)
+    const shelves = platforms.filter((b) => b.isShelf)
+    // The input pill is also the "cart" a dissolving text sticker streams into.
     const inputBody = bodies.find((b) => b.isInput) || null
+
+    // A platform's resting x. Anchored ones hug their corner; the rest sit just
+    // right of centre — but never so far right that they'd land on top of an
+    // anchored one, since two immovable bodies can't push each other apart.
+    const homeX = (b) => {
+      if (b.anchor === 'bottom-right') return W - b.hw - ANCHOR_PAD
+      const limit = freeX(b, 28)
+      return Math.min(W * 0.6, limit)
+    }
+
+    // The rightmost centre a body can take without landing on a corner-anchored
+    // platform. Everything else drops to the LEFT of the video card: a sticker
+    // that lands on the card comes to rest a whole card-height up, which on a
+    // phone band puts it straight back over the bio copy.
+    const freeX = (b, gap) => {
+      const corner = platforms.find((p) => p.anchor === 'bottom-right')
+      if (!corner || b === corner) return W - b.hw
+      return Math.max(b.hw, W - corner.w - ANCHOR_PAD - b.hw - gap)
+    }
     // Text boxes created at runtime via spawnText — tracked so cleanup can
     // detach and remove them (the initial `els` are owned by React).
     const dynamicEls = []
@@ -138,19 +174,19 @@ export function useStickerPhysics(sectionRef) {
       b.uprightTarget = b.upright ? rand(-7, 7) : 0
       if (reduced) {
         // Reduced motion: no drop — rest everything at the bottom.
-        b.cx = b.isInput
-          ? clamp(W * 0.6, b.hw, W - b.hw)
-          : clamp((W * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
+        b.cx = b.isPlatform
+          ? clamp(homeX(b), b.hw, W - b.hw)
+          : clamp((freeX(b, 8) * (i + 1)) / (bodies.length + 1), b.hw, W - b.hw)
         b.cy = clamp(floorY - b.hh, b.hh, H - b.hh)
         b.vx = b.vy = b.spin = 0
         b.angle = b.upright ? b.uprightTarget : rand(-6, 6)
         b.enteredTop = true
         b.sleeping = true
-      } else if (b.isInput) {
-        // The input drops in from above like the rest, but straight down onto a
-        // fixed, reachable spot — it's immovable in collisions, so it lands
-        // there rather than getting knocked into a corner — and stays upright.
-        b.cx = clamp(W * 0.6, b.hw, W - b.hw)
+      } else if (b.isPlatform) {
+        // Platforms drop in from above like the rest, but straight down onto a
+        // fixed spot — they're immovable in collisions, so they land there
+        // rather than getting knocked away — and stay upright.
+        b.cx = clamp(homeX(b), b.hw, W - b.hw)
         b.cy = -b.hh - rand(40, 140)
         b.vx = 0
         b.vy = 40
@@ -159,7 +195,7 @@ export function useStickerPhysics(sectionRef) {
         b.enteredTop = false
         b.sleeping = false
       } else {
-        b.cx = clamp(rand(b.hw, W - b.hw), b.hw, W - b.hw)
+        b.cx = clamp(rand(b.hw, freeX(b, 8)), b.hw, W - b.hw)
         // Stagger start heights above the top edge so they arrive in a loose
         // sequence rather than a single curtain.
         b.cy = -b.hh - rand(40, 40 + H * 0.7)
@@ -255,20 +291,19 @@ export function useStickerPhysics(sectionRef) {
         const o = obstacles[k]
         if (b.cx + ex > o.left && b.cx - ex < o.right) supportY = Math.min(supportY, o.top)
       }
-      // The input pill is a platform other stickers rest on top of — but ONLY
-      // once it has settled near the floor. While it's still falling in from
-      // above, it must not raise the support (that pinned stickers mid-air near
-      // the top); collision alone handles it during the drop.
-      if (
-        inputBody &&
-        b !== inputBody &&
-        inputBody.cy + inputBody.hh > floorY - PLATFORM_SETTLE
-      ) {
-        const ie = extents(inputBody)
-        const iLeft = inputBody.cx - ie.ex - OBSTACLE_PAD
-        const iRight = inputBody.cx + ie.ex + OBSTACLE_PAD
-        const iTop = inputBody.cy - ie.ey - OBSTACLE_PAD
-        if (b.cx + ex > iLeft && b.cx - ex < iRight) supportY = Math.min(supportY, iTop)
+      // Shelves (the input pill) are surfaces other stickers rest on top of —
+      // but ONLY once one has settled near the floor. While a shelf is still
+      // falling in from above it must not raise the support (that pinned
+      // stickers mid-air near the top); collision alone handles it during the
+      // drop.
+      for (let k = 0; k < shelves.length; k++) {
+        const p = shelves[k]
+        if (p === b || p.cy + p.hh <= floorY - PLATFORM_SETTLE) continue
+        const pe = extents(p)
+        const pLeft = p.cx - pe.ex - OBSTACLE_PAD
+        const pRight = p.cx + pe.ex + OBSTACLE_PAD
+        const pTop = p.cy - pe.ey - OBSTACLE_PAD
+        if (b.cx + ex > pLeft && b.cx - ex < pRight) supportY = Math.min(supportY, pTop)
       }
       if (b.cy + ey > supportY) {
         b.cy = supportY - ey
@@ -307,10 +342,10 @@ export function useStickerPhysics(sectionRef) {
       const nx = dx / dist
       const ny = dy / dist
       const overlap = min - dist
-      // The input is an immovable platform: stickers bounce off / rest on it,
-      // but it never gets shoved around (keeping its face reachable).
-      const aMov = !a.dragging && !a.frozen && !a.isInput
-      const bMov = !b.dragging && !b.frozen && !b.isInput
+      // Platforms are immovable: stickers bounce off / rest on them, but they
+      // never get shoved around (keeping their faces reachable).
+      const aMov = !a.dragging && !a.frozen && !a.isPlatform
+      const bMov = !b.dragging && !b.frozen && !b.isPlatform
       if (!aMov && !bMov) return
       // Positional correction split by mobility.
       if (aMov && bMov) {
@@ -639,6 +674,9 @@ export function useStickerPhysics(sectionRef) {
       floorY = H - FLOOR_INSET
       obstacles = measureObstacles()
       bodies.forEach((b) => {
+        // A corner-anchored platform belongs to its corner, not to wherever the
+        // old width left it — re-home it before clamping.
+        if (b.anchor) b.cx = homeX(b)
         const { ex, ey } = extents(b)
         b.cx = clamp(b.cx, ex, Math.max(ex, W - ex))
         b.cy = clamp(b.cy, ey, Math.max(ey, floorY - ey))

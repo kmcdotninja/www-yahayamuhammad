@@ -1,11 +1,18 @@
 .intro {
-  /* Mobile-only hero (the app swaps to .introC at >=901px). Kept tall (85svh)
-     so there's a generous band between the headline and the bio for the physics
-     stickers to fall into and spread out. */
-  min-height: 85svh;
+  /* Mobile-only hero (the app swaps to .introC at >=901px). The height floor is
+     only for unusually short content — the sticker band comes from the reserved
+     bottom padding below, not from svh, or a tall phone opens a dead gap
+     between the bio and the pile. */
+  min-height: 72svh;
   display: flex;
   flex-direction: column;
-  padding: 116px var(--pad) 28px;
+  /* The bottom padding is that band, reserved rather than borrowed: on a short
+     phone (a 667px-tall SE, say) the headline and bio already fill the screen,
+     so an svh-based height gives the pile nothing and the stickers end up over
+     the copy. Reserving ~170px guarantees the video card (~130px tall here)
+     plus clearance on every phone; the hero simply runs a little past the fold
+     on the shortest ones. */
+  padding: 116px var(--pad) clamp(160px, 20vh, 210px);
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   gap: 32px;

@@ -1,4 +1,5 @@
 import './HeroStickers.css'
+import HeroVideoCard from './HeroVideoCard.jsx'
 
 // The hero's sticker collage (a selection from /public/playground/stickers),
 // shared by the desktop <HeroCentered> and mobile <Hero>. `mod` selects the CSS
@@ -7,12 +8,13 @@ import './HeroStickers.css'
 // one is: drop the SVG in the folder, append a row, add a .hero-sticker--<mod>
 // width block. w/h are the art's true intrinsic sizes so each box is reserved
 // at the right ratio before it decodes.
+//
+// The Kanemi Kudi and Portfolio Website wordmarks and the "I'm a designer"
+// die-cut used to sit here; they came out to leave the pile room for the
+// build-clip polaroid below.
 const STICKERS = [
   { id: 'pin', mod: 'pin', src: '/playground/stickers/4.svg', w: 333, h: 388 },
   { id: 'brain', mod: 'brain', src: '/playground/stickers/8.svg', w: 277, h: 242 },
-  { id: 'designer', mod: 'designer', src: '/playground/stickers/1.svg', w: 960, h: 792 },
-  { id: 'kudi', mod: 'kudi', src: '/playground/stickers/6.svg', w: 725, h: 525 },
-  { id: 'portfolio', mod: 'portfolio', src: '/playground/stickers/7.svg', w: 1894, h: 823 },
   { id: 'book', mod: 'book', src: '/playground/stickers/5.svg', w: 433, h: 360 },
   // The face self-rights instead of tumbling — a portrait resting upside-down
   // reads as broken, where a wordmark at an angle reads as a slapped sticker.
@@ -40,12 +42,14 @@ function Sticker({ mod, src, w, h, upright }) {
 
 // Renders the stickers as bare siblings so they drop straight into whichever
 // hero <section> hosts them; that section calls useStickerPhysics on its ref.
+// The video polaroid is one of the bodies too — it just carries a lightbox.
 export default function HeroStickers() {
   return (
     <>
       {STICKERS.map((sticker) => (
         <Sticker key={sticker.id} {...sticker} />
       ))}
+      <HeroVideoCard />
     </>
   )
 }

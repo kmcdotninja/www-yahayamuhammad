@@ -1,0 +1,217 @@
+/* ---- Video lightbox ---- */
+/* Same overlay language as the project image lightbox (.lb): blurred near-black
+   backdrop, a title/close bar up top, the media centred under it. */
+.vlb {
+  position: fixed;
+  inset: 0;
+  /* Above the floating design panel (100000) — while a clip is playing nothing
+     should be sitting on top of it. */
+  z-index: 100001;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  pointer-events: none;
+  opacity: 0;
+  /* visibility (not just opacity) so the closed overlay isn't composited — a
+     permanently live backdrop-filter over the hero costs frames for nothing. */
+  visibility: hidden;
+  transition:
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.35s;
+}
+
+.vlb--open {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vlb__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 8, 10, 0.95);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 0;
+  padding: 0;
+  cursor: var(--cursor-pointer);
+  z-index: -1;
+}
+
+.vlb__bar {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px clamp(20px, 4vw, 48px) 16px;
+  color: #f5f3ee;
+  font-family: var(--sans);
+}
+
+.vlb__title {
+  font-family: var(--display);
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.vlb__meta {
+  margin-right: auto;
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.6);
+}
+
+.vlb__close {
+  margin-left: auto;
+  background: rgba(245, 243, 238, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #0a0a0a;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: var(--sans);
+  letter-spacing: 0.2px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.vlb__meta + .vlb__close {
+  margin-left: 0;
+}
+
+.vlb__close:hover {
+  background: rgba(245, 243, 238, 1);
+}
+
+.vlb__close:active {
+  transform: scale(0.96);
+}
+
+.vlb__stage {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+  padding: 8px clamp(16px, 4vw, 56px) 56px;
+}
+
+.vlb__player {
+  position: relative;
+  display: flex;
+  max-width: min(100%, 1280px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  animation: vlb-pop 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.vlb__video {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100svh - 170px);
+  width: auto;
+  height: auto;
+  background: #000;
+}
+
+@keyframes vlb-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* The frame itself is the play/pause button — no scrubber, no skip. */
+.vlb__toggle {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+
+.vlb__toggle.is-paused {
+  background: rgba(8, 8, 10, 0.32);
+}
+
+.vlb__glyph {
+  display: grid;
+  place-items: center;
+  width: clamp(56px, 6vw, 76px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vlb__toggle.is-paused .vlb__glyph {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.vlb__glyph svg {
+  width: 38%;
+  height: 38%;
+  /* Optical centring — the triangle's mass sits left of its box. */
+  margin-left: 6%;
+}
+
+/* A hairline of progress, deliberately not draggable: it reports, it doesn't
+   seek. */
+.vlb__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(245, 243, 238, 0.18);
+  pointer-events: none;
+}
+
+.vlb__progress span {
+  display: block;
+  height: 100%;
+  background: #f5f3ee;
+}
+
+@media (max-width: 700px) {
+  .vlb__bar {
+    padding: 20px 16px 12px;
+    gap: 10px;
+  }
+  .vlb__title {
+    font-size: 14px;
+  }
+  .vlb__meta {
+    font-size: 10px;
+  }
+  .vlb__close {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .vlb__stage {
+    padding: 8px 12px 40px;
+  }
+  .vlb__video {
+    max-height: calc(100svh - 150px);
+  }
+}

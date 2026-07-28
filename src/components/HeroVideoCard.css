@@ -1,0 +1,131 @@
+/* ---- Hero video polaroid ---- */
+/* Same physical-object language as the about-page gallery cards (.sr__photo):
+   a cream card with the frame up top and a Doto "label printer" caption in the
+   bottom lip. Square-cut here rather than rounded — it reads as a print tossed
+   into the sticker pile. Placement is the physics engine's (an inline transform
+   each frame); the width below is all this rule owns. */
+/* Above the stickers (z 7/8) rather than holding them up: anything that rolls
+   into its corner tucks BEHIND the card, so the clip is never covered and the
+   pile never has to stack on top of it. */
+.hero-sticker--video,
+.hero-sticker--video.is-dragging {
+  z-index: 9;
+}
+
+.hero-sticker--video {
+  width: clamp(230px, 23vw, 330px);
+  background: #f5f3ee;
+  padding: 8px 8px 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+.hero-video__frame {
+  position: relative;
+  display: block;
+  line-height: 0;
+}
+
+/* The looping preview (or the poster, under reduced motion). */
+.hero-video__media {
+  display: block;
+  width: 100%;
+  /* The clip's native 3260×2160, so the box is reserved at the right height
+     before the media loads — the physics engine measures this card on mount and
+     a late reflow would size its body wrong. */
+  aspect-ratio: 3260 / 2160;
+  height: auto;
+  object-fit: cover;
+  background: #0a0a0a;
+  /* The card is dragged by its face, so the video must not swallow the
+     gesture — the pointer handlers live on the card itself. */
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hero-video__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: clamp(44px, 4.4vw, 60px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #f5f3ee;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s ease;
+}
+
+.hero-video__play svg {
+  width: 42%;
+  height: 42%;
+  /* The triangle's optical centre sits left of its bounding box, so nudge it
+     back over the circle's centre. */
+  margin-left: 6%;
+}
+
+.hero-video__play:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.hero-video__play:active {
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+.hero-video__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  /* Fixed height: Doto swaps in late, and a caption that grew a pixel after
+     load would leave the physics body measured at the wrong size. */
+  height: 30px;
+  padding: 0 3px;
+  /* Doto — the same label-printer face the polaroid captions use. */
+  font-family: 'Doto', var(--sans);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  color: #2a2825;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Light page: invert the card so it doesn't dissolve into the cream canvas —
+   the same swap the about-page photo cards make. */
+[data-theme='light'] .hero-sticker--video {
+  background: #1a1a1a;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 20px 44px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme='light'] .hero-video__cap {
+  color: #f5f3ee;
+}
+
+/* Mobile: narrower, so the card leaves the rest of the pile enough bottom line
+   to land on beside it instead of stacking up into the bio (see the sizing note
+   in HeroStickers.css). */
+@media (max-width: 900px) {
+  .hero-sticker--video {
+    width: clamp(132px, 37vw, 175px);
+    padding: 6px 6px 0;
+  }
+  .hero-video__play {
+    width: clamp(32px, 9vw, 42px);
+  }
+  .hero-video__cap {
+    height: 22px;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+}

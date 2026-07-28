@@ -29,38 +29,28 @@
 /* Per-sticker size (desktop). */
 .hero-sticker--pin { width: clamp(52px, 5.5vw, 88px); }
 .hero-sticker--brain { width: clamp(118px, 10vw, 150px); }
-.hero-sticker--designer { width: clamp(150px, 12.5vw, 190px); }
-.hero-sticker--kudi { width: clamp(150px, 13vw, 200px); }
-.hero-sticker--portfolio { width: clamp(170px, 17vw, 250px); }
 .hero-sticker--book { width: clamp(96px, 8.5vw, 128px); }
 .hero-sticker--face { width: clamp(104px, 9.5vw, 148px); }
+/* The video polaroid sizes itself — see HeroVideoCard.css. */
 
 @media (max-width: 1180px) {
   /* A crowd once the headline eats the width — thin the pile to the core
      identity stickers so it doesn't jam. This also carries down to mobile. */
-  .hero-sticker--kudi,
-  .hero-sticker--portfolio,
   .hero-sticker--book {
     display: none;
   }
 }
 
-/* Mobile: no input pill here, so bring back the book + portfolio stickers to
-   fill the space, and scale everything for the short band under the headline. */
+/* Mobile: the band under the bio is only ~220px tall and the video card takes
+   the right of it, so the rest of the pile is sized to sit BESIDE the card on
+   the bottom line rather than stack on top of it — a stack that tall would run
+   back up into the bio copy. Three small stickers (~215px together) against
+   ~230px of free floor is what keeps the band from cluttering. The book stays
+   dropped here (the 1180px rule hides it) for the same reason. */
 @media (max-width: 900px) {
-  /* Bumped up now that the taller mobile hero leaves room below the bio. */
-  .hero-sticker--pin { width: clamp(42px, 11vw, 58px); }
-  .hero-sticker--brain { width: clamp(78px, 21vw, 116px); }
-  .hero-sticker--designer { width: clamp(94px, 26vw, 136px); }
-  .hero-sticker--face { width: clamp(64px, 18vw, 88px); }
-  /* Un-hide two of the stickers the 1180px rule dropped (the input pill that
-     used to sit here is gone on mobile). */
-  .hero-sticker--book,
-  .hero-sticker--portfolio {
-    display: block;
-  }
-  .hero-sticker--book { width: clamp(80px, 20vw, 112px); }
-  .hero-sticker--portfolio { width: clamp(120px, 32vw, 176px); }
+  .hero-sticker--pin { width: clamp(36px, 9.5vw, 50px); }
+  .hero-sticker--brain { width: clamp(70px, 18vw, 98px); }
+  .hero-sticker--face { width: clamp(58px, 17vw, 82px); }
 }
 
 /* ---- Text pill stickers (typed via the input) ---- */

@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .vercel
 src/data/contributions.json
+
+# Full-res video/photo masters (web versions live in public/)
+media-src
