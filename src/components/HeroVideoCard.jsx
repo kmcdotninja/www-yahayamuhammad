@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './HeroVideoCard.css'
 import VideoLightbox from './VideoLightbox.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
@@ -26,8 +26,31 @@ export default function HeroVideoCard() {
   const [open, setOpen] = useState(false)
   const reduced = useReducedMotion()
   const down = useRef(null)
+  const cardRef = useRef(null)
+  const frameRef = useRef(null)
   const playRef = useRef(null)
   const loopRef = useRef(null)
+
+  // Where the lightbox morphs from and back to. Read live rather than cached:
+  // the card is throwable, so it may have moved (or be mid-flight) between
+  // opening and closing. The frame — not the whole card — is the origin, since
+  // it shares the player's aspect ratio exactly. The lean comes off the card's
+  // physics transform so the player straightens out as it grows.
+  const getOrigin = useCallback(() => {
+    const card = cardRef.current
+    const frame = frameRef.current
+    if (!card || !frame) return null
+    const r = frame.getBoundingClientRect()
+    if (!r.width) return null
+    const t = getComputedStyle(card).transform
+    const m = t && t !== 'none' ? new DOMMatrixReadOnly(t) : null
+    return {
+      w: frame.offsetWidth, // unrotated, to pair with the rotation below
+      cx: r.left + r.width / 2,
+      cy: r.top + r.height / 2,
+      angle: m ? (Math.atan2(m.b, m.a) * 180) / Math.PI : 0,
+    }
+  }, [])
 
   // Don't spend battery decoding a loop nobody can see — the hero scrolls away
   // and this keeps running otherwise. Also pauses it while the lightbox (which
@@ -72,13 +95,14 @@ export default function HeroVideoCard() {
   return (
     <>
       <div
+        ref={cardRef}
         className="hero-sticker hero-sticker--video"
         data-upright
         data-anchor="bottom-right"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
-        <div className="hero-video__frame">
+        <div className="hero-video__frame" ref={frameRef}>
           {reduced ? (
             <img
               className="hero-video__media"
@@ -126,7 +150,14 @@ export default function HeroVideoCard() {
         </div>
       </div>
 
-      <VideoLightbox open={open} src={FULL} title={TITLE} meta={DATE} onClose={close} />
+      <VideoLightbox
+        open={open}
+        src={FULL}
+        title={TITLE}
+        meta={DATE}
+        getOrigin={getOrigin}
+        onClose={close}
+      />
     </>
   )
 }
