@@ -4,10 +4,11 @@ import VideoLightbox from './VideoLightbox.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 
 // The lightbox clip comes in two cuts: a 1600px one for desktop and a 960px one
-// for phones. The full-size file is ~4.8MB, which on a phone meant a long black
-// wait before the first frame — at a 366px-wide player it was never worth the
-// bytes. Paired with a poster from the clip's own first frame, so the modal has
-// something to show the instant it opens.
+// for phones. The full-size file runs to several MB, which on a phone meant a
+// long black wait before the first frame — at a 366px-wide player it was never
+// worth the bytes. Paired with a poster from the clip's own first frame, so the
+// modal has something to show the instant it opens. All four files are derived
+// from media-src/ by hand (ffmpeg); see the note in .gitignore.
 const FULL = '/video/rednoxx.mp4'
 const FULL_SM = '/video/rednoxx-sm.mp4'
 const FULL_POSTER = '/video/rednoxx-start.webp'
@@ -90,8 +91,8 @@ export default function HeroVideoCard() {
 
   const src = small ? FULL_SM : FULL
 
-  // Pull the lightbox's poster into cache while the hero is idle. It's 31KB
-  // against the 349KB loop this card already streams, and it's the difference
+  // Pull the lightbox's poster into cache while the hero is idle. It's ~34KB
+  // against the ~435KB loop this card already streams, and it's the difference
   // between the modal opening onto the clip's first frame and opening onto
   // black while the image crosses the wire behind the spinner.
   useEffect(() => {
@@ -149,7 +150,7 @@ export default function HeroVideoCard() {
               src={POSTER}
               alt=""
               width={900}
-              height={596}
+              height={590}
               decoding="async"
               draggable={false}
             />
@@ -160,7 +161,7 @@ export default function HeroVideoCard() {
               src={LOOP}
               poster={POSTER}
               width={900}
-              height={596}
+              height={590}
               autoPlay
               muted
               loop

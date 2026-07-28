@@ -31,10 +31,10 @@
 .hero-video__media {
   display: block;
   width: 100%;
-  /* The clip's native 3260×2160, so the box is reserved at the right height
+  /* The clip's native 3296×2160, so the box is reserved at the right height
      before the media loads — the physics engine measures this card on mount and
      a late reflow would size its body wrong. */
-  aspect-ratio: 3260 / 2160;
+  aspect-ratio: 3296 / 2160;
   height: auto;
   object-fit: cover;
   background: #0a0a0a;
