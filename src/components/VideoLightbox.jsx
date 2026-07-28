@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom'
 import './VideoLightbox.css'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
+import { useScrollLock } from '../hooks/useScrollLock.js'
 
 const IN_MS = 520
 const OUT_MS = 420
@@ -116,6 +117,10 @@ export default function VideoLightbox({ open, src, title, meta, getOrigin, onClo
   const [closing, setClosing] = useState(false)
   const reduced = useReducedMotion()
 
+  // Held through the exit morph too (`open` stays true until it finishes), so
+  // the page can't scroll out from under the card the player is flying back to.
+  useScrollLock(open)
+
   // Grow out of the card. Reduced motion gets the plain fade the CSS provides.
   useLayoutEffect(() => {
     if (!open || reduced) return
@@ -166,12 +171,8 @@ export default function VideoLightbox({ open, src, title, meta, getOrigin, onClo
       }
     }
     document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
     closeRef.current?.focus()
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, requestClose, toggle])
 
   return createPortal(

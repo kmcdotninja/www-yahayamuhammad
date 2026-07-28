@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './ProjectDrawer.css'
 import Picture from './Picture.jsx'
-import { getLenis } from '../lib/lenisStore.js'
+import { useScrollLock } from '../hooks/useScrollLock.js'
 
 const NARROW_RATIO = 1.15 // width/height — anything below is treated as pairable
 
@@ -73,48 +73,15 @@ export default function ProjectDrawer({
     if (contentRef.current) contentRef.current.scrollTop = 0
   }, [project?.name])
 
+  useScrollLock(open)
+
   useEffect(() => {
     if (!open) return
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
-
-    const lenis = getLenis()
-    lenis?.stop()
-
-    const scrollY = window.scrollY
-    const html = document.documentElement
-    const body = document.body
-    const prev = {
-      htmlOverflow: html.style.overflow,
-      bodyOverflow: body.style.overflow,
-      bodyPosition: body.style.position,
-      bodyTop: body.style.top,
-      bodyLeft: body.style.left,
-      bodyRight: body.style.right,
-      bodyWidth: body.style.width,
-    }
-    html.style.overflow = 'hidden'
-    body.style.overflow = 'hidden'
-    body.style.position = 'fixed'
-    body.style.top = `-${scrollY}px`
-    body.style.left = '0'
-    body.style.right = '0'
-    body.style.width = '100%'
-
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      html.style.overflow = prev.htmlOverflow
-      body.style.overflow = prev.bodyOverflow
-      body.style.position = prev.bodyPosition
-      body.style.top = prev.bodyTop
-      body.style.left = prev.bodyLeft
-      body.style.right = prev.bodyRight
-      body.style.width = prev.bodyWidth
-      window.scrollTo(0, scrollY)
-      lenis?.start()
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
   // Prefer grouped sections; otherwise fall back to flat images + story.
