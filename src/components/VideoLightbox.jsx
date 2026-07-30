@@ -109,7 +109,18 @@ function morph(player, origin, dir) {
 // context, and kept mounted (hidden) so the backdrop can fade both ways. The
 // <Player> only exists while open — nothing buffers in the background, and a
 // reopen gets a fresh element with fresh state rather than a rewind.
-export default function VideoLightbox({ open, src, poster, title, meta, getOrigin, onClose }) {
+export default function VideoLightbox({
+  open,
+  src,
+  poster,
+  // --clip-w / --clip-h: the source clip's pixel dimensions, which the player's
+  // size is derived from (see VideoLightbox.css).
+  clipVars,
+  title,
+  meta,
+  getOrigin,
+  onClose,
+}) {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
   const closeRef = useRef(null)
@@ -210,6 +221,7 @@ export default function VideoLightbox({ open, src, poster, title, meta, getOrigi
           <Player
             src={src}
             poster={poster}
+            clipVars={clipVars}
             videoRef={videoRef}
             playerRef={playerRef}
             onToggle={toggle}
@@ -226,7 +238,7 @@ export default function VideoLightbox({ open, src, poster, title, meta, getOrigi
 // clip is silent, so muted autoplay isn't blocked in practice) without an
 // effect having to reset anything. onCanPlay is the safety net: if a browser
 // did refuse to autoplay, show the play glyph rather than a frozen frame.
-function Player({ src, poster, videoRef, playerRef, onToggle, closing }) {
+function Player({ src, poster, clipVars, videoRef, playerRef, onToggle, closing }) {
   const [playing, setPlaying] = useState(true)
   const [progress, setProgress] = useState(0)
   // The clip has to arrive over the network. The poster covers the frame from
@@ -271,7 +283,7 @@ function Player({ src, poster, videoRef, playerRef, onToggle, closing }) {
   }, [playing, videoRef])
 
   return (
-    <div className="vlb__player" ref={playerRef}>
+    <div className="vlb__player" ref={playerRef} style={clipVars}>
       <video
         ref={videoRef}
         className="vlb__video"

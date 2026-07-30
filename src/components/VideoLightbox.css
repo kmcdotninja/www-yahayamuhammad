@@ -123,13 +123,14 @@
 .vlb__player {
   position: relative;
   display: flex;
-  /* Sized from the clip's own ratio rather than from the loaded video, so the
-     box is final on the very first frame — the morph measures it immediately,
-     and a late resize would both mis-aim the flight and jump the layout. Both
-     limits are expressed as widths (the height follows the ratio) because a
-     max-height would clamp the height without narrowing the width. */
-  width: min(100%, 1280px, calc((100svh - 170px) * 3296 / 2160));
-  aspect-ratio: 3296 / 2160;
+  /* Sized from the clip's own ratio (--clip-w/--clip-h, set from CLIP in
+     HeroVideoCard.jsx) rather than from the loaded video, so the box is final on
+     the very first frame — the morph measures it immediately, and a late resize
+     would both mis-aim the flight and jump the layout. Both limits are expressed
+     as widths (the height follows the ratio) because a max-height would clamp
+     the height without narrowing the width. */
+  width: min(100%, 1280px, calc((100svh - 170px) * var(--clip-w) / var(--clip-h)));
+  aspect-ratio: var(--clip-w) / var(--clip-h);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
@@ -248,6 +249,6 @@
     padding: 8px 12px 40px;
   }
   .vlb__player {
-    width: min(100%, calc((100svh - 150px) * 3296 / 2160));
+    width: min(100%, calc((100svh - 150px) * var(--clip-w) / var(--clip-h)));
   }
 }

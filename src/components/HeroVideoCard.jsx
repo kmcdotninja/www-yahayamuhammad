@@ -17,6 +17,15 @@ const POSTER = '/video/rednoxx-poster.webp'
 const TITLE = 'Building Rednoxx'
 const DATE = "Jul '26"
 
+// The master's pixel dimensions, and the single place they live. The card frame
+// and the lightbox player both size themselves from this ratio so their boxes
+// are final on the first frame (the morph measures them immediately, and a late
+// resize would mis-aim the flight). Each new recording has come in at a slightly
+// different ratio, so it's fed to CSS as custom properties rather than written
+// into four rules that then drift.
+const CLIP = { w: 3194, h: 2160 }
+const CLIP_VARS = { '--clip-w': CLIP.w, '--clip-h': CLIP.h }
+
 const SMALL_MQ = '(max-width: 900px)'
 
 // The card is a physics sticker AND a button, so a pointerup only counts as a
@@ -143,14 +152,14 @@ export default function HeroVideoCard() {
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
-        <div className="hero-video__frame" ref={frameRef}>
+        <div className="hero-video__frame" ref={frameRef} style={CLIP_VARS}>
           {reduced ? (
             <img
               className="hero-video__media"
               src={POSTER}
               alt=""
-              width={900}
-              height={590}
+              width={CLIP.w}
+              height={CLIP.h}
               decoding="async"
               draggable={false}
             />
@@ -160,8 +169,8 @@ export default function HeroVideoCard() {
               className="hero-video__media"
               src={LOOP}
               poster={POSTER}
-              width={900}
-              height={590}
+              width={CLIP.w}
+              height={CLIP.h}
               autoPlay
               muted
               loop
@@ -195,6 +204,7 @@ export default function HeroVideoCard() {
         open={open}
         src={src}
         poster={FULL_POSTER}
+        clipVars={CLIP_VARS}
         title={TITLE}
         meta={DATE}
         getOrigin={getOrigin}

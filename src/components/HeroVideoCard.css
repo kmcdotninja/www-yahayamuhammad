@@ -31,10 +31,11 @@
 .hero-video__media {
   display: block;
   width: 100%;
-  /* The clip's native 3296×2160, so the box is reserved at the right height
-     before the media loads — the physics engine measures this card on mount and
-     a late reflow would size its body wrong. */
-  aspect-ratio: 3296 / 2160;
+  /* The clip's own pixel ratio (--clip-w/--clip-h, set from CLIP in
+     HeroVideoCard.jsx), so the box is reserved at the right height before the
+     media loads — the physics engine measures this card on mount and a late
+     reflow would size its body wrong. */
+  aspect-ratio: var(--clip-w) / var(--clip-h);
   height: auto;
   object-fit: cover;
   background: #0a0a0a;
