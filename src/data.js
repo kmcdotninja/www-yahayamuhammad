@@ -84,6 +84,44 @@ export const projects = [
     ],
   },
   {
+    name: 'Rednoxx',
+    // Parked as a teaser (same pattern as Groq/Waffle) — the card shows the
+    // board + info but the drawer stays closed. Flip `comingSoon` off and add a
+    // `sections` array to take it fully live.
+    comingSoon: true,
+    description:
+      'Rednoxx is a healthcare platform for enrolments, payments, insurance, consultations, prescriptions, labs, surgery, and reporting. Built on a design system with foundations, 36 components, and 30 healthcare blocks, validated across a 50 screen product demo.',
+    roles: ['Product Design', 'Design System Engineer', 'Interaction Design', 'Accessibility'],
+    team: [
+      { name: 'Yahaya Muhammad', role: 'Product Designer' },
+      { name: 'Jamil Galadanchi', role: 'Project Lead' },
+      { name: 'Ibrahim Muhammad', role: 'Product Manager' },
+      { name: 'Abdulrahman Muhammad', role: 'Lead Engineer' },
+      { name: 'Abdulmalik Muhammad', role: 'Lead Frontend Engineer' },
+      { name: 'Kareema Imam', role: 'Frontend Engineer' },
+    ],
+    // Ordered column-major to match the authored board: column 1 top to bottom,
+    // then 2, then 3. `columnBreaks` pins where each column starts, since CSS
+    // multicol balances heights and would otherwise choose its own split.
+    images: [
+      '/projects/Rednoxx/Foundations.webp',
+      '/projects/Rednoxx/Color%20Spec.webp',
+      '/projects/Rednoxx/Empty%20State%201.webp',
+      '/projects/Rednoxx/Button.webp',
+      '/projects/Rednoxx/Table.webp',
+      '/projects/Rednoxx/Reg%20Slip.webp',
+      '/projects/Rednoxx/Rednoxx%20Logo.webp',
+      '/projects/Rednoxx/Components.webp',
+      '/projects/Rednoxx/Patient%20Tab.webp',
+      '/projects/Rednoxx/Drawer.webp',
+      '/projects/Rednoxx/No%20duplicate%20candidates.webp',
+      '/projects/Rednoxx/Discharge%20summary.webp',
+      '/projects/Rednoxx/Upload.webp',
+      '/projects/Rednoxx/Badge.webp',
+    ],
+    columnBreaks: [6, 9],
+  },
+  {
     name: 'Groq',
     // Parked as a teaser for now (same pattern as Waffle) — the card shows the
     // image strip + info but the drawer stays closed. Flip `comingSoon` off and

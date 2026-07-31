@@ -14,6 +14,16 @@
   margin-bottom: 56px;
 }
 
+/* A project can pin its grid to an authored arrangement via `columnBreaks`
+   (see data.js) — multicol balances heights on its own otherwise. Scoped to the
+   three-column breakpoint: a forced break outranks `column-count`, so left
+   unscoped it would hold three columns all the way down to a 390px phone. */
+@media (min-width: 901px) {
+  .works--grid .project__tile-frame[data-column-break] {
+    break-before: column;
+  }
+}
+
 /* Layout-only wrapper — owns the masonry break/margin and the GSAP
    scroll-reveal transform. The hover lift lives on the inner figure so
    GSAP's inline transform on the frame and CSS hover transform on the
