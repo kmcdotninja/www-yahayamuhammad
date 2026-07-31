@@ -5,7 +5,6 @@ export const projects = [
       'A learning app that turns Islamic studies for kids 6 to 12 into short, illustrated lessons that feel more like play than school.',
     roles: ['Product Design', 'Art Direction', 'Website Design', 'Interaction Design'],
     team: [
-      { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Oselu Irabor', role: 'Illustrator' },
       { name: 'David Odinegun', role: 'Motion Designer' },
       { name: 'Mohammad Ghayen', role: 'Mobile Engineer' },
@@ -93,33 +92,33 @@ export const projects = [
       'Rednoxx is a healthcare platform for enrolments, payments, insurance, consultations, prescriptions, labs, surgery, and reporting. Built on a design system with foundations, 36 components, and 30 healthcare blocks, validated across a 50 screen product demo.',
     roles: ['Product Design', 'Design System Engineer', 'Interaction Design', 'Accessibility'],
     team: [
-      { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Jamil Galadanchi', role: 'Project Lead' },
       { name: 'Ibrahim Muhammad', role: 'Product Manager' },
       { name: 'Abdulrahman Muhammad', role: 'Lead Engineer' },
       { name: 'Abdulmalik Muhammad', role: 'Lead Frontend Engineer' },
       { name: 'Kareema Imam', role: 'Frontend Engineer' },
     ],
-    // Ordered column-major to match the authored board: column 1 top to bottom,
-    // then 2, then 3. `columnBreaks` pins where each column starts, since CSS
-    // multicol balances heights and would otherwise choose its own split.
+    // Order is tuned for the masonry, not for reading: the two tall panels (the
+    // registration slip and the discharge summary) are pushed into separate
+    // columns and the short ones spread around them. Grouping them by topic
+    // instead stacked both giants in one column, which left the middle column
+    // ~300px short and opened a dead gap under it.
     images: [
+      '/projects/Rednoxx/Reg%20Slip.webp',
       '/projects/Rednoxx/Foundations.webp',
       '/projects/Rednoxx/Color%20Spec.webp',
+      '/projects/Rednoxx/Table.webp',
+      '/projects/Rednoxx/Discharge%20summary.webp',
       '/projects/Rednoxx/Empty%20State%201.webp',
       '/projects/Rednoxx/Button.webp',
-      '/projects/Rednoxx/Table.webp',
-      '/projects/Rednoxx/Reg%20Slip.webp',
+      '/projects/Rednoxx/Patient%20Tab.webp',
       '/projects/Rednoxx/Rednoxx%20Logo.webp',
       '/projects/Rednoxx/Components.webp',
-      '/projects/Rednoxx/Patient%20Tab.webp',
       '/projects/Rednoxx/Drawer.webp',
       '/projects/Rednoxx/No%20duplicate%20candidates.webp',
-      '/projects/Rednoxx/Discharge%20summary.webp',
       '/projects/Rednoxx/Upload.webp',
       '/projects/Rednoxx/Badge.webp',
     ],
-    columnBreaks: [6, 9],
   },
   {
     name: 'Groq',
@@ -131,7 +130,6 @@ export const projects = [
       'Groq is a crypto payment platform designed to help freelancers and businesses seamlessly receive and spend cryptocurrency.',
     roles: ['Brand Design', 'Product Design', 'Product Strategy', 'Illustration & Icon Design'],
     team: [
-      { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Saidu Bello', role: 'Backend Developer' },
       { name: 'Moses Chimaso', role: 'Frontend Developer' },
     ],
@@ -160,7 +158,6 @@ export const projects = [
       'A developer platform for shipping AI customer agents in days, not months. I designed Waffle end to end, from the wordmark to the marketing site that gets developers to the docs.',
     roles: ['Brand Identity', 'Web Design', 'Marketing Design', 'Art Direction'],
     team: [
-      { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Sarah Chen', role: 'Frontend Engineer' },
     ],
     images: [

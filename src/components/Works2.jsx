@@ -9,11 +9,7 @@ import { projects } from '../data.js'
 const ProjectDrawer = lazy(() => import('./ProjectDrawer.jsx'))
 
 const Project = memo(function Project({ project, onOpen }) {
-  const { name, description, roles, team, images, comingSoon, columnBreaks } = project
-  // CSS multicol balances column heights, so source order alone can't decide
-  // which column a tile lands in. `columnBreaks` lists the image indices that
-  // must START a column, letting a project pin its grid to an authored layout.
-  const breaks = new Set(columnBreaks)
+  const { name, description, roles, team, images, comingSoon } = project
   const pillRef = useRef(null)
   const [pillVisible, setPillVisible] = useState(false)
 
@@ -71,7 +67,6 @@ const Project = memo(function Project({ project, onOpen }) {
             key={src}
             className="project__tile-frame"
             data-reveal-card
-            data-column-break={breaks.has(i) ? '' : undefined}
           >
             <figure
               className="project__tile"
