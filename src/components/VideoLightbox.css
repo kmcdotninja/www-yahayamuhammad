@@ -23,12 +23,20 @@
   visibility: visible;
 }
 
-/* Chrome (backdrop + title bar) crossfades around the morph — in a little
-   quicker than the card's flight, out alongside it. */
+/* Chrome (backdrop + title bar) crossfades around the morph. The room goes dark
+   fast so the flight has something to fly THROUGH, and the bar drops in behind
+   it on a delay — the clip lands first, the furniture arrives after. */
 .vlb__backdrop,
 .vlb__bar {
   opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vlb__bar {
+  transform: translateY(-14px);
+  transition:
+    opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .vlb--open .vlb__backdrop,
@@ -36,10 +44,21 @@
   opacity: 1;
 }
 
+.vlb--open .vlb__bar {
+  transform: none;
+  transition-delay: 0.16s;
+}
+
+/* Out fast and together: on the way home the flight is the whole show. */
 .vlb--closing .vlb__backdrop,
 .vlb--closing .vlb__bar {
   opacity: 0;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
+  transition-delay: 0s;
+}
+
+.vlb--closing .vlb__bar {
+  transform: translateY(-10px);
 }
 
 .vlb__backdrop {
@@ -52,6 +71,26 @@
   padding: 0;
   cursor: var(--cursor-pointer);
   z-index: -1;
+}
+
+/* Desktop only: rack the blur in rather than cross-fading a pre-blurred sheet,
+   so the hero visibly dissolves as the card lifts off it. Held back from phones
+   because a backdrop-filter that changes every frame repaints the whole viewport,
+   and that's the one thing that can stall the flight on a mid-range Android. */
+@media (min-width: 901px) {
+  .vlb__backdrop {
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    transition:
+      opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      -webkit-backdrop-filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .vlb--open .vlb__backdrop {
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
 }
 
 .vlb__bar {
@@ -213,7 +252,9 @@
 }
 
 /* A hairline of progress, deliberately not draggable: it reports, it doesn't
-   seek. */
+   seek. Held back until the flight has landed — during the morph the player is
+   a piece of footage in mid-air, not a video with controls on it. The delay can
+   be a plain animation because <Player> is mounted fresh on every open. */
 .vlb__progress {
   position: absolute;
   left: 0;
@@ -222,6 +263,28 @@
   height: 3px;
   background: rgba(245, 243, 238, 0.18);
   pointer-events: none;
+  animation: vlb-chrome-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) 0.54s both;
+}
+
+.vlb--closing .vlb__progress {
+  animation: vlb-chrome-out 0.16s ease both;
+}
+
+@keyframes vlb-chrome-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes vlb-chrome-out {
+  to {
+    opacity: 0;
+  }
 }
 
 .vlb__progress span {

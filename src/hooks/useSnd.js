@@ -64,12 +64,33 @@ export const SOUNDS = {
 // import. Idempotent.
 if (typeof window !== 'undefined') {
   const warm = () => {
-    ensureKit(KITS.DEFAULT)
+    // snd-lib unlocks its AudioContext from its own one-shot `click` listener on
+    // window, registered when the Snd instance is constructed. That construction
+    // happens inside this dynamic import — i.e. after the click that triggered
+    // it has already been and gone — so the very first interaction would arm the
+    // listener rather than satisfy it, and nothing would play until the user
+    // clicked a second time. Re-firing the event once the kit is ready closes
+    // that gap. It is dispatched on `window`, whose propagation path is only
+    // itself, so no application click handler sees it.
+    ensureKit(KITS.DEFAULT).then(() => {
+      try {
+        window.dispatchEvent(new Event('click'))
+      } catch {
+        // ignore — worst case the next real click unlocks it
+      }
+    })
     window.removeEventListener('pointerdown', warm)
     window.removeEventListener('keydown', warm)
   }
   window.addEventListener('pointerdown', warm, { once: true, passive: true })
   window.addEventListener('keydown', warm, { once: true })
+}
+
+// Pre-fetch a kit's sprite. Worth calling for any kit other than DEFAULT: only
+// DEFAULT is warmed on first pointer (below), so without this the first few
+// plays of another kit land silently while its sprite is still downloading.
+export function warmKit(kit) {
+  ensureKit(kit)
 }
 
 export function useSnd(kit = KITS.DEFAULT) {

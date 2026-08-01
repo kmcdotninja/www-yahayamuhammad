@@ -52,6 +52,13 @@ export const ROUTE_SEO = {
     description:
       'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
   },
+  // About + timeline variant, parked for review — kept out of the sitemap so it
+  // isn't indexed as duplicate content alongside the live /about.
+  '/about-timeline': {
+    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    description:
+      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
+  },
   '/playground': {
     title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',
     description:

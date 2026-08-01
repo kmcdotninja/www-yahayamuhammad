@@ -144,11 +144,21 @@ body {
   padding: 0;
   background: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
   /* Firefox */
   scrollbar-width: none;
   /* IE/old Edge */
   -ms-overflow-style: none;
+}
+
+/* Clips the full-bleed 100vw elements (dividers, sticky bands, the hero
+   stickers) so they can't open a horizontal scrollbar.
+   Deliberately on <html> ONLY. The root element's overflow propagates to the
+   viewport, so this still does the clipping — but repeating it on <body> turns
+   <body> into its own scroll container whose scrollport is the full document
+   height, and `position: sticky` inside a scrollport that never scrolls simply
+   never sticks. */
+html {
+  overflow-x: hidden;
 }
 
 /* Chromium / WebKit */

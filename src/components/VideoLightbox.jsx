@@ -4,9 +4,9 @@ import './VideoLightbox.css'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 import { useScrollLock } from '../hooks/useScrollLock.js'
 
-const IN_MS = 520
-const OUT_MS = 420
-const STEPS = 18 // path samples; the tween between them is imperceptible
+const IN_MS = 720
+const OUT_MS = 540
+const STEPS = 30 // path samples; the tween between them is imperceptible
 
 // Opening lifts away quickly and takes its time landing. Closing gathers, then
 // tucks home. Both are sampled in JS rather than handed to the browser, because
@@ -40,15 +40,76 @@ function cubicBezier(x1, y1, x2, y2) {
 
 const lerp = (from, to, t) => from + (to - from) * t
 
+// A curve through hand-placed control points, smoothstepped between them, used
+// for the beats laid over the flight below. Read against LINEAR time rather than
+// the eased path position, so the crouch and the settle land at fixed moments
+// no matter how far the card happens to be from the middle of the screen.
+function envelope(points) {
+  return (t) => {
+    for (let i = 1; i < points.length; i++) {
+      const [t1, v1] = points[i]
+      if (t > t1 && i < points.length - 1) continue
+      const [t0, v0] = points[i - 1]
+      const p = Math.min(1, Math.max(0, (t - t0) / (t1 - t0 || 1)))
+      return lerp(v0, v1, p * p * (3 - 2 * p))
+    }
+    return points[points.length - 1][1]
+  }
+}
+
+// Scale multipliers riding on top of the card→player interpolation. Opening
+// crouches at the card before it launches, arrives a few percent oversized and
+// settles into place; closing winds up, then draws in tight. Both END at exactly
+// 1 so the flight finishes on the real box (full size / the card's frame) with
+// nothing left over to snap.
+const SCALE_IN = envelope([
+  [0, 1],
+  [0.13, 0.915],
+  [0.55, 1.05],
+  [0.84, 1.05],
+  [1, 1],
+])
+const SCALE_OUT = envelope([
+  [0, 1],
+  [0.17, 1.05],
+  [0.6, 0.965],
+  [1, 1],
+])
+
+// The whip: it doesn't just straighten out of its lean, it rotates past level
+// and swings back. Signed by the travel direction, in degrees (WHIP_DEG).
+const WHIP_IN = envelope([
+  [0, 0],
+  [0.16, 0.4],
+  [0.6, -1],
+  [0.86, -0.3],
+  [1, 0],
+])
+const WHIP_OUT = envelope([
+  [0, 0],
+  [0.2, -0.7],
+  [0.7, 0.35],
+  [1, 0],
+])
+const WHIP_DEG = 5
+
+// Peak squash-and-stretch, as a fraction of the box, at the fastest point of
+// the flight. Volume-conserving (the cross-axis takes the reciprocal), so it
+// reads as speed rather than as the aspect ratio breaking.
+const STRETCH = 0.13
+
 // Shared-element morph. The card's video frame and the player have the SAME
 // aspect ratio, so one uniform scale lines them up exactly — no squash mid-
 // flight — and the card's resting lean is carried through so the player
 // straightens out as it grows.
 //
-// The centre travels a quadratic bezier bowed up and slightly ahead of the
-// straight line, so it swings out of the corner rather than sliding along a
-// rail, and the scale breathes a fraction wide at the apex. Both readings of
-// "organic": nothing moves on an axis, nothing moves at a constant rate.
+// The centre travels a quadratic bezier bowed well up and ahead of the straight
+// line, so it vaults out of the corner rather than sliding along a rail. Four
+// beats are laid over that path to make the handoff read as a thrown object
+// rather than a tween: it CROUCHES before it launches, STRETCHES along its own
+// travel direction at speed, WHIPS past level and swings back, and ARRIVES
+// oversized before settling. Both readings of "organic": nothing moves on an
+// axis, nothing moves at a constant rate, nothing arrives without weight.
 function morph(player, origin, dir) {
   player.getAnimations().forEach((anim) => anim.cancel()) // measure the untransformed box
   const p = player.getBoundingClientRect()
@@ -60,7 +121,7 @@ function morph(player, origin, dir) {
 
   // Control point: half way, lifted, and led a little along the travel so the
   // arc leans diagonally instead of bulging symmetrically.
-  const lift = Math.min(170, 56 + Math.hypot(dx, dy) * 0.17)
+  const lift = Math.min(280, 90 + Math.hypot(dx, dy) * 0.26)
   const ctrlX = dx * 0.62
   const ctrlY = dy / 2 - lift
 
@@ -74,24 +135,42 @@ function morph(player, origin, dir) {
   }
 
   const ease = dir === 'in' ? EASE_IN : EASE_OUT
-  const frames = []
+  const scaleEnv = dir === 'in' ? SCALE_IN : SCALE_OUT
+  const whipEnv = dir === 'in' ? WHIP_IN : WHIP_OUT
+  const whip = WHIP_DEG * (dx > 0 ? -1 : 1) // lead with the side it's flying from
+
+  // Walk the path first: the stretch needs each sample's neighbours to know how
+  // fast the player is moving through it.
+  const path = []
   for (let i = 0; i <= STEPS; i++) {
     const t = i / STEPS
     const e = ease(t)
     const u = dir === 'in' ? e : 1 - e
-    const { x, y } = pointAt(u)
-    // A hair of extra size at the apex — the swell you get from something
-    // thrown rather than slid.
-    const swell = 1 + 0.01 * Math.sin(Math.PI * u)
-    frames.push({
-      offset: t,
-      transform: `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) rotate(${lerp(
-        origin.angle,
-        0,
-        u,
-      ).toFixed(3)}deg) scale(${(lerp(scale, 1, u) * swell).toFixed(5)})`,
-    })
+    path.push({ t, u, ...pointAt(u) })
   }
+  const at = (i) => path[Math.min(STEPS, Math.max(0, i))]
+  const speed = path.map((_, i) => Math.hypot(at(i + 1).x - at(i - 1).x, at(i + 1).y - at(i - 1).y))
+  const fastest = Math.max(...speed) || 1
+
+  const frames = path.map((pt, i) => {
+    // Local heading, so the stretch lies along the direction of travel wherever
+    // the arc is pointing rather than along a fixed axis.
+    const heading = (Math.atan2(at(i + 1).y - at(i - 1).y, at(i + 1).x - at(i - 1).x) * 180) / Math.PI
+    // sin() windows the stretch to zero at both ends: the flight has to finish
+    // on an undistorted box, or the last frame would leave the player skewed.
+    const k = STRETCH * (speed[i] / fastest) * Math.sin(Math.PI * pt.t)
+    const rot = lerp(origin.angle, 0, pt.u) + whip * whipEnv(pt.t)
+    const s = lerp(scale, 1, pt.u) * scaleEnv(pt.t)
+    return {
+      offset: pt.t,
+      transform:
+        `translate(${pt.x.toFixed(2)}px, ${pt.y.toFixed(2)}px) ` +
+        // Rotate into the heading, stretch, rotate back — screen-space squash
+        // and stretch, applied on top of the card's own lean below.
+        `rotate(${heading.toFixed(2)}deg) scale(${(1 + k).toFixed(4)}, ${(1 / (1 + k)).toFixed(4)}) rotate(${(-heading).toFixed(2)}deg) ` +
+        `rotate(${rot.toFixed(3)}deg) scale(${s.toFixed(5)})`,
+    }
+  })
 
   return player.animate(frames, {
     duration: dir === 'in' ? IN_MS : OUT_MS,

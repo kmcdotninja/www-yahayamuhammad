@@ -1,0 +1,664 @@
+/* Timeline band for /about-timeline.
+   The page itself reuses AboutPage2.css wholesale (same hero, portraits,
+   approach, experience and gallery) — everything here is the timeline that
+   gets slotted in after the portraits, so the two About variants can never
+   drift apart visually. */
+
+.tl {
+  /* Where the ruler parks once it sticks. Flush to the top, because it
+     *replaces* the nav for the length of the track rather than hanging below it
+     (see the .tl-pinned handoff at the foot of this file). Any inset here would
+     leave a sliver of the page scrolling past above the bar, which reads as a
+     glitch rather than as a floating header. */
+  --tl-top: 0px;
+  /* Nominal height of a photo row — every shot's flex-basis is derived from it
+     and its own aspect ratio, so rows justify without cropping. */
+  --tl-row-h: clamp(190px, 24vw, 340px);
+  /* How much of a collapsed gallery shows before the fade — enough to read the
+     top row and see clearly that there is more underneath. */
+  --tl-peek: clamp(340px, 58vh, 680px);
+  --tl-grid: var(--text-muted);
+  position: relative;
+  margin-bottom: clamp(56px, 8vw, 112px);
+}
+
+/* ---- Sticky ruler ---- */
+/* Sticky (not fixed) so it is pinned only while the chapters are on screen:
+   it rides in with the first chapter, parks under the nav through the whole
+   track, and releases with the last one. Nothing pins during the intro
+   because the intro sits outside this element. */
+.tl__ruler {
+  position: sticky;
+  top: var(--tl-top);
+  /* Above the TopNav (100) so the band slides cleanly over it during the
+     handoff, and below the mobile menu overlay (220). */
+  z-index: 101;
+  padding: 14px 0 12px;
+  /* An opaque, full-bleed backing so chapters scroll *under* the ruler rather
+     than through it. Drawn on ::before because a background on the sticky box
+     itself would stop at the page's --pad gutters and leave the sides
+     see-through. */
+}
+
+.tl__ruler::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Frame around the axis. Positioned, and that is load-bearing twice over: the
+   playhead and its chip are absolutely positioned, so this is what their offsets
+   resolve against — and an absolutely positioned element is only clipped by an
+   ancestor that is in its containing-block chain, so without this the tape's
+   `overflow: hidden` would let the chip hang off the end of the page. */
+.tl__viewport {
+  position: relative;
+}
+
+.tl__axis {
+  position: relative;
+  display: grid;
+  gap: 6px;
+}
+
+/* Row 1 — the month grid plus the taller year / event ticks. */
+.tl__ticks {
+  position: relative;
+  height: clamp(16px, 2.2vw, 26px);
+}
+
+/* One hairline per month, drawn as a repeating background so the density
+   follows the container width with no DOM per tick. --tl-months is set from
+   the axis span in JS. */
+.tl__ticks::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 52%;
+  background-image: linear-gradient(to right, var(--tl-grid) 1px, transparent 1px);
+  background-size: calc(100% / var(--tl-months)) 100%;
+  background-repeat: repeat-x;
+  opacity: 0.7;
+}
+
+.tl__tick {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  background: var(--text-dim);
+}
+
+/* January of each year — a mid-height tick under the big year numeral. */
+.tl__tick--year {
+  height: 78%;
+}
+
+/* A chapter — full height and brighter, so the events read as the events. */
+.tl__tick--event {
+  height: 100%;
+  width: 2px;
+  background: var(--text);
+  opacity: 0.55;
+}
+
+.tl__tick--event.is-active {
+  opacity: 1;
+}
+
+/* Row 2 — month label per chapter. */
+.tl__months {
+  position: relative;
+  height: 15px;
+}
+
+/* Row 3 — the big year numerals. */
+.tl__years {
+  position: relative;
+  height: clamp(20px, 3.4vw, 40px);
+}
+
+/* Labels hang rightwards from their tick rather than centring on it (the
+   reference board reads the same way). JS clamps the last one back inside the
+   axis so it can't spill past the page rail. */
+.tl__month,
+.tl__year {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tl__month {
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+/* Dropped when it would collide with its neighbour, or when it is the chapter
+   the playhead chip is already naming. The tick stays either way. */
+.tl__month--off,
+.tl__year--off {
+  opacity: 0;
+}
+
+.tl__year {
+  font-family: var(--display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  font-size: clamp(20px, 3.4vw, 40px);
+  line-height: 1;
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+/* The year the playhead is currently inside. */
+.tl__year.is-active {
+  color: #fff;
+}
+
+[data-theme='light'] .tl__year.is-active {
+  color: var(--text);
+}
+
+/* Clickable chapter markers — the ruler doubles as navigation once it sticks.
+   The hit area is a comfortable slab around the hairline tick, which is far
+   too thin to aim at on its own. */
+.tl__jump {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  margin-left: -22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: var(--cursor-pointer);
+  z-index: 3;
+}
+
+/* Hover/focus draws a brighter, taller tick directly over the real one — the
+   centre of the hit slab sits exactly on the mark — so the ruler reads as
+   something you can aim at. Paired with the month label being brought back in
+   the JSX, hovering also tells you *which* moment you are pointing at. */
+.tl__jump::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  opacity: 0;
+  transform: scaleY(0.75);
+  transform-origin: 50% 100%;
+  transition: opacity 0.16s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tl__jump:hover::after,
+.tl__jump:focus-visible::after {
+  opacity: 1;
+  transform: scaleY(1.25);
+}
+
+.tl__jump:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Pointed at — brought forward from the dimmed default. */
+.tl__month.is-hover {
+  color: #fff;
+}
+
+[data-theme='light'] .tl__month.is-hover {
+  color: var(--text);
+}
+
+/* ---- Playhead ---- */
+/* Rides the axis at --tl-x, a date interpolated from scroll position, so it
+   sweeps continuously between chapters instead of snapping. */
+.tl__head {
+  position: absolute;
+  left: var(--tl-x, 0%);
+  top: -14px;
+  bottom: -12px;
+  width: 1px;
+  background: var(--text);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.tl__head-chip {
+  position: absolute;
+  left: var(--tl-x, 0%);
+  top: calc(clamp(16px, 2.2vw, 26px) + 6px);
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: #fff;
+  pointer-events: none;
+  z-index: 3;
+}
+
+[data-theme='light'] .tl__head-chip {
+  color: var(--text);
+}
+
+/* ---- Chapters ---- */
+.tl__chapters {
+  padding-top: clamp(48px, 7vw, 96px);
+}
+
+.tl__chapter + .tl__chapter {
+  margin-top: clamp(72px, 11vw, 168px);
+}
+
+/* Title left, date + copy right — the split from the reference board. */
+.tl__chapter-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 72px);
+  align-items: start;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+.tl__chapter-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  line-height: 1.04;
+  color: #fff;
+  font-size: var(--fs-h2);
+}
+
+[data-theme='light'] .tl__chapter-title {
+  color: var(--text);
+}
+
+/* One authored line per span (the \n in the data file), so the heading breaks
+   where it was composed to break rather than wherever the column runs out. */
+.tl__chapter-line {
+  display: block;
+}
+
+.tl__chapter-when {
+  display: block;
+  margin: 0 0 14px;
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: var(--fs-caption);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.tl__chapter-body {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* ---- Photographs ---- */
+/* The gallery wrapper. `overflow: hidden` is permanent, not just while clipped:
+   it is what makes expanding a genuine wipe (the max-height animates against a
+   clipping box) instead of the rest of the grid popping in at frame one.
+   The clip lives here rather than on the multicol list itself — a definite
+   height on a multicol element changes how columns are balanced and spills
+   content sideways. */
+.tl__gallery {
+  position: relative;
+  overflow: hidden;
+}
+
+.tl__gallery.is-clipped {
+  max-height: var(--tl-peek);
+}
+
+/* Fade + control sitting at the clip line. */
+.tl__more {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: clamp(150px, 24vh, 280px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+  background: linear-gradient(to bottom, transparent, var(--bg) 76%);
+  pointer-events: none;
+}
+
+.tl__more-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 7px 7px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  cursor: var(--cursor-pointer);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+}
+
+.tl__more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.48);
+}
+
+.tl__more-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.tl__more-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #f5f3ee;
+}
+
+.tl__more-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.tl__more-btn:hover .tl__more-icon svg {
+  animation: tl-nudge 0.6s ease;
+}
+
+@keyframes tl-nudge {
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+[data-theme='light'] .tl__more-btn {
+  background: #0a0a0a;
+  color: #f5f3ee;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme='light'] .tl__more-icon {
+  background: #f5f3ee;
+  color: #0a0a0a;
+}
+
+/* Two layouts, chosen per chapter in src/data/timeline.js.
+
+   `row` (the default) is a justified gallery: each shot's basis and growth are
+   both proportional to its aspect ratio, so a row fills the width exactly and
+   every photo keeps its native shape — no crops, no letterboxing, and the count
+   per row falls out of the available width rather than a hardcoded column count.
+   Right for two or three photographs.
+
+   `masonry` stacks them into columns instead, each at its own height. Right once
+   there are enough that a single row would either run off the page or shrink
+   every photo to a stamp. */
+.tl__shots {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tl__shots--row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1vw, 14px);
+}
+
+.tl__shot {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tl__shots--row .tl__shot {
+  flex: var(--ar) 1 calc(var(--ar) * var(--tl-row-h));
+  /* A justified row's leftover item grows to fill whatever width it is handed,
+     which on a phone turns the odd one out into a full-bleed banner twice the
+     height of its neighbours. 66% sits above every real row's share (the
+     widest two-up split here is ~61/39) so full rows still justify untouched,
+     and the orphan simply stops at two-thirds and stays left-aligned.
+     Fluid rather than breakpointed, so there is no width at which a photo
+     suddenly doubles. */
+  max-width: 66%;
+}
+
+/* A lone portrait has no row to justify against, so it is sized directly:
+   roughly a column's width on desktop, about two-thirds on a phone. */
+.tl__shots--single .tl__shot {
+  max-width: min(100%, clamp(180px, 56vw, 320px));
+}
+
+/* CSS multicol, the same mechanism the works grid and the playground feed use.
+   Photos flow into whichever column has room, so tall and short sit side by side
+   with no gaps and nothing gets cropped to a uniform box. */
+.tl__shots--masonry {
+  column-count: 3;
+  column-gap: clamp(8px, 1vw, 14px);
+}
+
+.tl__shots--masonry .tl__shot {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  display: block;
+  width: 100%;
+  margin-bottom: clamp(8px, 1vw, 14px);
+}
+
+.tl__shot-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: var(--ar);
+  object-fit: cover;
+}
+
+/* Same Doto label-printer caption as the About portraits and marquee. */
+.tl__shot-cap {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  margin: 0;
+  font-family: 'Doto', var(--sans);
+  font-weight: 900;
+  font-size: var(--fs-caption);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .tl__chapter-head {
+    grid-template-columns: 1fr;
+    gap: clamp(16px, 3vw, 28px);
+  }
+}
+
+/* ---- Nav handoff ---- */
+/* The ruler takes the header over for as long as it is pinned: the nav retracts
+   upward as the band rises to meet it, and drops back once the track ends and
+   the band clears the viewport, in time for the rest of the page and the footer.
+   `.tl-page` is on <html> for this route's whole lifetime while `.tl-pinned`
+   toggles — the transition has to live on the always-present one, or removing
+   the class would snap the nav back instead of animating it. */
+.tl-page .intro__top {
+  transition:
+    padding 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.26s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tl-pinned .intro__top {
+  opacity: 0;
+  transform: translateY(-115%);
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  /* Every third hairline only — a monthly grid turns into a smear at this
+     width. */
+  .tl__ticks::before {
+    background-size: calc(300% / var(--tl-months)) 100%;
+  }
+  .tl__shots--masonry {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .tl {
+    --tl-row-h: clamp(140px, 38vw, 210px);
+  }
+  .tl__ruler {
+    padding: 10px 0 8px;
+  }
+  .tl__month {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .tl__head-chip {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+  .tl__shot {
+    border-radius: 5px;
+  }
+  /* Two columns rather than one: these are photographs, not screenshots, so
+     they stay readable at half a phone's width and a ten-photo chapter doesn't
+     turn into a mile of scrolling. */
+  .tl__shots--masonry {
+    column-count: 2;
+    column-gap: 8px;
+  }
+  .tl__shot-cap {
+    left: 10px;
+    bottom: 8px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl__month,
+  .tl__year,
+  .tl__tick--event {
+    transition: none;
+  }
+}
+
+/* ---- Tape mode (phones) ---- */
+/* Six years squeezed into 320px leaves year numerals the size of body copy and
+   month labels colliding into a smear. So below this width the axis stops
+   fitting the screen and becomes a tape several screens wide: it slides
+   horizontally under a fixed playhead as you scroll, showing roughly eighteen
+   months at a time at a size you can actually read. Same data, same positions,
+   same scroll input — only the framing changes.
+   Kept last in the file so it wins over the narrow-screen rules above. */
+@media (max-width: 760px) {
+  .tl {
+    /* ~4.5 screens of travel: wide enough for large numerals, short enough that
+       the whole span is still crossed in one pass down the chapters. */
+    --tl-tape-w: 450vw;
+  }
+
+  .tl__viewport {
+    overflow: hidden;
+    /* Vertical pans stay the browser's (the page must still scroll normally);
+       horizontal is ours, for scrubbing. */
+    touch-action: pan-y;
+    cursor: var(--cursor-grab);
+  }
+
+  .tl__viewport:active {
+    cursor: var(--cursor-grabbing);
+  }
+
+  .tl__axis {
+    width: var(--tl-tape-w);
+    transform: translate3d(var(--tl-shift, 0px), 0, 0);
+    will-change: transform;
+  }
+
+  /* The playhead no longer tracks a percentage of the axis — it stays put while
+     the tape moves, and only travels itself at the two ends. */
+  .tl__head,
+  .tl__head-chip {
+    left: var(--tl-anchor, 42%);
+  }
+
+  /* Room to breathe, which is the whole point of the exercise. */
+  .tl__ticks {
+    height: 26px;
+  }
+
+  /* Every month gets its own hairline again — at this scale they are ~20px
+     apart rather than 3px, so the grid reads as a ruler instead of a smear. */
+  .tl__ticks::before {
+    background-size: calc(100% / var(--tl-months)) 100%;
+  }
+
+  .tl__month {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+  }
+
+  .tl__years {
+    height: clamp(30px, 8.5vw, 46px);
+  }
+
+  .tl__year {
+    font-size: clamp(30px, 8.5vw, 46px);
+  }
+
+  .tl__head-chip {
+    font-size: 12px;
+    padding: 2px 7px;
+  }
+}

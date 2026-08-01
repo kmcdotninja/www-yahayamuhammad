@@ -91,6 +91,18 @@ export default function HeroVideoCard() {
     return () => io.disconnect()
   }, [open, reduced])
 
+  // Hand the clip off. The moment it lifts out of the card the frame keeps only
+  // a ghost of it, so the same footage isn't playing twice — once in flight and
+  // once in the corner it just left — while the backdrop is still going dark.
+  // Toggled on the node rather than through className, so React never rewrites
+  // the class string out from under the physics engine's own `is-dragging`.
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card) return
+    card.classList.toggle('is-handoff', open)
+    return () => card.classList.remove('is-handoff')
+  }, [open])
+
   useEffect(() => {
     const mq = window.matchMedia(SMALL_MQ)
     const onChange = () => setSmall(mq.matches)

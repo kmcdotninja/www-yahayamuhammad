@@ -18,6 +18,8 @@ const PlaygroundPage = lazy(() => import('./components/PlaygroundPage.jsx'))
 const AboutPage2 = lazy(() => import('./components/AboutPage2.jsx'))
 // Original About page — kept for later use, parked at /about-old.
 const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
+// About + a sticky scroll-through timeline, parked at /about-timeline.
+const AboutTimelinePage = lazy(() => import('./components/AboutTimelinePage.jsx'))
 const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 // Loader (and its 3D dependency) is gated behind a runtime flag — only
 // pull it into the bundle when we actually decide to mount it.
@@ -133,6 +135,12 @@ export default function App() {
     body = (
       <Suspense fallback={null}>
         <AboutPage />
+      </Suspense>
+    )
+  } else if (renderPath === '/about-timeline') {
+    body = (
+      <Suspense fallback={null}>
+        <AboutTimelinePage />
       </Suspense>
     )
   } else if (renderPath === '/') {

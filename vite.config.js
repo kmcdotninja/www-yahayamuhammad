@@ -18,6 +18,19 @@ export default defineConfig({
   define: {
     __LAST_COMMIT_DATE__: JSON.stringify(getLastCommitDate()),
   },
+  // Bind to 0.0.0.0 so the dev server is reachable from other devices on the
+  // same Wi-Fi (phones, tablets) — needed to test the mobile layouts and the
+  // touch interactions for real.
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    host: true,
+    port: 4173,
+    strictPort: true,
+  },
   // Vite 8 uses oxc (oxidation-compiler) by default. We rely on its
   // tree-shaking + dead-code elimination; no extra esbuild config needed.
   build: {
