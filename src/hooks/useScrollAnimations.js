@@ -107,10 +107,16 @@ export function useScrollAnimations(pathname) {
       document.addEventListener('load', onAssetLoad, true)
 
       const html = document.documentElement
+      // Only the loader finishing warrants a refresh. This used to fire on any
+      // class change on <html> — and ScrollTrigger.refresh() jumps scroll to 0
+      // and back to measure, so an unrelated class toggle (a page adding its own
+      // state class while you scroll) yanked the page underneath you.
+      let wasLoading = html.classList.contains('is-loading')
       const classObserver = new MutationObserver(() => {
-        if (!html.classList.contains('is-loading')) {
-          setTimeout(() => ScrollTrigger.refresh(), 50)
-        }
+        const isLoading = html.classList.contains('is-loading')
+        if (wasLoading === isLoading) return
+        wasLoading = isLoading
+        if (!isLoading) setTimeout(() => ScrollTrigger.refresh(), 50)
       })
       classObserver.observe(html, {
         attributes: true,

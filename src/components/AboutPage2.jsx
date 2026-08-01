@@ -3,6 +3,7 @@ import './AboutPage2.css'
 import TopNav from './TopNav.jsx'
 import Footer from './Footer.jsx'
 import Picture from './Picture.jsx'
+import { withLinks } from '../lib/inlineLinks.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 
 // The live About page (rendered at /about). The original layout is parked at
@@ -12,7 +13,7 @@ const HEADLINE =
   'Product Designer\nbuilding digital products\nfor humans'
 
 const LEDE =
-  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'
+  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at [Friends of Figma Kano](https://friends.figma.com/kano/).'
 // Real experience, sourced from the LinkedIn profile export (Profile.pdf).
 const EXPERIENCE = [
   {
@@ -254,7 +255,7 @@ export default function AboutPage2() {
             ))}
           </h1>
           <p className="ab2__lede" data-reveal>
-            {LEDE}
+            {withLinks(LEDE)}
           </p>
         </section>
 

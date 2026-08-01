@@ -33,6 +33,21 @@
   padding-left: max(0px, min(15%, 100% - 9.9em));
 }
 
+/* Links inside body copy: underlined rather than coloured, so they read as part
+   of the sentence and don't need a colour that would have to work in both
+   themes. */
+.ab2__lede a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.2s ease;
+}
+
+.ab2__lede a:hover {
+  opacity: 0.65;
+}
+
 /* Inline by default so a narrow column can wrap the headline however it needs;
    the authored breaks only take effect once there is room for them. */
 .ab2__headline-line {

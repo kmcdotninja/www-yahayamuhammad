@@ -58,7 +58,7 @@ export const HEADLINE =
   'Product Designer\nbuilding digital products\nfor humans'
 
 export const LEDE =
-  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'
+  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. I also lead and mentor designers at [Friends of Figma Kano](https://friends.figma.com/kano/).'
 
 // The career and the trips on one track — which is why this page has no
 // separate work-experience list and no photo marquee. Every chapter reads the

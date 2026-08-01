@@ -81,7 +81,8 @@
 
 /* One hairline per month, drawn as a repeating background so the density
    follows the container width with no DOM per tick. --tl-months is set from
-   the axis span in JS. */
+   the axis span in JS. This is the ruler's texture — the marks that carry
+   meaning (years, chapters) sit on top of it as taller, brighter ticks. */
 .tl__ticks::before {
   content: '';
   position: absolute;
@@ -605,6 +606,12 @@
   .tl__shot {
     border-radius: 5px;
   }
+  /* Work chapters stack one per row and run the full measure. Side by side at
+     this width each artefact was ~175px across — too small to read a screen
+     or a logo lockup, which is the entire point of showing them. */
+  .tl__shots--strip .tl__shot {
+    width: 100%;
+  }
   /* Two columns rather than one: these are photographs, not screenshots, so
      they stay readable at half a phone's width and a ten-photo chapter doesn't
      turn into a mile of scrolling. */
@@ -612,10 +619,11 @@
     column-count: 2;
     column-gap: 8px;
   }
+  /* Captions off on phones. At two-up the photographs are ~175px wide and a
+     label eats a meaningful share of the frame; the alt text still carries the
+     description for anyone who needs it. */
   .tl__shot-cap {
-    left: 10px;
-    bottom: 8px;
-    font-size: 13px;
+    display: none;
   }
 }
 
@@ -672,7 +680,7 @@
     height: 26px;
   }
 
-  /* Every month gets its own hairline again — at this scale they are ~20px
+  /* Every month gets its own hairline again — at tape scale they sit ~20px
      apart rather than 3px, so the grid reads as a ruler instead of a smear. */
   .tl__ticks::before {
     background-size: calc(100% / var(--tl-months)) 100%;

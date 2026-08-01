@@ -7,6 +7,7 @@ import './AboutTimelinePage.css'
 import TopNav from './TopNav.jsx'
 import Footer from './Footer.jsx'
 import Picture from './Picture.jsx'
+import { withLinks } from '../lib/inlineLinks.jsx'
 import { getLenis } from '../lib/lenisStore.js'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 import { KITS, SOUNDS, useSnd, warmKit } from '../hooks/useSnd.js'
@@ -367,7 +368,10 @@ function Timeline() {
   // AboutTimelinePage.css (which have to survive .tl-pinned being removed, or
   // the nav would snap back rather than animate) can scope to this route only.
   useEffect(() => {
-    const root = document.documentElement
+    // On <body>, not <html>: things watch <html> for class changes (see
+    // useScrollAnimations), and a state class that toggles on every scroll has
+    // no business waking them.
+    const root = document.body
     root.classList.add('tl-page')
     return () => root.classList.remove('tl-page', 'tl-pinned')
   }, [])
@@ -474,7 +478,7 @@ function Timeline() {
         // Start measuring from here, so arriving at the timeline doesn't fire a
         // burst for the distance scrolled to reach it.
         if (pinned) lastTickY.current = window.scrollY
-        document.documentElement.classList.toggle('tl-pinned', pinned)
+        document.body.classList.toggle('tl-pinned', pinned)
       }
 
       const anchor = readLine()
@@ -545,7 +549,7 @@ function Timeline() {
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
-      document.documentElement.classList.remove('tl-pinned')
+      document.body.classList.remove('tl-pinned')
       lastPinned.current = false
     }
   }, [axis, readLine, play])
@@ -576,10 +580,14 @@ function Timeline() {
   // on a desktop the axis is static and the markers are click targets.
   const onScrubStart = useCallback((e) => {
     if (!tapeRef.current) return
-    drag.current = { active: true, x: e.clientX, from: headFloat.current, moved: 0 }
-    // Lenis would fight the direct scrollTo below, smoothing every drag frame
-    // into a lag. Handing scroll back on release restores the easing.
-    getLenis()?.stop()
+    drag.current = {
+      active: true,
+      locked: false,
+      x: e.clientX,
+      y: e.clientY,
+      from: headFloat.current,
+      moved: 0,
+    }
     e.currentTarget.setPointerCapture?.(e.pointerId)
   }, [])
 
@@ -590,7 +598,31 @@ function Timeline() {
       const { axisW } = dimsRef.current
       if (!axisW) return
       const dx = e.clientX - d.x
-      d.moved = Math.max(d.moved, Math.abs(dx))
+      const dy = e.clientY - d.y
+      // Recorded before the lock decides, and on both axes: a drag that turns
+      // out to be vertical still has to count as a drag, or releasing it over a
+      // marker fires that marker's click and the page jumps to another chapter —
+      // which is most of what "it shifts when I drag" was.
+      d.moved = Math.max(d.moved, Math.abs(dx), Math.abs(dy))
+
+      // Direction lock. The ruler sits in the middle of a page you also need to
+      // scroll, and `touch-action: pan-y` means the browser may be panning
+      // vertically at the same time as this handler runs — two things moving the
+      // page at once, which is what made it feel unstable. So: stay out of the
+      // way until the gesture declares itself, then take only the horizontal
+      // ones and hand the vertical ones straight back to the browser.
+      if (!d.locked) {
+        if (Math.abs(dx) < DRAG_SLOP && Math.abs(dy) < DRAG_SLOP) return
+        if (Math.abs(dy) >= Math.abs(dx)) {
+          d.active = false
+          return
+        }
+        d.locked = true
+        // Only now is this ours, so only now does Lenis need to stand down —
+        // it would otherwise smooth every drag frame into a lag.
+        getLenis()?.stop()
+      }
+
       // Drag right, go back in time: the tape moves with the finger.
       const target = d.from - (dx * axis.span) / axisW
       const m = Math.min(axis.to, Math.max(axis.from, target))
@@ -601,10 +633,10 @@ function Timeline() {
 
   const onScrubEnd = useCallback((e) => {
     const d = drag.current
-    if (!d.active) return
     d.active = false
     dragged.current = d.moved > DRAG_SLOP
-    getLenis()?.start()
+    if (d.locked) getLenis()?.start()
+    d.locked = false
     e.currentTarget.releasePointerCapture?.(e.pointerId)
     // Cleared after the click that follows this release has been and gone.
     setTimeout(() => {
@@ -798,7 +830,7 @@ export default function AboutTimelinePage() {
             ))}
           </h1>
           <p className="ab2__lede" data-reveal>
-            {LEDE}
+            {withLinks(LEDE)}
           </p>
         </section>
 
