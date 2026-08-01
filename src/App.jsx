@@ -14,12 +14,14 @@ import { applySEO, ROUTE_SEO } from './lib/seo.js'
 // in their own chunks so users on /playground or /about don't download the
 // home-page graph and vice-versa.
 const PlaygroundPage = lazy(() => import('./components/PlaygroundPage.jsx'))
-// Live About page.
-const AboutPage2 = lazy(() => import('./components/AboutPage2.jsx'))
-// Original About page — kept for later use, parked at /about-old.
-const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
-// About + a sticky scroll-through timeline, parked at /about-timeline.
+// Live About page: the scroll-through timeline, served at /about (and still at
+// /about-timeline, so existing links keep working).
 const AboutTimelinePage = lazy(() => import('./components/AboutTimelinePage.jsx'))
+// The previous About — hero, portraits, approach, experience, marquee. Kept and
+// parked at /about-classic.
+const AboutPage2 = lazy(() => import('./components/AboutPage2.jsx'))
+// The original About — kept and parked at /about-old.
+const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
 const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 // Loader (and its 3D dependency) is gated behind a runtime flag — only
 // pull it into the bundle when we actually decide to mount it.
@@ -125,7 +127,13 @@ export default function App() {
         <PlaygroundPage />
       </Suspense>
     )
-  } else if (renderPath === '/about') {
+  } else if (renderPath === '/about' || renderPath === '/about-timeline') {
+    body = (
+      <Suspense fallback={null}>
+        <AboutTimelinePage />
+      </Suspense>
+    )
+  } else if (renderPath === '/about-classic') {
     body = (
       <Suspense fallback={null}>
         <AboutPage2 />
@@ -135,12 +143,6 @@ export default function App() {
     body = (
       <Suspense fallback={null}>
         <AboutPage />
-      </Suspense>
-    )
-  } else if (renderPath === '/about-timeline') {
-    body = (
-      <Suspense fallback={null}>
-        <AboutTimelinePage />
       </Suspense>
     )
   } else if (renderPath === '/') {

@@ -26,6 +26,42 @@
   font-size: var(--fs-hero);
   /* Echo the reference: the first line sits indented from the left rail. */
   text-indent: clamp(0px, 16vw, 280px);
+  /* And the block as a whole is held off the rail. Self-limiting: the second
+     term is the room left over after the longest line at the current display
+     size, so on a narrower screen the offset gives way instead of forcing that
+     line to wrap. It reaches zero on phones on its own — no breakpoint needed. */
+  padding-left: max(0px, min(15%, 100% - 9.4em));
+}
+
+/* Inline by default so a narrow column can wrap the headline however it needs;
+   the authored breaks only take effect once there is room for them. */
+.ab2__headline-line {
+  display: inline;
+}
+
+/* 1200, not the usual desktop breakpoint: between roughly 900 and 1200 the type
+   is already at full size while the measure is not, so the longest line wraps on
+   its own and a stepped setting on top of that reads as a mistake. Below this
+   the lines run inline and wrap however the column needs. */
+@media (min-width: 1200px) {
+  .ab2__headline-line {
+    display: block;
+    text-indent: 0;
+  }
+  /* A stepped setting rather than a flush block: the opener sits well in from
+     the rail, the long middle line runs the full measure, and the closer steps
+     back in — so the three lines read as a shape instead of a paragraph. */
+  /* Each indent yields to the line it is indenting. The `100% - Xem` term is the
+     space left after that line's own text (measured in ems, so it tracks the
+     display size), which caps the step before it can ever push the line into a
+     second row — the failure this stepping otherwise causes between about 900
+     and 1200px, where the type is at full size but the measure is not. */
+  .ab2__headline-line:nth-child(1) {
+    text-indent: max(0px, min(20vw, 100% - 6.9em));
+  }
+  .ab2__headline-line:nth-child(3) {
+    text-indent: max(0px, min(11vw, 100% - 4.9em));
+  }
 }
 
 .ab2__lede {

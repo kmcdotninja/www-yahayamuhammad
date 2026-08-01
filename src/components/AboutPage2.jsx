@@ -9,7 +9,7 @@ import { useReducedMotion } from '../hooks/useReducedMotion.js'
 // /about-old for later use.
 
 const HEADLINE =
-  'Product Designer building digital system for the world'
+  'Product Designer\nbuilding digital product\nfor humans'
 
 const LEDE =
   'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'
@@ -244,7 +244,14 @@ export default function AboutPage2() {
       <main className="ab2">
         <section className="ab2__hero">
           <h1 className="ab2__headline" data-reveal>
-            {HEADLINE}
+            {/* Breaks are authored, not left to the measure: a short indented
+                opener over two full-width lines is a composition. Below the
+                desktop breakpoint they revert to inline and wrap naturally. */}
+            {HEADLINE.split('\n').map((line) => (
+              <span className="ab2__headline-line" key={line}>
+                {line}{' '}
+              </span>
+            ))}
           </h1>
           <p className="ab2__lede" data-reveal>
             {LEDE}

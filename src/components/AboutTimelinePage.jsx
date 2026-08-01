@@ -46,12 +46,12 @@ const TAPE_ANCHOR = 0.42
 const PEEK_INTO_NEXT = 0.25
 
 // The ruler ticks over as the playhead crosses each month, like the detent on a
-// dial. The industrial kit gives that a harder, more mechanical crack than the
-// kit the rest of the site clicks with — it is a second sprite to fetch, so the
-// timeline warms it on mount rather than letting the first few ticks land silent
-// while it downloads. `tap` resolves to one of five variants per call, which is
-// what stops a fast scroll from sounding like a machine gun.
-const TICK_KIT = KITS.INDUSTRIAL
+// dial. Kit 01 — the same one the nav, the theme toggle and the sticker input
+// click with — so the timeline sounds like the rest of the site rather than
+// importing a second voice, and costs no extra sprite to fetch. `tap` resolves
+// to one of five variants per call, which is what stops a fast scroll from
+// sounding like a machine gun.
+const TICK_KIT = KITS.DEFAULT
 const TICK_SOUND = SOUNDS.TAP
 const TICK_VOLUME = 0.35
 // One detent per this much scrolling. Deliberately measured in scroll distance
@@ -132,6 +132,7 @@ function fitStride(positions, labelW, w) {
 function Shots({ chapter }) {
   const { shots, layout } = chapter
   const masonry = layout === 'masonry'
+  const kind = masonry ? 'masonry' : layout === 'strip' ? 'strip' : 'row'
   const collapsible = masonry && chapter.collapse && shots.length > 1
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
@@ -218,8 +219,8 @@ function Shots({ chapter }) {
     >
       <ul
         ref={listRef}
-        className={`tl__shots tl__shots--${masonry ? 'masonry' : 'row'}${
-          shots.length === 1 ? ' tl__shots--single' : ''
+        className={`tl__shots tl__shots--${kind}${
+          shots.length === 1 && kind === 'row' ? ' tl__shots--single' : ''
         }`}
         data-reveal-stagger
       >
@@ -238,7 +239,11 @@ function Shots({ chapter }) {
               // own ratio) and the part worth keeping isn't centred.
               style={s.pos ? { objectPosition: s.pos } : undefined}
             />
-            <span className="tl__shot-cap">{s.cap}</span>
+            <span
+              className={`tl__shot-cap${s.capTone === 'dark' ? ' tl__shot-cap--dark' : ''}`}
+            >
+              {s.cap}
+            </span>
           </li>
         ))}
       </ul>
@@ -783,7 +788,14 @@ export default function AboutTimelinePage() {
       <main className="ab2">
         <section className="ab2__hero">
           <h1 className="ab2__headline" data-reveal>
-            {HEADLINE}
+            {/* Breaks are authored, not left to the measure: a short indented
+                opener over two full-width lines is a composition. Below the
+                desktop breakpoint they revert to inline and wrap naturally. */}
+            {HEADLINE.split('\n').map((line) => (
+              <span className="ab2__headline-line" key={line}>
+                {line}{' '}
+              </span>
+            ))}
           </h1>
           <p className="ab2__lede" data-reveal>
             {LEDE}

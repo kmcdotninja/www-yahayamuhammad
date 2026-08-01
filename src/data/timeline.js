@@ -11,11 +11,12 @@
 //     date:    '2025-07',             // YYYY-MM. Drives everything on the ruler.
 //     title:   'Kutuby, and\nbuilding again',   // \n = a deliberate line break
 //     body:    'One or two sentences.',
-//     layout:  'masonry',             // optional; omit for a justified row
+//     layout:  'masonry' | 'strip',   // optional; omit for a justified row
 //     collapse: true,                 // optional; masonry only — see below
 //     shots: [                        // optional; [] or omit for a text chapter
 //       { src: '/about/photo.webp', alt: 'Described for screen readers',
-//         cap: 'CAPTION', ar: 1800 / 2225 },
+//         cap: 'CAPTION', ar: 1800 / 2225,
+//         capTone: 'dark' },          // optional; for light-cornered photos
 //     ],
 //   }
 //
@@ -41,6 +42,8 @@
 //      page fills in, and it is what lets a row justify cleanly.
 //      `pos` (optional) is the CSS object-position that decides which part of a
 //      cropped photo you keep — '50% 60%' frames low, '50% 0' keeps the top.
+//      `capTone: 'dark'` (optional) prints the caption in ink rather than white,
+//      for photographs whose bottom-left corner is light.
 //
 //   3. `\n` in a title is an authored line break. These are set in a display
 //      face at hero size, so where a line turns is a composition decision — it
@@ -52,7 +55,7 @@
 // ---------------------------------------------------------------------------
 
 export const HEADLINE =
-  'Product Designer building digital product digital system for the world'
+  'Product Designer\nbuilding digital product\nfor humans'
 
 export const LEDE =
   'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'
@@ -68,13 +71,14 @@ export const TIMELINE = [
     date: '2020-03',
     title: 'From site engineer\nto digital design',
     body: 'I trained as a civil engineer, but YodaBox gave me my first chance as a designer. Engineering taught me to understand the problem before the solution, a mindset I carried into designing learning experiences for kids.',
+    // A contact-sheet strip: common height, natural widths, left-aligned. Work
+    // shows a few artefacts rather than a wall of photographs, so they should
+    // sit at a readable size instead of being stretched to the page rail.
+    layout: 'strip',
     shots: [
-      {
-        src: '/images/polaroid-kaduna.webp',
-        alt: 'Yahaya Muhammad in Kaduna',
-        cap: 'Kaduna',
-        ar: 1152 / 2048,
-      },
+      { src: '/about/Yodabox/Mobile App.webp', alt: 'The Yoda Box mobile app', cap: 'Mobile app', ar: 858 / 1322 , capTone: 'dark'},
+      { src: '/about/Yodabox/The box.webp', alt: 'A Yoda Box sticker held in the hand', cap: 'The box', ar: 929 / 646 },
+      { src: '/about/Yodabox/Logo.webp', alt: 'The Yoda Box logo and its construction grid', cap: 'Logo', ar: 1014 / 647 , capTone: 'dark'},
     ],
   },
   {
@@ -82,13 +86,10 @@ export const TIMELINE = [
     date: '2022-04',
     title: 'Healthcare design\nend to end',
     body: 'My parents always wanted me to be a doctor but life had other plans, somehow I still found myself in healthcare. Three years in line I have spent my time designing products that help clinicians care for patients, from hospital systems to vaccination platforms. Funny how things worked out.',
+    layout: 'strip',
     shots: [
-      {
-        src: '/about/ai-build.webp',
-        alt: 'A working session on screen at the desk',
-        cap: 'At the desk',
-        ar: 1800 / 2225,
-      },
+      { src: '/about/Healthcare/North App.webp', alt: 'A patient appointment app for clinicians', cap: 'North app', ar: 723 / 1341 , capTone: 'dark'},
+      { src: '/about/Healthcare/Pneumacare Illustration.webp', alt: 'PneumaCare provider dashboard', cap: 'Pneumacare', ar: 960 / 945 , capTone: 'dark'},
     ],
   },
   {
@@ -96,13 +97,11 @@ export const TIMELINE = [
     date: '2025-07',
     title: 'Kutuby and\nbuilding for education again',
     body: 'After designing learning experiences at YodaBox, getting to do it again at Kutuby has been one of the sweetest parts of my journey. This time, helping kids learn Arabic through thoughtful lessons, games, and onboarding has made the work even more meaningful.',
+    layout: 'strip',
     shots: [
-      {
-        src: '/about/workspace.webp',
-        alt: 'A call with the Kutuby team on screen',
-        cap: 'At the studio',
-        ar: 1800 / 2225,
-      },
+      { src: '/about/workspace.webp', alt: 'A call with the Kutuby team on screen', cap: 'At the studio', ar: 1800 / 2225 },
+      { src: '/about/Kutuby/the website design.webp', alt: 'The Kutuby website design on screen', cap: 'The website design', ar: 960 / 1187 },
+      { src: '/about/Kutuby/character illustrations.webp', alt: 'Kutuby character illustrations on screen', cap: 'Character illustrations', ar: 960 / 1187 },
     ],
   },
   {
@@ -116,12 +115,12 @@ export const TIMELINE = [
     collapse: true,
     body: 'One of the greatest blessings of my life was answering the call to Makkah for pilgrimage. Two weeks away from work and the world, a lifetime of memories, and a journey that will stay with me forever.',
     shots: [
-      { src: '/about/transit.webp', alt: 'On the flight out', cap: 'In transit', ar: 1800 / 2373 },
-      { src: '/about/mecca.webp', alt: 'The Kaaba at Masjid al-Haram, Makkah', cap: 'Makkah', ar: 1800 / 2225 },
-      { src: '/about/Makkah/Muqam Ibrahim.webp', alt: 'Pilgrims in ihram passing Maqam Ibrahim at the Haram', cap: 'Maqam Ibrahim', ar: 783 / 1125 },
-      { src: '/about/Makkah/Uhud Mount.webp', alt: 'Mount Uhud, outside Madina', cap: 'Mount Uhud', ar: 783 / 1152 },
-      { src: '/about/Makkah/Madina Minaret.webp', alt: 'A minaret of the Prophet’s Mosque, Madina', cap: 'Madina minaret', ar: 783 / 1210 },
-      { src: '/about/madina.webp', alt: 'Arches at the Prophet’s Mosque, Madina', cap: 'Madina', ar: 1800 / 2225 },
+      { src: '/about/transit.webp', alt: 'On the flight out', cap: 'In transit', ar: 1800 / 2373 , capTone: 'dark'},
+      { src: '/about/mecca.webp', alt: 'The Kaaba at Masjid al-Haram, Makkah', cap: 'Makkah', ar: 1800 / 2225 , capTone: 'dark'},
+      { src: '/about/Makkah/Muqam Ibrahim.webp', alt: 'Pilgrims in ihram passing Maqam Ibrahim at the Haram', cap: 'Maqam Ibrahim', ar: 783 / 1125 , capTone: 'dark'},
+      { src: '/about/Makkah/Uhud Mount.webp', alt: 'Mount Uhud, outside Madina', cap: 'Mount Uhud', ar: 783 / 1152 , capTone: 'dark'},
+      { src: '/about/Makkah/Madina Minaret.webp', alt: 'A minaret of the Prophet’s Mosque, Madina', cap: 'Madina minaret', ar: 783 / 1210 , capTone: 'dark'},
+      { src: '/about/madina.webp', alt: 'Arches at the Prophet’s Mosque, Madina', cap: 'Madina', ar: 1800 / 2225 , capTone: 'dark'},
       { src: '/about/Makkah/Islamic History Museum.webp', alt: 'A scale model of the old city at the Islamic history museum', cap: 'Islamic history museum', ar: 783 / 1210 },
     ],
   },
@@ -138,7 +137,7 @@ export const TIMELINE = [
     collapse: true,
     shots: [
       { src: '/about/Singapore/Selfie.webp', alt: 'Yahaya Muhammad in Singapore', cap: 'Selfie', ar: 743 / 1321 },
-      { src: '/about/Singapore/Arab Street Exploration.webp', alt: 'Exploring Arab Street, Singapore', cap: 'Arab Street', ar: 932 / 1657 },
+      { src: '/about/Singapore/Arab Street Exploration.webp', alt: 'Exploring Arab Street, Singapore', cap: 'Arab Street', ar: 932 / 1657 , capTone: 'dark'},
       { src: '/about/Singapore/Marina Bay Night.webp', alt: 'Marina Bay after dark', cap: 'Marina Bay night',
         // Top third is empty night sky. Cropped shorter and framed low so the
         // height comes out of the black, not off the building.
@@ -154,7 +153,7 @@ export const TIMELINE = [
       { src: '/about/Singapore/Temasek Shop House.webp', alt: 'A Temasek shop house', cap: 'Temasek shop house', ar: 1334 / 1321 },
       { src: '/about/Singapore/Marina Shop.webp', alt: 'A shopfront at Marina Bay', cap: 'Marina shop', ar: 944 / 1321 },
       { src: '/about/Singapore/Audi Shop.webp', alt: 'An Audi showroom', cap: 'Audi shop', ar: 967 / 1639 },
-      { src: '/about/Singapore/Trip Friends.webp', alt: 'With friends on the trip', cap: 'Trip friends', ar: 1800 / 1694 },
+      { src: '/about/Singapore/Trip Friends.webp', alt: 'With friends on the trip', cap: 'Trip friends', ar: 1800 / 1694 , capTone: 'dark'},
     ],
   },
 ]

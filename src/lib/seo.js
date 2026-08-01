@@ -43,6 +43,13 @@ export const ROUTE_SEO = {
   '/about': {
     title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
     description:
+      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
+  },
+  // The previous About layout, parked for reference — kept out of the sitemap so
+  // it isn't indexed as duplicate content alongside the live /about.
+  '/about-classic': {
+    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    description:
       'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
   },
   // Original About page, parked for later use — kept out of the sitemap so it
@@ -52,8 +59,8 @@ export const ROUTE_SEO = {
     description:
       'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
   },
-  // About + timeline variant, parked for review — kept out of the sitemap so it
-  // isn't indexed as duplicate content alongside the live /about.
+  // Alias of /about, kept so existing links survive. Out of the sitemap so the
+  // two URLs aren't indexed as duplicates.
   '/about-timeline': {
     title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
     description:

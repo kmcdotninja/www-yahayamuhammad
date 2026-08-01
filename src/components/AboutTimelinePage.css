@@ -14,6 +14,9 @@
   /* Nominal height of a photo row — every shot's flex-basis is derived from it
      and its own aspect ratio, so rows justify without cropping. */
   --tl-row-h: clamp(190px, 24vw, 340px);
+  /* Common width for a `strip` chapter's photos — their heights follow their
+     own proportions from there. */
+  --tl-strip-w: clamp(150px, 27vw, 400px);
   /* How much of a collapsed gallery shows before the fade — enough to read the
      top row and see clearly that there is more underneath. */
   --tl-peek: clamp(340px, 58vh, 680px);
@@ -120,10 +123,11 @@
   height: 15px;
 }
 
-/* Row 3 — the big year numerals. */
+/* Row 3 — the big year numerals. Height tracks their font size exactly, so the
+   two have to move together. */
 .tl__years {
   position: relative;
-  height: clamp(20px, 3.4vw, 40px);
+  height: clamp(26px, 4.4vw, 52px);
 }
 
 /* Labels hang rightwards from their tick rather than centring on it (the
@@ -160,7 +164,7 @@
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: var(--ls-display);
-  font-size: clamp(20px, 3.4vw, 40px);
+  font-size: clamp(26px, 4.4vw, 52px);
   line-height: 1;
   color: var(--text-muted);
   transition: color 0.3s ease;
@@ -441,10 +445,28 @@
   list-style: none;
 }
 
-.tl__shots--row {
+.tl__shots--row,
+.tl__shots--strip {
   display: flex;
   flex-wrap: wrap;
   gap: clamp(8px, 1vw, 14px);
+}
+
+/* `strip` — a contact sheet. Every photo gets the same width and keeps its own
+   height, so the tops line up and the differences in proportion stay visible: a
+   tall phone mockup reads as tall next to a wide logo lockup. The row ends where
+   it ends rather than stretching to the rail.
+   `align-items: flex-start` is doing real work here — flex items stretch to the
+   tallest in their row by default, and since the images are object-fit: cover
+   that would silently crop every photo down to a common height, which is the
+   one thing this layout exists to avoid. */
+.tl__shots--strip {
+  align-items: flex-start;
+}
+
+.tl__shots--strip .tl__shot {
+  flex: 0 0 auto;
+  width: min(100%, var(--tl-strip-w));
 }
 
 .tl__shot {
@@ -498,7 +520,13 @@
   object-fit: cover;
 }
 
-/* Same Doto label-printer caption as the About portraits and marquee. */
+/* The Doto label-printer caption. No drop shadow — it was only ever propping up
+   white text on images that happened to be light.
+   Instead the tone is chosen per photograph in src/data/timeline.js: white by
+   default, `capTone: 'dark'` where the corner it sits in is light. An automatic
+   blend was tried and rejected — inversion has a blind spot at mid-grey, and on
+   saturated images it returns the complementary colour, which reads as a fault
+   rather than a decision. Two tones chosen by eye beat one clever rule. */
 .tl__shot-cap {
   position: absolute;
   left: 14px;
@@ -510,8 +538,12 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
   pointer-events: none;
+}
+
+/* For photographs whose bottom-left corner is light. */
+.tl__shot-cap--dark {
+  color: #0a0a0a;
 }
 
 /* ---- Responsive ---- */
@@ -556,6 +588,8 @@
 @media (max-width: 600px) {
   .tl {
     --tl-row-h: clamp(140px, 38vw, 210px);
+    /* Two-up on a phone rather than one long ribbon. */
+    --tl-strip-w: clamp(140px, 45vw, 190px);
   }
   .tl__ruler {
     padding: 10px 0 8px;
@@ -650,11 +684,11 @@
   }
 
   .tl__years {
-    height: clamp(30px, 8.5vw, 46px);
+    height: clamp(39px, 11vw, 60px);
   }
 
   .tl__year {
-    font-size: clamp(30px, 8.5vw, 46px);
+    font-size: clamp(39px, 11vw, 60px);
   }
 
   .tl__head-chip {
