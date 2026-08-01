@@ -34,37 +34,43 @@ export function applySEO({ title, description, path }) {
   setMeta('meta[name="twitter:url"]', 'content', url)
 }
 
+// About titles follow `Name / Section`, in the spirit of pudding.studio
+// ("Pudding Studio / Our Kitchen"): short and human is what someone actually
+// reads in a tab or a result. The descriptions stay descriptive, though — that
+// line is the search snippet, and it has to say what the page is to someone who
+// has never heard of the site. Home and playground keep the older keyword-led
+// titles.
 export const ROUTE_SEO = {
   '/': {
     title: 'Yahaya Muhammad — Product Designer & Engineer | Portfolio',
     description:
-      'Yahaya Muhammad is a product designer and engineer based in Nigeria, currently designing and building at Kutuby. See selected case studies in healthcare, education and brand.',
+      'Yahaya Muhammad is a product designer and engineer based in Nigeria, currently designing and building at Kutuby. See selected case studies in healthcare, education and fintech.',
   },
   '/about': {
-    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    title: 'Yahaya Muhammad / About',
     description:
-      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
+      'Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
   },
   // The previous About layout, parked for reference — kept out of the sitemap so
   // it isn't indexed as duplicate content alongside the live /about.
   '/about-classic': {
-    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    title: 'Yahaya Muhammad / About',
     description:
-      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
+      'Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
   },
   // Original About page, parked for later use — kept out of the sitemap so it
   // isn't indexed as duplicate content alongside the live /about.
   '/about-old': {
-    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    title: 'Yahaya Muhammad / About',
     description:
-      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
+      'Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. From civil engineering to design — building products that connect with people.',
   },
   // Alias of /about, kept so existing links survive. Out of the sitemap so the
   // two URLs aren't indexed as duplicates.
   '/about-timeline': {
-    title: 'About Yahaya Muhammad — Product Designer & Engineer in Nigeria',
+    title: 'Yahaya Muhammad / About',
     description:
-      'About Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
+      'Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
   },
   '/playground': {
     title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',

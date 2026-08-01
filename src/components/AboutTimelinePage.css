@@ -612,6 +612,11 @@
   .tl__shots--strip .tl__shot {
     width: 100%;
   }
+  /* Same 24px the intro portraits stack at (.ab2__portraits), so a stacked pair
+     of images reads identically wherever it appears on the page. */
+  .tl__shots--strip {
+    gap: 24px;
+  }
   /* Two columns rather than one: these are photographs, not screenshots, so
      they stay readable at half a phone's width and a ten-photo chapter doesn't
      turn into a mile of scrolling. */
