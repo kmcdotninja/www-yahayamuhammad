@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import './MobileMenu2.css'
 import Picture from './Picture.jsx'
-import { SHOW_NAV_ICONS } from '../lib/flags.js'
+import { SHOW_NAV_ICONS, SHOW_THEME_TOGGLE } from '../lib/flags.js'
 import { useSnd } from '../hooks/useSnd.js'
 import { navigate, usePathname } from '../lib/router.js'
 
@@ -175,18 +175,20 @@ export default function MobileMenu2({
       </nav>
 
       <div className="mm2__actions">
-        <button
-          type="button"
-          className="mm2__chip mm2__chip--icon"
-          onClick={() => {
-            play(theme === 'dark' ? SOUNDS.TOGGLE_ON : SOUNDS.TOGGLE_OFF)
-            onToggleTheme?.()
-          }}
-          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          tabIndex={open ? 0 : -1}
-        >
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-        </button>
+        {SHOW_THEME_TOGGLE && (
+          <button
+            type="button"
+            className="mm2__chip mm2__chip--icon"
+            onClick={() => {
+              play(theme === 'dark' ? SOUNDS.TOGGLE_ON : SOUNDS.TOGGLE_OFF)
+              onToggleTheme?.()
+            }}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            tabIndex={open ? 0 : -1}
+          >
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
+        )}
         <button
           type="button"
           className="mm2__chip"

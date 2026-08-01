@@ -6,7 +6,7 @@ import './Hero.css'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
 import Picture from './Picture.jsx'
-import { SHOW_NAV_ICONS } from '../lib/flags.js'
+import { SHOW_NAV_ICONS, SHOW_THEME_TOGGLE } from '../lib/flags.js'
 import { useSnd } from '../hooks/useSnd.js'
 import { useTheme } from '../hooks/useTheme.js'
 import { navigate, usePathname } from '../lib/router.js'
@@ -175,15 +175,17 @@ export default function TopNav() {
           </nav>
 
           <div className="intro__right">
-            <button
-              type="button"
-              className="intro__pill intro__pill--icon"
-              onClick={onToggleTheme}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              title={`${theme === 'dark' ? 'Light' : 'Dark'} mode`}
-            >
-              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            </button>
+            {SHOW_THEME_TOGGLE && (
+              <button
+                type="button"
+                className="intro__pill intro__pill--icon"
+                onClick={onToggleTheme}
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                title={`${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              >
+                {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              </button>
+            )}
             <button
               type="button"
               className="intro__pill intro__pill--button"

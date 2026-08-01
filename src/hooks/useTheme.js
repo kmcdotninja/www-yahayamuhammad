@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SHOW_THEME_TOGGLE } from '../lib/flags.js'
 
 const LIGHT = {
   '--bg': '#f5f3ee',
@@ -28,11 +29,18 @@ function applyTheme(theme) {
 export function useTheme() {
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') return 'dark'
+    // With the toggle hidden, dark wins outright. Reading the stored value here
+    // would strand anyone who had switched to light in a theme they now have no
+    // control to leave.
+    if (!SHOW_THEME_TOGGLE) return 'dark'
     return localStorage.getItem('theme') || 'dark'
   })
 
   useEffect(() => {
     applyTheme(theme)
+    // Not persisted while forced — so a stored preference survives untouched and
+    // comes back the moment the toggle does.
+    if (!SHOW_THEME_TOGGLE) return
     try {
       localStorage.setItem('theme', theme)
     } catch {

@@ -1,0 +1,77 @@
+/* Stickers streaming off an inline link, Instagram-Live style.
+   Every value that varies per sticker is a custom property set in JS; the motion
+   itself is one CSS animation, so the compositor runs it and a dozen in flight
+   cost nothing. */
+
+.burst {
+  position: relative;
+  display: inline;
+}
+
+/* The stage is zero-sized and anchored to the link's start. Absolute so it takes
+   the stickers out of the text flow — otherwise each one would reflow the
+   sentence as it spawned. */
+.burst__stage {
+  position: absolute;
+  left: 0.6em;
+  bottom: 0.1em;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  /* Above the body copy, below the sticky ruler and the nav. */
+  z-index: 5;
+}
+
+.burst__trigger {
+  display: inline;
+}
+
+.burst__bit {
+  position: absolute;
+  left: var(--x, 0);
+  bottom: 0;
+  width: var(--size, 20px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform, opacity;
+  /* `both` so the sticker is already at frame zero — at its start position and
+     invisible — for the frame between append and the animation starting.
+     Without it each one flashes at full size on the baseline first. */
+  animation: burst-rise var(--life, 2100ms) cubic-bezier(0.25, 0.6, 0.35, 1) both;
+}
+
+/* Up, and pulled sideways along the way — a straight vertical float reads as a
+   loading spinner; the curve reads as something let go of. It swells past full
+   size on the way in, which is the bit that makes it feel like a pop. */
+@keyframes burst-rise {
+  0% {
+    transform: translate3d(0, 6px, 0) scale(0.35) rotate(0deg);
+    opacity: 0;
+  }
+  14% {
+    transform: translate3d(calc(var(--drift) * 0.1), calc(var(--rise) * -0.14), 0)
+      scale(1.12) rotate(calc(var(--tilt) * 0.2));
+    opacity: 1;
+  }
+  55% {
+    transform: translate3d(calc(var(--drift) * 0.72), calc(var(--rise) * -0.58), 0)
+      scale(1) rotate(calc(var(--tilt) * 0.7));
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift), calc(var(--rise) * -1), 0) scale(0.72)
+      rotate(var(--tilt));
+    opacity: 0;
+  }
+}
+
+/* No stream at all under reduced motion — the JS declines to spawn, and this is
+   the belt-and-braces half in case one is already in the air when the setting
+   changes. */
+@media (prefers-reduced-motion: reduce) {
+  .burst__bit {
+    display: none;
+  }
+}

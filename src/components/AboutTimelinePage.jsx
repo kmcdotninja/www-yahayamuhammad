@@ -8,6 +8,10 @@ import TopNav from './TopNav.jsx'
 import Footer from './Footer.jsx'
 import Picture from './Picture.jsx'
 import { withLinks } from '../lib/inlineLinks.jsx'
+import StickerBurst from './StickerBurst.jsx'
+
+// Friends of Figma sticker, streamed off the lede's link on hover.
+const FOF_STICKER = '/stickers/FoF.svg'
 import { getLenis } from '../lib/lenisStore.js'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 import { KITS, SOUNDS, useSnd, warmKit } from '../hooks/useSnd.js'
@@ -830,7 +834,13 @@ export default function AboutTimelinePage() {
             ))}
           </h1>
           <p className="ab2__lede" data-reveal>
-            {withLinks(LEDE)}
+            {withLinks(LEDE, (a, href) =>
+              href.includes('friends.figma.com') ? (
+                <StickerBurst src={FOF_STICKER}>{a}</StickerBurst>
+              ) : (
+                a
+              ),
+            )}
           </p>
         </section>
 

@@ -4,10 +4,14 @@ import TopNav from './TopNav.jsx'
 import Footer from './Footer.jsx'
 import Picture from './Picture.jsx'
 import { withLinks } from '../lib/inlineLinks.jsx'
+import StickerBurst from './StickerBurst.jsx'
 import { useReducedMotion } from '../hooks/useReducedMotion.js'
 
 // The live About page (rendered at /about). The original layout is parked at
 // /about-old for later use.
+
+// Friends of Figma sticker, streamed off the chapter's link on hover.
+const FOF_STICKER = '/stickers/FoF.svg'
 
 const HEADLINE =
   'Product Designer\nbuilding digital products\nfor humans'
@@ -255,7 +259,13 @@ export default function AboutPage2() {
             ))}
           </h1>
           <p className="ab2__lede" data-reveal>
-            {withLinks(LEDE)}
+            {withLinks(LEDE, (a, href) =>
+              href.includes('friends.figma.com') ? (
+                <StickerBurst src={FOF_STICKER}>{a}</StickerBurst>
+              ) : (
+                a
+              ),
+            )}
           </p>
         </section>
 

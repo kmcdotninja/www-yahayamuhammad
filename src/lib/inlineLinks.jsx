@@ -5,9 +5,14 @@
 // Deliberately only this one pattern — it is not a markdown renderer, and the
 // moment it needs to be, reach for one instead of growing this.
 
+import { Fragment } from 'react'
+
 const LINK = /\[([^\]]+)\]\(([^)\s]+)\)/g
 
-export function withLinks(text) {
+// `wrap` (optional) gets each anchor and its href and may return something else
+// to render in its place — how a link picks up decoration without this module
+// having to know what decoration is.
+export function withLinks(text, wrap) {
   if (typeof text !== 'string' || !text.includes('](')) return text
 
   const out = []
@@ -20,14 +25,15 @@ export function withLinks(text) {
     // Anything off-site opens in a new tab; noreferrer as well as noopener so we
     // aren't leaking the referrer on someone else's behalf.
     const external = /^https?:\/\//.test(href)
-    out.push(
-      <a
-        key={`${href}-${m.index}`}
-        href={href}
-        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}
-      >
+    const anchor = (
+      <a href={href} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : null)}>
         {label}
-      </a>,
+      </a>
+    )
+    // Keyed here rather than on the anchor, so a wrapper doesn't have to know to
+    // carry the key through.
+    out.push(
+      <Fragment key={`${href}-${m.index}`}>{wrap ? wrap(anchor, href) : anchor}</Fragment>,
     )
     last = m.index + m[0].length
   }
