@@ -9,7 +9,7 @@ import { useReducedMotion } from '../hooks/useReducedMotion.js'
 // /about-old for later use.
 
 const HEADLINE =
-  'Product Designer\nbuilding digital product\nfor humans'
+  'Product Designer\nbuilding digital products\nfor humans'
 
 const LEDE =
   'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at Friends of Figma Kano.'

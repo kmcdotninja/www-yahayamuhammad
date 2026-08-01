@@ -30,7 +30,7 @@
      term is the room left over after the longest line at the current display
      size, so on a narrower screen the offset gives way instead of forcing that
      line to wrap. It reaches zero on phones on its own — no breakpoint needed. */
-  padding-left: max(0px, min(15%, 100% - 9.4em));
+  padding-left: max(0px, min(15%, 100% - 9.9em));
 }
 
 /* Inline by default so a narrow column can wrap the headline however it needs;
