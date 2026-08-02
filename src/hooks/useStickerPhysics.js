@@ -115,6 +115,9 @@ export function useStickerPhysics(sectionRef) {
         // Upright bodies (the face, the input) never tumble — they self-right to
         // a small lean instead of resting at whatever angle they land.
         upright: el.hasAttribute('data-upright'),
+        // data-flat: upright *and* square to the page. The lean below reads as
+        // charm on a paper sticker and as a defect on a video frame.
+        flat: el.hasAttribute('data-flat'),
         uprightTarget: 0,
         // Platforms (the input pill, the video card) keep their spot: other
         // stickers rest on TOP of them rather than over their faces, so they
@@ -192,8 +195,8 @@ export function useStickerPhysics(sectionRef) {
       b.hw = b.w / 2
       b.hh = b.h / 2
       // Upright bodies settle to a subtle, per-load lean; everything else can
-      // land at any angle.
-      b.uprightTarget = b.upright ? rand(-7, 7) : 0
+      // land at any angle. Flat ones settle square.
+      b.uprightTarget = b.upright && !b.flat ? rand(-7, 7) : 0
       if (reduced) {
         // Reduced motion: no drop — rest everything at the bottom.
         b.cx = b.isPlatform

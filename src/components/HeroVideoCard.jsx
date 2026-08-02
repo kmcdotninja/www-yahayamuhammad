@@ -39,7 +39,8 @@ const TAP_MS = 500 // held longer than this, it was a carry, not a click
 // (useStickerPhysics picks it up from the .hero-sticker class), the preview
 // loops silently inside the frame so it reads as alive rather than as a
 // screenshot, and opening it plays the full clip in a chromeless lightbox.
-// data-upright keeps it from tumbling — a video frame resting upside down reads
+// data-upright keeps it from tumbling and data-flat keeps it square — a video
+// frame resting upside down reads
 // as broken, the way the portrait sticker does.
 export default function HeroVideoCard() {
   const [open, setOpen] = useState(false)
@@ -160,6 +161,9 @@ export default function HeroVideoCard() {
         ref={cardRef}
         className="hero-sticker hero-sticker--video"
         data-upright
+        // Square to the page: the resting lean the other stickers carry made the
+        // clip read as tilted footage rather than as a frame.
+        data-flat
         data-anchor="bottom-right"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
