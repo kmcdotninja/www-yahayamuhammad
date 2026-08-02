@@ -203,7 +203,12 @@ export function useScrollAnimations(pathname) {
               ease: EASE,
               scrollTrigger: {
                 trigger: el,
-                start: 'top 92%',
+                // 92% by default: a block reveals a little before it is fully
+                // in view. `data-reveal-start` overrides it for the few blocks
+                // that are meant to be seen the moment they break the fold —
+                // a section deliberately peeking above it would otherwise sit
+                // there at opacity 0, which is worse than not peeking at all.
+                start: el.dataset.revealStart || 'top 92%',
                 toggleActions: 'play none none reverse',
               },
             },

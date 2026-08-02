@@ -844,7 +844,11 @@ export default function AboutTimelinePage() {
           </p>
         </section>
 
-        <section className="ab2__portraits" data-reveal>
+        {/* The portraits are sized to break the fold under the hero (see
+            .ab2__hero in AboutPage2.css) — so they reveal as soon as any of
+            that band shows, rather than waiting for the usual 92% mark and
+            leaving the tease blank. */}
+        <section className="ab2__portraits" data-reveal data-reveal-start="top 99%">
           <figure className="ab2__portrait">
             <Picture
               src="/images/headshot.webp"
@@ -856,18 +860,18 @@ export default function AboutTimelinePage() {
               decoding="async"
               draggable={false}
             />
-            <figcaption className="ab2__portrait-cap">Headshot</figcaption>
+            <figcaption className="ab2__portrait-cap">This is me</figcaption>
           </figure>
           <figure className="ab2__portrait">
             <Picture
-              src="/about/workspace.webp"
-              alt="At the studio"
+              src="/about/ai-build.webp"
+              alt="A working session on screen at the desk"
               className="ab2__portrait-img"
               loading="eager"
               decoding="async"
               draggable={false}
             />
-            <figcaption className="ab2__portrait-cap">At the studio</figcaption>
+            <figcaption className="ab2__portrait-cap">At the desk</figcaption>
           </figure>
         </section>
 

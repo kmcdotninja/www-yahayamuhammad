@@ -269,7 +269,9 @@ export default function AboutPage2() {
           </p>
         </section>
 
-        <section className="ab2__portraits" data-reveal>
+        {/* Reveals as soon as its peeking band breaks the fold — see the note
+            on the same section in AboutTimelinePage.jsx. */}
+        <section className="ab2__portraits" data-reveal data-reveal-start="top 99%">
           <figure className="ab2__portrait">
             <Picture
               src="/images/headshot.webp"
@@ -285,14 +287,14 @@ export default function AboutPage2() {
           </figure>
           <figure className="ab2__portrait">
             <Picture
-              src="/about/workspace.webp"
-              alt="At the studio"
+              src="/about/ai-build.webp"
+              alt="A working session on screen at the desk"
               className="ab2__portrait-img"
               loading="eager"
               decoding="async"
               draggable={false}
             />
-            <figcaption className="ab2__portrait-cap">At the studio</figcaption>
+            <figcaption className="ab2__portrait-cap">At the desk</figcaption>
           </figure>
         </section>
 

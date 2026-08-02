@@ -5,13 +5,43 @@
 .ab2 {
   background: var(--bg);
   min-height: 100svh;
-  /* Clear the fixed TopNav (matches .about), rail-aligned side padding. */
-  padding: 156px var(--pad) clamp(80px, 10vw, 160px);
+  /* Clear the fixed TopNav (matches .about), rail-aligned side padding. Held in
+     a variable because the hero below measures the first screen against it. */
+  --ab2-top: 156px;
+  padding: var(--ab2-top) var(--pad) clamp(80px, 10vw, 160px);
+}
+
+/* On a short laptop the first screen is spoken for by the time the lede ends,
+   so the nav clearance gives some of itself back rather than pushing the
+   portraits out of sight. Still well clear of the 76px bar. */
+@media (min-width: 901px) and (max-height: 840px) {
+  .ab2 {
+    --ab2-top: 124px;
+  }
 }
 
 /* ---- Hero statement ---- */
 .ab2__hero {
-  margin-bottom: clamp(56px, 9vw, 132px);
+  /* Deliberately tighter than the page's other section gaps. The portraits sit
+     directly below, and at the old gap they landed a hair past the fold on a
+     laptop: the page opened on a headline over empty canvas with nothing to say
+     there are photographs at all (they also stayed invisible, since the reveal
+     only arms once an element's top clears 92% of the screen). */
+  margin-bottom: clamp(28px, 3vw, 44px);
+}
+
+/* The hero takes the first screen, but only as far as the point where the top
+   band of the portraits still breaks the fold — so the page always opens with a
+   slice of photograph showing, and you know to keep going. `min-height` measures
+   the screen rather than the copy, so the tease survives a longer headline or a
+   wrapped lede; where the copy is already taller than the screen allows, it
+   simply doesn't apply and the gap above stands on its own. The 680px cap keeps
+   a tall monitor from opening a canyon between the lede and the photographs.
+   The subtraction is this page's top padding plus the band left showing. */
+@media (min-width: 901px) {
+  .ab2__hero {
+    min-height: min(680px, calc(100svh - var(--ab2-top) - 168px));
+  }
 }
 
 .ab2__headline {
@@ -428,5 +458,24 @@
   }
   .ab2__portrait {
     width: 100%;
+  }
+}
+
+/* The mobile half of the tease. The rule above is scoped `min-width: 901px`, so
+   on a short phone the headline and lede still filled the window on their own
+   and the portraits started under the fold with nothing to say they were there.
+   Reclaiming the fixed air at the top and taking the display size down one step
+   keeps a strip of them showing. Keyed on height as well as width so a normal
+   phone held in portrait is untouched. */
+@media (max-width: 900px) and (max-height: 700px) {
+  .ab2 {
+    --ab2-top: 84px;
+    padding-top: var(--ab2-top);
+  }
+  .ab2__headline {
+    font-size: max(44px, 11.5vw);
+  }
+  .ab2__lede {
+    margin-top: clamp(14px, 3vw, 26px);
   }
 }
