@@ -12,6 +12,11 @@ const SOCIALS = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/yahyabinmuhammad/' },
 ]
 
+// Same file the desktop header's Resume pill points at (see TopNav.jsx) — the
+// header's right-hand pills are hidden under 1024px, so the drawer carries
+// its own copy of the link for phone and tablet.
+const RESUME_HREF = '/yahaya-muhammad-resume.pdf'
+
 function SunIcon() {
   return (
     <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
@@ -189,6 +194,19 @@ export default function MobileMenu2({
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
         )}
+        <a
+          href={RESUME_HREF}
+          className="mm2__chip"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => {
+            play(SOUNDS.BUTTON)
+            onClose()
+          }}
+          tabIndex={open ? 0 : -1}
+        >
+          Resume
+        </a>
         <button
           type="button"
           className="mm2__chip"

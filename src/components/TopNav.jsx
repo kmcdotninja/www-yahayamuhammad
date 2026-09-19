@@ -12,6 +12,10 @@ import { useTheme } from '../hooks/useTheme.js'
 import { navigate, usePathname } from '../lib/router.js'
 
 const EMAIL = 'yahayabinmuhammad@gmail.com'
+// Lives in /public, so Vite copies it to the deploy root untouched and the
+// URL stays stable. Opened in a new tab: the browser's native PDF viewer
+// takes it from there and the portfolio keeps its place behind it.
+const RESUME_HREF = '/yahaya-muhammad-resume.pdf'
 
 // Gated behind SHOW_NAV_ICONS — flip that flag to bring the voxel icons back.
 function NavIcon({ src, width = 44, height = 44, eager }) {
@@ -186,13 +190,15 @@ export default function TopNav() {
                 {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
               </button>
             )}
-            <button
-              type="button"
+            <a
+              href={RESUME_HREF}
               className="intro__pill intro__pill--button"
-              onClick={copyEmail}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => play(SOUNDS.BUTTON)}
             >
-              {copied ? 'Copied' : 'Mail'}
-            </button>
+              Resume
+            </a>
           </div>
 
           <button
