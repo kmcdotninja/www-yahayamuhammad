@@ -219,6 +219,25 @@ p {
   text-wrap: pretty;
 }
 
+/* Custom text selection — a solid white block with black ink.
+   White/black are deliberate fixed literals (the highlight is a marker laid
+   over the page, not part of the page surface) so the selection reads the same
+   in both themes. `text-shadow: none` stops any glow/shadow from smearing
+   against the white block, and the colors are fully opaque so the block stays
+   solid rather than tinting whatever sits behind it. ::-moz-selection is kept
+   as its own rule — an unknown selector would invalidate the whole group. */
+::selection {
+  background: #fff;
+  color: #000;
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background: #fff;
+  color: #000;
+  text-shadow: none;
+}
+
 /* Respect user motion preferences — silences every transition + animation
    site-wide unless the element explicitly opts back in. Halves jank on
    low-end Android browsers and removes a battery cost on Reduced Motion. */

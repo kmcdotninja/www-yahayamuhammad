@@ -17,7 +17,7 @@ const HEADLINE =
   'Product Designer\nbuilding digital products\nfor humans'
 
 const LEDE =
-  'I’ve designed products across healthcare, fintech, retail, and enterprise, taking ideas from research to production. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at [Friends of Figma Kano](https://friends.figma.com/kano/).'
+  'I’ve designed products across education, healthcare, fintech, retail, and enterprise, taking ideas from research to production. Education is the thread I keep coming back to, from YodaBox’s learning products for kids to the learning app I design today. My civil engineering background helps me solve real problems through design. I also lead and mentor designers at [Friends of Figma Kano](https://friends.figma.com/kano/).'
 // Real experience, sourced from the LinkedIn profile export (Profile.pdf).
 const EXPERIENCE = [
   {

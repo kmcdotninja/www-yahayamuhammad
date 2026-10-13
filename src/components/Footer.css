@@ -258,19 +258,134 @@
 }
 
 .footer__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: var(--text);
 }
 
-.footer__status {
+/* The heart is a real button so it's keyboard-reachable, but it should read
+   as part of the sentence: no chrome, inherited size, baseline-ish alignment. */
+.footer__heart {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  cursor: var(--cursor-pointer);
+  transform-origin: 50% 80%;
+  transition: transform 0.15s ease;
 }
 
-@media (max-width: 700px) {
-  .footer__status {
-    flex-wrap: wrap;
-    gap: 12px;
+.footer__heart:hover {
+  transform: scale(1.18);
+}
+
+.footer__heart:active {
+  transform: scale(0.92);
+}
+
+.footer__heart.is-beating {
+  animation: heart-bounce 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer__love {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Zero-sized and anchored to the heart's top edge, so the bits take no space in
+   the line. They rise up out of the footer and over the YMD art above it, which
+   is why this outranks that section's z-index 4. */
+.footer__hearts {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.footer__heart-bit {
+  position: absolute;
+  left: var(--x, 0);
+  top: 0;
+  font-size: var(--size, 16px);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  /* `both` so the bit sits at frame zero — in place and invisible — for the
+     frame between mount and the animation starting, and through its stagger
+     delay. Without it every heart flashes at full size on the baseline first. */
+  animation: heart-float var(--life, 2000ms) cubic-bezier(0.25, 0.6, 0.35, 1)
+    var(--delay, 0ms) both;
+}
+
+/* Up, and pulled sideways along the way. A straight vertical float reads as a
+   progress indicator; the arc reads as something let go of. The swell past full
+   size on the way in is the bit that makes it feel like a pop. */
+@keyframes heart-float {
+  0% {
+    transform: translate3d(-50%, 0, 0) scale(0.3) rotate(0deg);
+    opacity: 0;
+  }
+  14% {
+    transform: translate3d(calc(-50% + var(--drift) * 0.1),
+        calc(var(--rise) * -0.14), 0)
+      scale(1.15) rotate(calc(var(--tilt) * 0.2));
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(calc(-50% + var(--drift) * 0.72),
+        calc(var(--rise) * -0.6), 0)
+      scale(1) rotate(calc(var(--tilt) * 0.7));
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(calc(-50% + var(--drift)), calc(var(--rise) * -1), 0)
+      scale(0.7) rotate(var(--tilt));
+    opacity: 0;
+  }
+}
+
+@keyframes heart-bounce {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  22% {
+    transform: translateY(-9px) scale(1.32);
+  }
+  44% {
+    transform: translateY(0) scale(0.88);
+  }
+  66% {
+    transform: translateY(-4px) scale(1.12);
+  }
+  84% {
+    transform: translateY(0) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* No burst at all under reduced motion — the click handler declines to spawn,
+   and this is the belt-and-braces half in case one is already in the air when
+   the setting changes. */
+@media (prefers-reduced-motion: reduce) {
+  .footer__heart,
+  .footer__heart.is-beating {
+    animation: none;
+    transition: none;
+  }
+  .footer__heart-bit {
+    display: none;
   }
 }
 
