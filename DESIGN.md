@@ -120,6 +120,22 @@ These are deliberately fixed regardless of theme — they belong to physical
 - Two hero components: `HeroCentered` (`.introC`, desktop ≥901px) and `Hero`
   (`.intro`, mobile ≤900px). They share `HeroStickers` + `useStickerPhysics`.
 
+### Project tiles: phones in code
+
+Most project tiles are baked images (Groq's phone mockups are PNGs). Kiko's
+phone tiles are built in code instead, by `PhoneTile` (`src/components/PhoneTile.jsx`),
+so the screen can be a live loop: the same 1800 x 2250 layout as the baked
+mockups (grey `#eaebec` panel, silver iPhone, Dynamic Island, 9:41 bar,
+uppercase IBM Plex Mono caption), sized in container-query units so it scales
+with its column. In `data.js`, an `images` entry `{ phone, caption }` makes one
+(`phone` is an `.mp4` loop or a still), `{ video, width, height }` is a plain
+loop. Loops are lazy (`useLazyLoop`): nothing loads until near the viewport,
+they pause off screen, and reduced motion keeps the poster.
+Layout flags on an entry (Works2 `segmentsOf`): `wide: true` makes it span two
+columns on desktop beside the entry after it (Kiko's iPad), breaking the
+masonry into runs above and below; `rows: true` starts a run laid in plain rows
+of three. Below 901px everything stacks as before.
+
 ---
 
 ## 4. Motion

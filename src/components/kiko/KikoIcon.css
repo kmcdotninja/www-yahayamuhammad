@@ -1,0 +1,60 @@
+/* Kiko's app icon with the flipping Kiko (KikoIcon.jsx). The card fills its
+   slot at the given aspect ratio; the icon is as large as fits comfortably. */
+
+.kic {
+  container-type: size;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  overflow: hidden;
+  background: var(--kiko-cream, #f5f1e8);
+}
+
+.kic__icon {
+  position: relative;
+  width: min(66cqh, 66cqw);
+  aspect-ratio: 1;
+  background: #0b0c0d;
+  /* the iOS icon corner */
+  border-radius: 22.37%;
+  overflow: hidden;
+  /* keeps the rounded clip on the GPU layer (Safari) */
+  isolation: isolate;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+/* placed so Kiko sits exactly where icon-512.png has it */
+.kic__jump {
+  position: absolute;
+  left: 8.22%;
+  top: 5.48%;
+  width: 82.36%;
+  height: 91.31%;
+  /* Kiko's flip pivot (buddy.css bFlip: 50% 55% of Kiko) */
+  transform-origin: 50% 54.25%;
+  will-change: transform;
+}
+
+.kic__squash {
+  position: absolute;
+  inset: 0;
+  /* squash and stretch from Kiko's base */
+  transform-origin: 50% 91.14%;
+  will-change: transform;
+}
+
+.kic__squash img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.kic__squash img + img {
+  opacity: 0;
+}

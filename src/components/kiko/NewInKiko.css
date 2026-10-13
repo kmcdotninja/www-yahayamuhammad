@@ -1,0 +1,82 @@
+/* New in Kiko (NewInKiko.jsx). Fills its slot edge to edge, 4:5, 1000 x 1250
+   card units (--c). Milky cream, SF Pro Rounded Heavy. Transform and opacity
+   only, set per frame. No shadows, no lines. */
+
+.nik {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--kiko-cream, #f5f1e8);
+  color: #0c0e0f;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nik * {
+  --c: calc(100cqw / 1000);
+}
+
+/* moment 1: "New in Kiko" over a cyan v1.6 block, centred */
+.nik__title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--c) * 40);
+  padding-bottom: calc(var(--c) * 20);
+  opacity: 0;
+}
+
+.nik__new,
+.nik__ver {
+  font-family: var(--kiko-round, 'SF Pro Rounded Kiko', ui-rounded, system-ui, sans-serif);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: #0c0e0f;
+  opacity: 0;
+}
+
+.nik__new {
+  font-size: calc(var(--c) * 132);
+}
+
+.nik__ver {
+  font-size: calc(var(--c) * 150);
+  padding: calc(var(--c) * 16) calc(var(--c) * 46) calc(var(--c) * 24);
+  border-radius: calc(var(--c) * 40);
+  background: #50d2ed;
+}
+
+/* moment 2: the pills (positioned per frame from the physics) */
+.nik__pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-family: var(--kiko-round, 'SF Pro Rounded Kiko', ui-rounded, system-ui, sans-serif);
+  font-weight: 900;
+  font-size: calc(var(--c) * 58);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* the label sits a hair low in its line box (SF Pro Rounded's metrics) */
+.nik__pill > span {
+  display: block;
+  transform: translateY(calc(var(--c) * 2));
+}

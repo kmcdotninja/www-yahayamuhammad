@@ -2,12 +2,20 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './ProjectDrawer.css'
 import Picture from './Picture.jsx'
+import ProjectMedia from './ProjectMedia.jsx'
 import { useScrollLock } from '../hooks/useScrollLock.js'
 
 const NARROW_RATIO = 1.15 // width/height — anything below is treated as pairable
 
+// Entries are image/video paths, or { phone } / { video } / { snippet } objects (ProjectMedia)
+const idOf = (src) => (typeof src === 'string' ? src : src?.phone || src?.tablet || src?.video || src?.snippet || src?.image)
+
 const isNarrow = (src, dims) => {
-  const d = dims[src]
+  if (src && typeof src === 'object') {
+    if (src.phone || src.tablet || src.snippet) return true // phone and snippet tiles are 4:5
+    if (src.width && src.height) return src.width / src.height < NARROW_RATIO
+  }
+  const d = dims[idOf(src)]
   if (!d) return false
   return d.w / d.h < NARROW_RATIO
 }
@@ -125,15 +133,16 @@ export default function ProjectDrawer({
           // sync decode so it lands without a paint-then-replace flash.
           const eager = isFirstRow && ix === 0
           return (
-            <figure className="pd__image" key={src}>
-              <Picture
+            <figure className="pd__image" key={idOf(src)}>
+              <ProjectMedia
                 src={src}
                 alt=""
+                controls
                 loading={eager ? 'eager' : 'lazy'}
                 decoding="async"
                 fetchPriority={eager ? 'high' : 'low'}
                 draggable={false}
-                onLoad={onImgLoad(src)}
+                onLoad={onImgLoad(idOf(src))}
               />
             </figure>
           )
@@ -218,14 +227,22 @@ export default function ProjectDrawer({
                 </ul>
               </div>
               <div className="pd__meta-block">
-                <span className="pd__meta-label">Team</span>
-                <ul className="pd__meta-list">
-                  {project.team.map((t) => (
-                    <li key={t.name}>
-                      {t.name} ({t.role})
-                    </li>
-                  ))}
-                </ul>
+                <span className="pd__meta-label">
+                  {project.team.length ? 'Team' : project.kind || 'Team'}
+                </span>
+                {project.team.length ? (
+                  <ul className="pd__meta-list">
+                    {project.team.map((t) => (
+                      <li key={t.name}>
+                        {t.name} ({t.role})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="pd__meta-list">
+                    <li>{project.solo}</li>
+                  </ul>
+                )}
               </div>
             </div>
 

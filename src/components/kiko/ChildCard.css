@@ -1,0 +1,125 @@
+/* The child card (ChildCard.jsx). A milky cream card, 4:5, rounded; laid out
+   in card units (--c = 1/1000 of the card's width) so it scales with its
+   column. Text top left, a big Kiko in the lower part, cropped a little by the
+   card's bottom edge and never reaching the text, even at the top of a hop. */
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Heavy.woff2') format('woff2');
+  font-weight: 800 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Bold.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.kidc {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 28px;
+  overflow: hidden;
+  isolation: isolate;
+  /* the one milky cream every light Kiko card uses */
+  background: var(--kiko-cream, #f5f1e8);
+  --kidc-round: var(--kiko-round, 'SF Pro Rounded Kiko', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif);
+}
+
+.kidc * {
+  --c: calc(100cqw / 1000);
+}
+
+/* ---- the text: two fixed-height clipped lines ---- */
+
+.kidc__text {
+  position: absolute;
+  left: calc(var(--c) * 76);
+  top: calc(var(--c) * 66);
+  right: calc(var(--c) * 40);
+  z-index: 1;
+  visibility: hidden; /* until the fonts are in (no swap flash) */
+}
+
+.kidc--ready .kidc__text {
+  visibility: visible;
+}
+
+.kidc__line {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.kidc__line--age {
+  height: calc(var(--c) * 62);
+  font: 700 calc(var(--c) * 50) / calc(var(--c) * 62) var(--kidc-round);
+  color: #5a5a5a;
+}
+
+.kidc__line--name {
+  margin-top: calc(var(--c) * 2);
+  height: calc(var(--c) * 206);
+  font: 900 calc(var(--c) * 172) / calc(var(--c) * 206) var(--kidc-round);
+  letter-spacing: -0.03em;
+  color: #0b0c0d;
+}
+
+.kidc__slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  height: 100%;
+}
+
+.kidc__bit {
+  display: inline-block;
+  height: 100%;
+  white-space: pre;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* ---- Kiko: the layer is the Brand page's Kiko + 12px of air all round
+   (284 x 320.5 around a 260 x 296.5 figure). The figure is 800 card units wide,
+   its top at 480, so it sits clear of the name even at the top of a hop. ---- */
+
+.kidc__kiko {
+  position: absolute;
+  left: calc(var(--c) * 63);
+  top: calc(var(--c) * 443);
+  width: calc(var(--c) * 874);
+  height: calc(var(--c) * 985);
+  will-change: transform;
+}
+
+.kidc__squash {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96.3%; /* Kiko's base */
+  will-change: transform;
+}
+
+.kidc .kidc__squash img.kidc__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.kidc .kidc__squash img.kidc__img.is-on {
+  opacity: 1;
+}

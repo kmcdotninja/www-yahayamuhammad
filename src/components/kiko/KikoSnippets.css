@@ -1,0 +1,92 @@
+/* Kiko's animated snippet tiles (homepage project grid). Each sits on the same
+   grey panel as the baked Groq snippets and the PhoneTile, laid out in the
+   1800 x 2250 design units (--u = one design pixel, container query units),
+   with the same uppercase IBM Plex Mono caption. No shadows. */
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Heavy.woff2') format('woff2');
+  font-weight: 800 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Bold.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.ksn {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #eaebec;
+  overflow: hidden;
+  /* the one milky cream every light Kiko card uses (Kiko's own cream, #f5f1e8) */
+  --kiko-cream: #f5f1e8;
+  /* Kiko's type: SF Pro Rounded Heavy (Kiko's own web file) */
+  --kiko-round: 'SF Pro Rounded Kiko', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+}
+
+.ksn * {
+  --u: calc(100cqw / 1800);
+}
+
+/* the square card in the middle of the panel */
+.ksn__card {
+  position: absolute;
+  left: calc(var(--u) * 310);
+  top: calc(var(--u) * 486);
+  width: calc(var(--u) * 1180);
+  height: calc(var(--u) * 1180);
+  border-radius: calc(var(--u) * 44);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* the peekaboo and New in Kiko cards fill their slot edge to edge, like the
+   site's other full-bleed tiles (then the card is 1000 x 1250 units) */
+.ksn__card.peek,
+.ksn__card.nik {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* inside the card, --c is one card unit (the card is 1000 units wide) */
+.ksn__card * {
+  --c: calc(100cqw / 1000);
+}
+
+.ksn__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--u) * 1722);
+  text-align: center;
+  font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: calc(var(--u) * 35);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #121212;
+  white-space: nowrap;
+}
+
+.ksn img {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* New in Kiko lives in NewInKiko.css */
+
+/* the app icon and Peekaboo live in KikoIcon.css / Peekaboo.css */

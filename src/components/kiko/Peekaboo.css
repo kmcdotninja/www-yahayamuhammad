@@ -1,0 +1,138 @@
+/* Peekaboo -> logotype (Peekaboo.jsx). Fills its slot edge to edge, 4:5,
+   1000 x 1250 card units (--c). Transform and opacity only, set per frame. */
+
+.kpk {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #121314;
+  color: #fff;
+  /* Kiko's milky cream (same token as the other Kiko cards) */
+  --kiko-cream: #f5f1e8;
+  isolation: isolate;
+}
+
+.kpk--light {
+  background: var(--kiko-cream);
+  color: #0c0e0f;
+}
+
+.kpk * {
+  --c: calc(100cqw / 1000);
+}
+
+/* hidden until the first frame is drawn (no flash of the end state) */
+.kpk__group {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.kpk__kiko {
+  position: absolute;
+  /* Kiko's bottom centre, the point every scale and squash grows from */
+  transform-origin: 50% 91.14%;
+  will-change: transform;
+}
+
+.kpk__body {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 91.14%;
+  will-change: transform;
+}
+
+.kpk__body img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.kpk__body img:last-child {
+  opacity: 1;
+}
+
+/* the wordmark, set like the Brand page lockup; letters rise out of the
+   baseline (clipped below only) */
+.kpk__word {
+  position: absolute;
+  display: flex;
+  height: 0.8em;
+  font-family: 'SF Pro Rounded Kiko', 'SF Pro Rounded', ui-rounded, system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  clip-path: inset(-60% -20% 0 -20%);
+  -webkit-font-smoothing: antialiased;
+}
+
+.kpk__ch {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpk__group {
+    opacity: 1;
+  }
+}
+
+/* the sound toggle: flat, round, bottom-right; cyan when on (Kiko's accent) */
+.kpk__sound {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.82);
+  cursor: var(--cursor-pointer, pointer);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.kpk--light .kpk__sound {
+  background: rgba(12, 14, 15, 0.07);
+  color: rgba(12, 14, 15, 0.78);
+}
+
+.kpk .kpk__sound.is-on {
+  background: #50d2ed;
+  color: #0b0c0d;
+}
+
+.kpk__sound:active {
+  transform: scale(0.94);
+}
+
+.kpk__sound:focus-visible {
+  outline: 2px solid #50d2ed;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .kpk__sound:not(.is-on):hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  .kpk--light .kpk__sound:not(.is-on):hover {
+    background: rgba(12, 14, 15, 0.12);
+  }
+}

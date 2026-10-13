@@ -1,0 +1,85 @@
+/* TabletTile — an iPad in landscape, in the PhoneTile's design units (--u):
+   screen 1440 x 1001 (1180 x 820 points), 40 of black bezel, the same silver band. */
+
+.ttile__pad {
+  position: absolute;
+  left: calc(var(--u) * 130);
+  top: calc(var(--u) * 574);
+  width: calc(var(--u) * 1540);
+  height: calc(var(--u) * 1101);
+  border-radius: calc(var(--u) * 92);
+  /* breathing room in the grey panel like the phones' (~10% of the card above and below): the iPad drawn at 90%
+     about its own centre; the individual `scale` property composes with the grid's centring transform */
+  scale: 0.9;
+  background: linear-gradient(135deg, #b9b9b9 0%, #f4f4f5 18%, #9f9e9d 40%, #dcdcdc 62%, #f6f6f7 80%, #a8a8a8 100%);
+}
+
+.ttile__pad::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--u) * 4);
+  border-radius: calc(var(--u) * 88);
+  background: linear-gradient(180deg, #fafafa, #c9c9c9 50%, #f2f2f2);
+}
+
+.ttile__bezel {
+  position: absolute;
+  inset: calc(var(--u) * 10);
+  border-radius: calc(var(--u) * 82);
+  background: #000;
+}
+
+/* the front camera, on the long edge in landscape */
+.ttile__cam {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * 23);
+  width: calc(var(--u) * 14);
+  height: calc(var(--u) * 14);
+  margin-left: calc(var(--u) * -7);
+  border-radius: 50%;
+  background: #1d1e22;
+  box-shadow: inset 0 0 0 calc(var(--u) * 3) #2a2c31;
+}
+
+.ttile__screen {
+  position: absolute;
+  left: calc(var(--u) * 50);
+  top: calc(var(--u) * 50);
+  width: calc(var(--u) * 1440);
+  height: calc(var(--u) * 1001);
+  border-radius: calc(var(--u) * 46);
+  overflow: hidden;
+  background: #121314;
+  isolation: isolate;
+}
+
+/* status bar: points x 1.22 (1440 / 1180) */
+.ttile__status {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--u) * 29);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 calc(var(--u) * 26);
+  color: #fff;
+  font: 600 calc(var(--u) * 15) / 1 -apple-system, 'SF Pro Text', system-ui, sans-serif;
+}
+
+.ttile__icons {
+  position: static;
+  gap: calc(var(--u) * 6);
+}
+.ttile__icons .ptile__wifi { width: calc(var(--u) * 17); height: calc(var(--u) * 12); }
+.ttile__icons .ptile__bat { width: calc(var(--u) * 27); height: calc(var(--u) * 13); }
+
+/* Centred in its panel whatever the panel's shape (the grid's wide cell, a 4:5 tile, the stacked 16:11 on phones):
+   the iPad's own middle on the panel's middle, so the room above and below always matches (the doubled class
+   outranks the generic nocap/grid offsets, which assume the design's fixed top) */
+.ptile.ttile.ttile > .ttile__pad.ttile__pad {
+  left: 50%;
+  top: 50%;
+  transform: none;
+  translate: -50% -50%;
+}

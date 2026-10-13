@@ -1,5 +1,108 @@
 export const projects = [
   {
+    name: 'Kiko',
+    // A side project, not client work: the third info block reads "Side
+    // project" (from `kind`) with the `solo` line in place of a team list.
+    // Case study parked for now (same pattern as Groq/Waffle): the card shows
+    // the strip + info but the drawer stays closed. Remove `comingSoon` to
+    // take the written-up `sections` below live.
+    comingSoon: true,
+    // the written case study is still parked, but the card opens the live story of how Kiko was made
+    link: 'https://trykiko.app/making-of-kiko',
+    linkLabel: 'The making of Kiko',
+    kind: 'Side project',
+    solo: 'Solo. Created, designed and built end to end in 2026 as a web app (PWA). Currently on version 1.6.',
+    description:
+      'A playful Arabic letters and numbers app for Muslim children aged 4 to 7. Kiko, a little character with its own voice, guides every step, because the children using it cannot read yet.',
+    roles: ['Product Design', 'Character & Brand', 'Front-End Engineering', 'Voice & Sound Design'],
+    team: [],
+    // Flat array drives the masonry on the works page. Strings are images;
+    // `{ phone, caption }` is a phone mockup built in code (PhoneTile) with a
+    // silent looping recording of the real v1.6 app (or a still) on its
+    // screen; `{ video }` is a plain looping clip. See ProjectMedia.jsx.
+    // The masonry, each tile at its natural height (`aspect` sets a code-built
+    // card's shape: the peekaboos square, the app icon short). The iPad is
+    // `wide`: on desktop it opens the grid spanning two columns beside the
+    // tile after it (Works2.jsx segmentsOf); the masonry follows below.
+    // `{ phone }` / `{ tablet }`: device mockups in code with looping
+    // recordings; `{ snippet }`: Kiko's animated cards (components/kiko).
+    // Captions are kept here but hidden for now (ProjectMedia SHOW_CAPTIONS).
+    images: [
+      { snippet: 'peekaboo' },
+      { phone: '/video/kiko/game-time.mp4', caption: 'Game Time' },
+      { snippet: 'kiko-talks', caption: 'Kiko talks' },
+      { snippet: 'new-in-kiko', caption: 'New in Kiko' },
+      { phone: '/video/kiko/kikos-look.mp4', caption: "Kiko's look" },
+      { snippet: 'child', caption: 'Every child, their own Kiko' },
+      { phone: '/video/kiko/tracing.mp4', caption: 'Tracing' },
+      { tablet: '/video/kiko/ipad-catch-levelup.mp4', caption: 'The Catch game · Level up', wide: true },
+      { snippet: 'icon', ratio: '5 / 4' },
+      { phone: '/video/kiko/story-time.mp4', caption: 'Story Time' },
+      { image: '/projects/kiko/post-meet.webp', width: 1800, height: 2250 },
+      { phone: '/projects/kiko/screens/meet-kiko.webp', caption: 'Meet Kiko' },
+      { tablet: '/video/kiko/ipad-journey.mp4', caption: 'The journey', wide: true },
+      { phone: '/video/kiko/runner.mp4', caption: 'Game Time · Runner' },
+      { phone: '/video/kiko/kiko-alive.mp4', caption: 'Kiko, alive' },
+      { snippet: 'peekaboo-light' },
+      { phone: '/projects/kiko/screens/parent-lounge.webp', caption: 'Parent lounge' },
+    ],
+    sections: [
+      {
+        heading: 'The problem',
+        note:
+          'The children Kiko is for cannot read yet, and most learning apps still lean on written instructions. A four year old ends up tapping at random or waiting for a grown-up. So I set one rule before drawing anything: the whole app has to work without reading. Kiko\'s recorded voice, sounds and haptics carry every instruction, every tap gets an answer, and a wrong move never gets a silent no. Kiko says why and shows the way.',
+        images: [
+          { phone: '/projects/kiko/screens/meet-kiko.webp', caption: 'Meet Kiko' },
+          { phone: '/video/kiko/kiko-alive.mp4', caption: 'Kiko, alive' },
+        ],
+      },
+      {
+        heading: 'Kiko',
+        note:
+          'Kiko is the guide, the logo and the friend in one. I drew its expressions as SVGs and built them into a single living character: 27 faces, a set of moves, 12 colourways and accessories, with its mouth moving in sync with every line it says. Around it sits a full brand: the mark and lockup, SF Pro Rounded, one cyan accent on a dark and quiet app, an illustration set and its own sounds.',
+        images: [
+          { snippet: 'peekaboo' },
+          { snippet: 'icon' },
+        ],
+      },
+      {
+        heading: 'Tracing and Game Time',
+        note:
+          'Home is one path with one next step. Each Arabic letter and number is traced with a finger from a green start dot, with a pencil sound under it and Kiko cheering when it lands. After every three letters comes Game Time: Pop, Catcher, Fit it and Runner, four games that replay the letters just learned, so practice feels like a reward rather than a test.',
+        images: [
+          { phone: '/video/kiko/tracing.mp4', caption: 'Tracing' },
+          { phone: '/video/kiko/game-time.mp4', caption: 'Game Time' },
+        ],
+      },
+      {
+        heading: 'Stories',
+        note:
+          'Every level ends with a short narrated film about one of the Prophets, told for little ears. The Prophets are never drawn. Their stories are carried by words and respectful symbols, like the Kaaba or Suleiman\'s crown, and Kiko tells the story without ever playing a part in it. Only the page in front speaks, so a film never talks over anything else.',
+        images: [
+          { phone: '/video/kiko/story-time.mp4', caption: 'Story Time' },
+        ],
+      },
+      {
+        heading: 'Kiko\'s look and the Parent lounge',
+        note:
+          'Coins earned while learning buy Kiko new colours and glasses, and whatever a child picks, Kiko wears everywhere in the app. Behind a grown-ups\' code sits the Parent lounge: progress for each child, printable worksheets and screen time, with several children sharing one device.',
+        images: [
+          { phone: '/video/kiko/kikos-look.mp4', caption: "Kiko's look" },
+          { phone: '/projects/kiko/screens/parent-lounge.webp', caption: 'Parent lounge' },
+        ],
+      },
+      {
+        heading: 'Voice, QA and launch',
+        note:
+          'Kiko has one recorded voice (Gemini Live, voice Sulafat), made through a pipeline I built for it: record every line, check it, pick the best take. Each release goes through device QA on iPhone and Android before it ships. Version 1.6 added Stories, Game Time, Kiko\'s look and the Parent lounge, and went out with this launch film and a set of release posts.',
+        images: [
+          { video: '/video/kiko-launch.mp4', width: 720, height: 900 },
+          { snippet: 'new-in-kiko' },
+        ],
+      },
+    ],
+  },
+  {
     name: 'Kutuby',
     description:
       'A learning app that turns Islamic studies for kids, age 4 to 10 into short, illustrated lessons that feel more like play than school.',

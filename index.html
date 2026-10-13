@@ -200,6 +200,42 @@
       }
     </script>
 
+    <!-- Structured data: Kiko (side project case study, SEO.md P2). The case
+         study opens in a drawer on the home page, so it points at "/". -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "@id": "https://yahayamuhammad.com/#kiko",
+        "name": "Kiko",
+        "headline": "Kiko: a playful Arabic letters and numbers app for Muslim children",
+        "description": "A side project by Yahaya Muhammad: a playful Arabic letters and numbers web app (PWA) for Muslim children aged 4 to 7, guided by Kiko, a character with its own recorded voice. Designed and built solo in 2026, currently on version 1.6.",
+        "url": "https://yahayamuhammad.com/",
+        "image": [
+          "https://yahayamuhammad.com/projects/kiko/post-meet.webp",
+          "https://yahayamuhammad.com/projects/kiko/screens/meet-kiko.webp",
+          "https://yahayamuhammad.com/video/kiko/game-time-poster.webp",
+          "https://yahayamuhammad.com/video/kiko/story-time-poster.webp"
+        ],
+        "video": {
+          "@type": "VideoObject",
+          "name": "Kiko 1.6 launch film",
+          "description": "The launch film for Kiko version 1.6: Stories, Game Time, Kiko's look and the Parent lounge.",
+          "contentUrl": "https://yahayamuhammad.com/video/kiko-launch.mp4",
+          "thumbnailUrl": "https://yahayamuhammad.com/video/kiko-poster.webp",
+          "uploadDate": "2026-10-12",
+          "duration": "PT42S"
+        },
+        "dateCreated": "2026",
+        "version": "1.6",
+        "inLanguage": "en",
+        "genre": "Side project",
+        "keywords": "product design engineer, side project, edtech, kids app, Arabic letters, character design, PWA, design to code",
+        "author": { "@id": "https://yahayamuhammad.com/#person" },
+        "creator": { "@id": "https://yahayamuhammad.com/#person" }
+      }
+    </script>
+
     <!-- Preload only the critical BDO Grotesk weight that the LCP heading
          relies on. The other six weights swap in lazily through their
          @font-face rules. yahaya-hero.webp is a below-the-fold image used

@@ -10,6 +10,11 @@
       <image:title>Yahaya Muhammad — Product Designer &amp; Engineer</image:title>
       <image:caption>Portfolio of Yahaya Muhammad, product designer and engineer based in Nigeria.</image:caption>
     </image:image>
+    <image:image>
+      <image:loc>https://yahayamuhammad.com/projects/kiko/post-meet.webp</image:loc>
+      <image:title>Kiko, a side project by Yahaya Muhammad</image:title>
+      <image:caption>Kiko, a playful Arabic letters and numbers app for Muslim children aged 4 to 7, designed and built by Yahaya Muhammad.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://yahayamuhammad.com/about</loc>

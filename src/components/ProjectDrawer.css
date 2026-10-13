@@ -508,7 +508,8 @@
   background: rgba(0, 0, 0, 0.03);
 }
 
-.pd__image img {
+.pd__image img,
+.pd__image video {
   display: block;
   width: 100%;
   height: auto;
@@ -517,7 +518,8 @@
   -webkit-user-drag: none;
 }
 
-.pd__row--pair .pd__image img {
+.pd__row--pair .pd__image img,
+.pd__row--pair .pd__image video {
   height: 100%;
   object-fit: cover;
 }

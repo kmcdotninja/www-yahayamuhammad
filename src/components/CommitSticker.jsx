@@ -173,7 +173,7 @@ export default function CommitSticker() {
             height="80"
             loading="lazy"
             decoding="async"
-            fetchpriority="low"
+            fetchPriority="low"
           />
         </span>
       </div>

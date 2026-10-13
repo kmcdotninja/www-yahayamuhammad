@@ -32,7 +32,7 @@ all the way into production code.* That hybrid is the differentiator; a plain
 - **Description (home):** `Product design engineer who designs, builds and ships products from canvas to code. Based in Nigeria — case studies across edtech, fintech and developer tools.`
 
 Case-study domains are **edtech (Kutuby), fintech (Groq), developer tools
-(Waffle)**. Don't claim healthcare in descriptions — no public case study
+(Waffle)**, plus one side project: **Kiko** (edtech, designed and built solo). Don't claim healthcare in descriptions — no public case study
 supports it. (It's retained in `knowsAbout` as an area of expertise.)
 
 ---
@@ -49,13 +49,15 @@ Five places. Changing the pitch means touching all five.
 | [public/robots.txt](public/robots.txt) | Crawl rules + sitemap pointer | Fine as-is |
 | Page `<h1>`s | The one real semantic heading per page | `sr-only` in [Hero.jsx](src/components/Hero.jsx), [HeroCentered.jsx](src/components/HeroCentered.jsx), [AboutPage.jsx](src/components/AboutPage.jsx) |
 
-### The four JSON-LD blocks in `index.html`
+### The JSON-LD blocks in `index.html`
 
 1. **Person** (`#person`) — `jobTitle`, `description`, `knowsAbout`, `worksFor`,
    `memberOf`, `sameAs`, address. The most important block for a personal brand.
 2. **WebSite** (`#website`) — `alternateName`, authored/published by `#person`.
 3. **ProfilePage** (`#profilepage`) — `mainEntity` → `#person`.
 4. **Organization** (`#fof-kano`) — Friends of Figma, Kano.
+5. **CreativeWork** (`#kiko`) — the Kiko side project, with its launch film as
+   a `VideoObject`. The first per-project block (see §5 P2); the others can copy it.
 
 > **Note on headings:** the big visible headline is an `aria-hidden` `<p>` (it's
 > animated per-line by `RevealHeadline`). The real `<h1>` on each page is
@@ -220,4 +222,5 @@ External checks worth running after deploying:
 
 | Date | Change |
 |---|---|
+| 2026-10 | Added **Kiko** as a side project: `CreativeWork` JSON-LD (`#kiko`, with the launch film as a `VideoObject`) in `index.html` and a Kiko image entry on `/` in `public/sitemap.xml`. Case study opens in the home-page drawer like the others, so no new route or `ROUTE_SEO` entry. |
 | 2026-07 | Repositioned from "Product Designer & UX Designer" to **Product Design Engineer** as the primary target and pitch across all metadata, JSON-LD, sitemap and `<h1>`s. Corrected the case-study domain claim from "healthcare, education and brand" to the accurate "edtech, fintech and developer tools". Added `Product Design Engineering` / `Design Engineering` / `Prototyping` / `Front-End Development` to `knowsAbout`. |

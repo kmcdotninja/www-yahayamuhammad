@@ -1,0 +1,25 @@
+/* Kiko's type for the Kiko project tiles: SF Pro Rounded (Kiko's own web files,
+   from the Kiko repo's fonts/), Heavy for headings and pills, Bold for small
+   labels. Use `font-family: var(--kiko-round)` (set on :root). */
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Heavy.woff2') format('woff2');
+  font-weight: 800 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SF Pro Rounded Kiko';
+  src: url('/fonts/sf-pro-rounded/SFProRounded-Bold.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --kiko-round: 'SF Pro Rounded Kiko', ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  /* the one milky cream every light Kiko card uses (Kiko's own cream) */
+  --kiko-cream: #f5f1e8;
+}

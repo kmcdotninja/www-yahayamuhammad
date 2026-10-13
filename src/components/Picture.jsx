@@ -58,7 +58,7 @@ export default function Picture({
         className={className}
         loading={loading}
         decoding={decoding}
-        fetchpriority={fetchPriority}
+        fetchPriority={fetchPriority}
         draggable={draggable}
         onLoad={onLoad}
         sizes={sizes}

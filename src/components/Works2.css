@@ -46,7 +46,8 @@
   transform: translateY(-2px);
 }
 
-.works--grid .project__tile img {
+.works--grid .project__tile img,
+.works--grid .project__tile video {
   width: 100%;
   height: auto;
   display: block;
@@ -74,8 +75,40 @@
   }
 }
 
+/* no cursor pill on these (Kiko's animated tiles): show the normal cursor */
+.works--grid .project__tile--nopill {
+  cursor: var(--cursor-default);
+}
+
 @media (hover: none) {
   .works--grid .project__tile {
     cursor: var(--cursor-pointer);
   }
 }
+
+/* ---- JS masonry (a project with a `wide` entry, see useMasonry) ----
+   Tiles are placed absolutely by the hook above 600px; on phones they stack. */
+.works--grid .project__grid--js {
+  column-count: initial;
+  position: relative;
+}
+@media (max-width: 600px) {
+  .works--grid .project__grid--js .project__tile-frame { margin-bottom: 12px; }
+}
+/* the wide tile (an iPad): its grey panel is wider than tall (16:11), the
+   device fits it whichever way is tighter, centred */
+.works--grid .project__tile-frame--wide .ttile {
+  aspect-ratio: 16 / 11;
+  container-type: size;
+}
+.works--grid .project__tile-frame--wide .ttile,
+.works--grid .project__tile-frame--wide .ttile * {
+  --u: min(calc(100cqw / 1800), calc(100cqh / 1250));
+}
+.works--grid .project__tile-frame--wide .ttile.ptile--nocap > * {
+  transform: translate(calc((100cqw - var(--u) * 1800) / 2), calc(50cqh - var(--u) * 1124.5));
+}
+
+/* a project's own page (Kiko: The making of Kiko), under its context */
+.info-block__link{display:inline-block;margin-top:12px;font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:3px}
+.info-block__link:hover{opacity:.7}

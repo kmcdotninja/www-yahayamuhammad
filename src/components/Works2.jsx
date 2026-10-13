@@ -1,7 +1,8 @@
 import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import './Works.css'
 import './Works2.css'
-import Picture from './Picture.jsx'
+import ProjectMedia from './ProjectMedia.jsx'
+import { useMasonry } from '../hooks/useMasonry.js'
 import { projects } from '../data.js'
 
 // ProjectDrawer is heavy (image loader + portal + lenis hooks) and only
@@ -9,7 +10,7 @@ import { projects } from '../data.js'
 const ProjectDrawer = lazy(() => import('./ProjectDrawer.jsx'))
 
 const Project = memo(function Project({ project, onOpen }) {
-  const { name, description, roles, team, images, comingSoon, statusLabel } = project
+  const { name, description, roles, team, images, comingSoon, statusLabel, kind, solo, link, linkLabel } = project
   // Parked projects carry their own label (Rednoxx is actively being written
   // up, the rest are queued), so the ribbon and hover pill read the same word.
   const parkedLabel = statusLabel || 'Coming Soon'
@@ -47,15 +48,54 @@ const Project = memo(function Project({ project, onOpen }) {
   const openDrawer = useCallback(
     (e) => {
       e?.preventDefault?.()
+      // a project with its own page (Kiko's "The making of Kiko") opens that page in a new tab
+      if (link) { window.open(link, '_blank', 'noopener'); return }
       if (comingSoon) return
       onOpen()
     },
-    [comingSoon, onOpen],
+    [comingSoon, onOpen, link],
   )
 
+  const gridRef = useRef(null)
+  const hasWide = images.some((src) => src?.wide)
+  useMasonry(gridRef, hasWide)
+
+  const renderTile = (src, i) => {
+    const snip = !!src?.snippet
+    return (
+      <div
+        // entries are image/video paths, or { phone } / { tablet } / { video } / { snippet } / { image } objects
+        key={typeof src === 'string' ? src : src.phone || src.tablet || src.video || src.snippet || src.image}
+        className={`project__tile-frame${src?.wide ? ' project__tile-frame--wide' : ''}`}
+        data-wide={src?.wide ? '1' : undefined}
+        data-reveal-card
+      >
+        <figure
+          className={`project__tile${snip ? ' project__tile--nopill' : ''}`}
+          onClick={openDrawer}
+          // Kiko's animated snippet tiles keep the cursor pill off, so it
+          // never sits on top of what's moving in them
+          onPointerEnter={snip ? undefined : onImageEnter}
+          onPointerMove={snip ? undefined : onImageMove}
+          onPointerLeave={snip ? undefined : onImageLeave}
+        >
+          <ProjectMedia
+            src={src}
+            alt={`${name} ${i + 1}`}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
+            draggable={false}
+            sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
+          />
+        </figure>
+      </div>
+    )
+  }
+
   return (
-    <article className={`project${comingSoon ? ' project--soon' : ''}`}>
-      {comingSoon && (
+    <article className={`project${comingSoon && !link ? ' project--soon' : ''}`}>
+      {comingSoon && !link && (
         <span
           className={`project__ribbon${
             parkedLabel.length > 12 ? ' project__ribbon--long' : ''
@@ -69,38 +109,22 @@ const Project = memo(function Project({ project, onOpen }) {
         {name}
       </h2>
 
-      <div className="project__grid">
-        {images.map((src, i) => (
-          <div
-            key={src}
-            className="project__tile-frame"
-            data-reveal-card
-          >
-            <figure
-              className="project__tile"
-              onClick={openDrawer}
-              onPointerEnter={onImageEnter}
-              onPointerMove={onImageMove}
-              onPointerLeave={onImageLeave}
-            >
-              <Picture
-                src={src}
-                alt={`${name} ${i + 1}`}
-                loading="lazy"
-                decoding="async"
-                fetchPriority="low"
-                draggable={false}
-                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
-              />
-            </figure>
-          </div>
-        ))}
+      {/* The masonry. A project with a `wide` entry (Kiko's iPads) is laid out
+          by useMasonry: natural heights, the wide tile across two columns;
+          every other project keeps the CSS-column masonry. */}
+      <div ref={gridRef} className={`project__grid${hasWide ? ' project__grid--js' : ''}`}>
+        {images.map((src, i) => renderTile(src, i))}
       </div>
 
       <div className="project__info" data-reveal-stagger>
         <div className="info-block">
           <span className="info-block__label">Context</span>
           <p className="info-block__text">{description}</p>
+          {link && (
+            <a className="info-block__link" href={link} target="_blank" rel="noopener">
+              {linkLabel || 'Open'} ↗
+            </a>
+          )}
         </div>
         <div className="info-block">
           <span className="info-block__label">Role</span>
@@ -110,16 +134,25 @@ const Project = memo(function Project({ project, onOpen }) {
             ))}
           </ul>
         </div>
-        <div className="info-block">
-          <span className="info-block__label">Team</span>
-          <ul className="info-block__list">
-            {team.map((t) => (
-              <li key={t.name}>
-                {t.name} ({t.role})
-              </li>
-            ))}
-          </ul>
-        </div>
+        {team.length ? (
+          <div className="info-block">
+            <span className="info-block__label">Team</span>
+            <ul className="info-block__list">
+              {team.map((t) => (
+                <li key={t.name}>
+                  {t.name} ({t.role})
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          // Solo side projects (Kiko) have no team: the block is labelled with
+          // the project's `kind` and carries its `solo` line instead.
+          <div className="info-block">
+            <span className="info-block__label">{kind || 'Team'}</span>
+            <p className="info-block__text">{solo}</p>
+          </div>
+        )}
       </div>
 
       <span
@@ -129,7 +162,7 @@ const Project = memo(function Project({ project, onOpen }) {
         }`}
         aria-hidden="true"
       >
-        {comingSoon ? parkedLabel : 'Open'}
+        {link ? `${linkLabel || 'Open'} ↗` : comingSoon ? parkedLabel : 'Open'}
       </span>
     </article>
   )

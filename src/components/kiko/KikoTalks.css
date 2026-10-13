@@ -1,0 +1,251 @@
+/* Kiko talks (KikoTalks.jsx). Kiko's milky cream card filling its slot,
+   laid out in card units (--c = 1/1000 of the card's width): Kiko in the
+   middle, its line under it in one fixed-height clipped box. Transform and
+   opacity only, set per frame. No shadows, no glow. */
+
+.ktk {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: inherit;
+  background: var(--kiko-cream, #f5f1e8);
+  color: #0c0e0f;
+}
+
+.ktk * {
+  --c: calc(100cqw / 1000);
+}
+
+.ktk__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* a little above centre: the sound toggle keeps the bottom-right corner */
+  padding-bottom: calc(var(--c) * 40);
+}
+
+/* the rendered layer is the Brand page's Kiko + 12px of air all round
+   (284 x 320 around a 260 x 296 figure) */
+.ktk__kiko {
+  position: relative;
+  flex: none;
+  width: calc(var(--c) * 600);
+  height: calc(var(--c) * 675.9);
+}
+
+.ktk__fig {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96.3%; /* Kiko's base */
+  will-change: transform;
+}
+
+.ktk__body,
+.ktk__face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* the speaking light: the orange blob turning inside the shape, clipped to the
+   body by the body's own alpha. Its box, in the figure's 178 x 203 viewBox
+   units (the layer adds 8.2 units of air): the blob's square, 212 units round
+   its centre (132, 122); it turns about (87, 130). */
+.ktk__swirl {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  -webkit-mask: var(--ktk-mask) center / 100% 100% no-repeat;
+  mask: var(--ktk-mask) center / 100% 100% no-repeat;
+  will-change: opacity;
+}
+
+.ktk__blob {
+  position: absolute;
+  left: 17.59%;
+  top: 11.03%;
+  width: 109.04%;
+  height: 96.62%;
+  transform-origin: 28.78% 53.79%;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* ---- the line: one clipped box, every line laid out in it once ---- */
+
+.ktk__box {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: calc(var(--c) * 116);
+  margin-top: calc(var(--c) * 20);
+  overflow: hidden;
+  /* the lines roll in and out through soft edges, not a hard cut */
+  -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent);
+  visibility: hidden; /* until the fonts are in (no swap flash) */
+  font: 800 calc(var(--c) * 68) / calc(var(--c) * 116) var(--kiko-round, 'SF Pro Rounded Kiko', ui-rounded, system-ui, sans-serif);
+  letter-spacing: -0.035em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ktk--ready .ktk__box {
+  visibility: visible;
+}
+
+.ktk__line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  visibility: hidden;
+  will-change: transform;
+}
+
+.ktk__ch {
+  display: inline-block;
+  opacity: 0;
+  white-space: pre;
+  backface-visibility: hidden;
+}
+
+.ktk__nw {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* the word to look at, on Kiko's cyan block (the app's [word] heading) */
+.ktk__br {
+  position: relative;
+  display: inline-flex;
+  padding: 0 0.14em 0.04em;
+  line-height: 1.05;
+  color: #0b0c0d;
+  isolation: isolate;
+}
+
+.ktk__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.18em;
+  background: #50d2ed;
+  clip-path: inset(0 100% 0 0 round 0.18em);
+}
+
+.ktk__br .ktk__ch {
+  position: relative;
+}
+
+/* the sound toggle, as on the Peekaboo cards: flat, round, bottom-right; cyan
+   when on (Kiko's accent) */
+.ktk__sound {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(12, 14, 15, 0.07);
+  color: rgba(12, 14, 15, 0.78);
+  cursor: var(--cursor-pointer, pointer);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s, color 0.2s, transform 0.12s;
+}
+
+.ktk .ktk__sound.is-on {
+  background: #50d2ed;
+  color: #0b0c0d;
+}
+
+.ktk__sound:active {
+  transform: scale(0.94);
+}
+
+.ktk__sound:focus-visible {
+  outline: 2px solid #50d2ed;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .ktk__sound:not(.is-on):hover {
+    background: rgba(12, 14, 15, 0.12);
+  }
+}
+
+/* the sound hint, once per page view: the toggle pulses twice with a cyan
+   ring, and a small pill beside it says what it does, then fades (flat) */
+.ktk__hint {
+  position: absolute;
+  right: 60px;
+  bottom: 18px;
+  z-index: 2;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: #0c0e0f;
+  font: 600 13px / 28px var(--kiko-round, 'SF Pro Rounded Kiko', ui-rounded, system-ui, sans-serif);
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(6px, 0, 0);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ktk--hint .ktk__hint {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.15s;
+}
+
+.ktk--hint .ktk__sound {
+  animation: ktkPulse 0.6s cubic-bezier(0.45, 0, 0.55, 1) 2;
+}
+
+@keyframes ktkPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(80, 210, 237, 0.9);
+  }
+  45% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 4px rgba(80, 210, 237, 0.9);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(80, 210, 237, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ktk--hint .ktk__sound {
+    animation: none;
+  }
+  .ktk__hint {
+    transform: none;
+  }
+}
