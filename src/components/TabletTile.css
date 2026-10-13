@@ -8,9 +8,10 @@
   width: calc(var(--u) * 1540);
   height: calc(var(--u) * 1101);
   border-radius: calc(var(--u) * 92);
-  /* breathing room in the grey panel like the phones' (~10% of the card above and below): the iPad drawn at 90%
-     about its own centre; the individual `scale` property composes with the grid's centring transform */
-  scale: 0.9;
+  /* The 0.9 shrink that gives the iPad breathing room in the grey panel (~10%
+     of the card above and below) lives in the centring rule at the foot of this
+     file, folded into that one transform. It is deliberately NOT a standalone
+     `scale` here: see the note down there. */
   background: linear-gradient(135deg, #b9b9b9 0%, #f4f4f5 18%, #9f9e9d 40%, #dcdcdc 62%, #f6f6f7 80%, #a8a8a8 100%);
 }
 
@@ -76,10 +77,25 @@
 
 /* Centred in its panel whatever the panel's shape (the grid's wide cell, a 4:5 tile, the stacked 16:11 on phones):
    the iPad's own middle on the panel's middle, so the room above and below always matches (the doubled class
-   outranks the generic nocap/grid offsets, which assume the design's fixed top) */
+   outranks the generic nocap/grid offsets, which assume the design's fixed top).
+
+   The centring AND the 0.9 shrink are one `transform`, on purpose, and nothing
+   else on this element may set `translate` or `scale`.
+
+   Written as separate properties it is correct in dev and wrong in production.
+   The individual properties compose in a fixed order (translate, rotate, scale,
+   then transform), and the minifier rewrites across them: it folded
+   `transform: none; translate: -50% -50%` into `transform: translate(-50%,-50%)`,
+   which put the translate after the pad's own `scale: .9` so the -50% was
+   measured in already-scaled coordinates and the iPad sat 5% of its own size
+   down and to the right. Resetting with `translate: none; scale: none` did not
+   help either — the minifier drops declarations whose value is the initial one,
+   so the base `scale` came back and applied twice.
+
+   A single transform list cannot be reordered or dropped, so what ships is what
+   is written here. If the shrink ever needs to change, change it here. */
 .ptile.ttile.ttile > .ttile__pad.ttile__pad {
   left: 50%;
   top: 50%;
-  transform: none;
-  translate: -50% -50%;
+  transform: translate(-50%, -50%) scale(0.9);
 }
