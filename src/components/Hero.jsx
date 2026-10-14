@@ -8,16 +8,19 @@ import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 // On phones (≤760px — the same cutoff the headline font uses) the display is
 // so large that each word wants its own line, so we author the breaks
 // explicitly. Tablets (768px+) have room for the tighter three-line grouping.
+// Phones get shorter lines than tablets: the display is so much larger relative
+// to the rail there that a tablet-length line would run straight past it. The
+// tightest fit is "things for fun" at 390px, which leaves ~25px of the rail.
 const PHONE_LINES = [
-  'Design, build',
-  'and ship',
-  'products from',
-  'canvas to code',
+  'A product',
+  'designer who',
+  'builds and makes',
+  'things for fun',
 ]
 const TABLET_LINES = [
-  'Design, build',
-  'and ship products',
-  'from canvas to code',
+  'A product designer',
+  'who builds and makes',
+  'things for fun',
 ]
 
 const PHONE_MQ = '(max-width: 760px)'

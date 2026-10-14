@@ -8,10 +8,15 @@ import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 
 // Authored line breaks, not wrapping. Broken on phrase boundaries so the
 // closing phrase lands whole on its own line.
+//
+// The ceiling that matters is 901px, the narrowest width this desktop hero
+// renders at (below that the app swaps to <Hero>): the longest line here,
+// "who builds and makes", measures ~940px against a ~1354px rail at 1440 and
+// still clears it at 901. Keep new lines at or under about twenty characters.
 const HEADLINE_LINES = [
-  'Design, build',
-  'and ship products',
-  'from canvas to code',
+  'A product designer',
+  'who builds and makes',
+  'things for fun',
 ]
 
 export default function HeroCentered() {
