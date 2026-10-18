@@ -33,7 +33,14 @@ const isEnabled = () => {
 export default function DesignPanel() {
   const [enabled] = useState(isEnabled)
   const { theme } = useTheme()
-  const [open, setOpen] = useState(false)
+  // The floating "Design" button used to be the only way in; that corner now
+  // belongs to the Ask YahayaLLM launcher. Visiting ?panel opens this directly
+  // instead, so the tool is still one URL away without a button on every screen.
+  const [open, setOpen] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).has('panel'),
+  )
   const [copied, setCopied] = useState(false)
   const [overrides, setOverrides] = useState(() => {
     if (typeof window === 'undefined') return {}
@@ -231,28 +238,7 @@ export default function DesignPanel() {
 
   if (!enabled) return null
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        className="dpanel-fab"
-        onClick={() => setOpen(true)}
-        title="Open design panel"
-        aria-label="Open design panel"
-      >
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <line x1="4" y1="8" x2="20" y2="8" />
-          <line x1="4" y1="16" x2="20" y2="16" />
-          <circle cx="9" cy="8" r="2.4" fill="#14120d" />
-          <circle cx="15" cy="16" r="2.4" fill="#14120d" />
-        </svg>
-        <span>Design</span>
-        {changes.length > 0 && (
-          <span className="dpanel-fab__dot">{changes.length}</span>
-        )}
-      </button>
-    )
-  }
+  if (!open) return null
 
   return (
     <aside className="dpanel" aria-label="Design panel">

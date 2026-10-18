@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
-import { setLenis } from '../lib/lenisStore.js'
+import { runAfterScroll, setLenis } from '../lib/lenisStore.js'
 
 // Soft "expo.out"-style cubic — settles slowly, never bounces
 const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -65,6 +65,7 @@ export function useScrollAnimations(pathname) {
 
       function raf(time) {
         lenis.raf(time)
+        runAfterScroll(time)
         rafId = requestAnimationFrame(raf)
       }
       rafId = requestAnimationFrame(raf)

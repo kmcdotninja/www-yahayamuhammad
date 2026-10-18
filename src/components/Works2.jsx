@@ -67,7 +67,8 @@ const Project = memo(function Project({ project, onOpen }) {
         // entries are image/video paths, or { phone } / { tablet } / { video } / { snippet } / { image } objects
         key={typeof src === 'string' ? src : src.phone || src.tablet || src.video || src.snippet || src.image}
         className={`project__tile-frame${src?.wide ? ' project__tile-frame--wide' : ''}`}
-        data-wide={src?.wide ? '1' : undefined}
+        // `wide: 'full'` spans every column (Rednoxx's films); `wide: true` two
+        data-wide={src?.wide === 'full' ? 'full' : src?.wide ? '1' : undefined}
         data-reveal-card
       >
         <figure

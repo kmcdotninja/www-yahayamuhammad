@@ -1,4 +1,6 @@
-export const projects = [
+// Every project, written up. `hidden: true` keeps one off the site (the works
+// section and the assistant both read `projects` below) without deleting it.
+const allProjects = [
   {
     name: 'Kiko',
     // A side project, not client work: the third info block reads "Side
@@ -7,11 +9,11 @@ export const projects = [
     // the strip + info but the drawer stays closed. Remove `comingSoon` to
     // take the written-up `sections` below live.
     comingSoon: true,
-    // the written case study is still parked, but the card opens the live story of how Kiko was made
-    link: 'https://trykiko.app/making-of-kiko',
-    linkLabel: 'The making of Kiko',
+    // the written case study is still parked, so the card opens Kiko's website
+    link: 'https://trykiko.app',
+    linkLabel: 'Visit Kiko',
     kind: 'Side project',
-    solo: 'Solo. Created, designed and built end to end in 2026 as a web app (PWA). Currently on version 1.6.',
+    solo: 'I made Kiko on my own through 2026, from the character and the brand to the code it runs on. It ships as an installable web app and is currently on version 1.6.',
     description:
       'A playful Arabic letters and numbers app for Muslim children aged 4 to 7. Kiko, a little character with its own voice, guides every step, because the children using it cannot read yet.',
     roles: ['Product Design', 'Character & Brand', 'Front-End Engineering', 'Voice & Sound Design'],
@@ -27,6 +29,12 @@ export const projects = [
     // `{ phone }` / `{ tablet }`: device mockups in code with looping
     // recordings; `{ snippet }`: Kiko's animated cards (components/kiko).
     // Captions are kept here but hidden for now (ProjectMedia SHOW_CAPTIONS).
+    // Parked for later: the Kiko website's own animations (the five cards in
+    // components/kiko/web, art only, and the clips /video/kiko/web-runner.mp4
+    // and web-levelup.mp4, 540x720). To use them, register WebCards' five
+    // components in ProjectMedia's SNIPPETS ('web-trace', 'web-pop',
+    // 'web-count', 'web-stories', 'web-roll') and add `{ snippet: 'web-…' }` /
+    // `{ video, width: 540, height: 720 }` entries here.
     images: [
       { snippet: 'peekaboo' },
       { phone: '/video/kiko/game-time.mp4', caption: 'Game Time' },
@@ -104,6 +112,12 @@ export const projects = [
   },
   {
     name: 'Kutuby',
+    // Case study parked for now (Kiko's pattern): the `sections` below stay
+    // written, but the drawer stays closed and the card opens the website.
+    // Remove `comingSoon` and `link` to take the case study live again.
+    comingSoon: true,
+    link: 'https://kutuby.com',
+    linkLabel: 'Visit Kutuby',
     description:
       'A learning app that turns Islamic studies for kids, age 4 to 10 into short, illustrated lessons that feel more like play than school.',
     roles: ['Product Design', 'Art Direction', 'Website Design', 'Interaction Design'],
@@ -194,6 +208,9 @@ export const projects = [
     // This one is actively being written up, so its ribbon and hover pill
     // read "Currently Building" instead of the default "Coming Soon".
     statusLabel: 'Currently Building',
+    // the card opens the live design system rather than waiting on the write-up
+    link: 'https://rednoxx-design-system.vercel.app/design',
+    linkLabel: 'View the design system',
     description:
       'Rednoxx is a healthcare platform for enrolments, payments, insurance, consultations, prescriptions, labs, surgery, and reporting. Built on a design system with foundations, 36 components, and 30 healthcare blocks, validated across a 50 screen product demo.',
     roles: ['Product Design', 'Design System Engineer', 'Interaction Design', 'Accessibility'],
@@ -209,9 +226,15 @@ export const projects = [
     // columns and the short ones spread around them. Grouping them by topic
     // instead stacked both giants in one column, which left the middle column
     // ~300px short and opened a dead gap under it.
+    // `{ video, wide }`: a film of the real demo on a Studio Display (V7
+    // Go's way: the product recorded in a browser, played on a display in a
+    // Blender room), across two columns: the HIM patients flow, at an angle.
+    // Second, beside the logo: anywhere later it waits under a taller card and
+    // leaves a hole (the masonry sets a wide tile under the taller of its two).
+    // The slip card sits low, away from the film, which shows the slip itself.
     images: [
-      '/projects/Rednoxx/Reg%20Slip.webp',
       '/projects/Rednoxx/Rednoxx%20Logo.webp',
+      { video: '/video/rednoxx/him-patients.mp4', width: 1600, height: 900, wide: true },
       '/projects/Rednoxx/Foundations.webp',
       '/projects/Rednoxx/Table.webp',
       '/projects/Rednoxx/Empty%20State%201.webp',
@@ -219,6 +242,7 @@ export const projects = [
       '/projects/Rednoxx/Color%20Token.webp',
       '/projects/Rednoxx/Components.webp',
       '/projects/Rednoxx/Drawer.webp',
+      '/projects/Rednoxx/Reg%20Slip.webp',
       '/projects/Rednoxx/Discharge%20summary.webp',
       '/projects/Rednoxx/No%20duplicate%20candidates.webp',
       '/projects/Rednoxx/Badge.webp',
@@ -255,6 +279,8 @@ export const projects = [
   },
   {
     name: 'Waffle',
+    // Off the site for now; delete this line to bring it back.
+    hidden: true,
     // Drawer is parked for now — the scroller, info block, and
     // `sections` content below stay so we can flip this back on later.
     comingSoon: true,
@@ -309,3 +335,5 @@ export const projects = [
     ],
   },
 ]
+export const projects = allProjects.filter((p) => !p.hidden)
+

@@ -130,3 +130,16 @@ main {
   border: 0;
 }
 
+
+/* ---------- Scroll flare (see lib/flare.js) ---------- */
+
+/* Above the page, below the nav; it only ever draws the flared images.
+   Desktop only: phones and tablets show photos without the flare. */
+.flare-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

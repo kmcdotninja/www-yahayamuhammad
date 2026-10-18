@@ -26,50 +26,6 @@
   cursor: default;
 }
 
-/* Collapsed launcher — a prominent floating pill. */
-.dpanel-fab {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 100000;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 16px 0 14px;
-  border-radius: 999px;
-  border: 0;
-  background: #f5f3ee;
-  color: #14120d;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.dpanel-fab:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55);
-}
-.dpanel-fab:active {
-  transform: translateY(0) scale(0.98);
-}
-.dpanel-fab__dot {
-  min-width: 18px;
-  height: 18px;
-  margin-left: 2px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #12c988;
-  color: #042418;
-  font-size: 11px;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
-}
-
 .dpanel__top {
   display: flex;
   align-items: center;

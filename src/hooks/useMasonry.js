@@ -3,7 +3,8 @@ import { useLayoutEffect } from 'react'
 // A real masonry for a project whose tiles mix heights and include a `wide`
 // tile (two columns). Each tile keeps its natural height; tiles go one by one
 // into the shortest column (a wide tile into the pair of neighbouring columns
-// that's lowest), so the columns end unevenly, as a masonry does. Columns
+// that's lowest; a `full` one across every column, below the tallest), so the
+// columns end unevenly, as a masonry does. Columns
 // follow the site's breakpoints: 3 above 900px, 2 above 600px, and on phones
 // the tiles simply stack (no positioning at all).
 export function useMasonry(ref, enabled) {
@@ -26,8 +27,9 @@ export function useMasonry(ref, enabled) {
       const cw = (w - g * (n - 1)) / n
       const h = new Array(n).fill(0)
       items.forEach((el) => {
-        const wide = el.dataset.wide === '1'
-        const span = wide ? Math.min(2, n) : 1
+        const full = el.dataset.wide === 'full'
+        const wide = full || el.dataset.wide === '1'
+        const span = full ? n : wide ? Math.min(2, n) : 1
         el.style.position = 'absolute'
         el.style.width = `${cw * span + g * (span - 1)}px`
         el.style.margin = '0'

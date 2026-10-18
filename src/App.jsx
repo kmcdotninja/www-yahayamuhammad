@@ -4,6 +4,7 @@ import Hero from './components/Hero.jsx'
 import HeroCentered from './components/HeroCentered.jsx'
 import Works2 from './components/Works2.jsx'
 import Footer from './components/Footer.jsx'
+import ScrollFlare from './components/ScrollFlare.jsx'
 import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
@@ -28,6 +29,10 @@ const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
 const Loader = lazy(() => import('./components/Loader.jsx'))
 // Dev design panel — only its chunk loads, and only when ?panel / the flag is set.
 const DesignPanel = lazy(() => import('./components/DesignPanel.jsx'))
+// YahayaLLM — highlight any text on the site and ask about it. Mounted on every
+// route, but deferred to idle alongside the analytics: it does nothing until
+// there is a selection to react to, so it has no business in the LCP path.
+const AskYahaya = lazy(() => import('./components/AskYahaya.jsx'))
 // Local machine only — never on the deployed domain, so visitors can't see it.
 const IS_LOCALHOST =
   typeof window !== 'undefined' &&
@@ -73,13 +78,13 @@ export default function App() {
     applySEO({ ...seo, path: pathname })
   }, [pathname])
 
-  // Defer SpeedInsights mount until idle so it never shows up in the
-  // initial JS execution budget.
-  const [analyticsReady, setAnalyticsReady] = useState(false)
+  // Defer the non-critical mounts (SpeedInsights, YahayaLLM) until idle so they
+  // never show up in the initial JS execution budget.
+  const [deferredReady, setDeferredReady] = useState(false)
   useEffect(() => {
     const ric = window.requestIdleCallback || ((cb) => setTimeout(cb, 1500))
     const cancel = window.cancelIdleCallback || clearTimeout
-    const id = ric(() => setAnalyticsReady(true), { timeout: 3000 })
+    const id = ric(() => setDeferredReady(true), { timeout: 3000 })
     return () => cancel(id)
   }, [])
 
@@ -181,14 +186,20 @@ export default function App() {
         {body}
       </div>
       <div className={veilClass} aria-hidden="true" />
+      <ScrollFlare />
       {loading && (
         <Suspense fallback={null}>
           <Loader onDone={() => setLoading(false)} />
         </Suspense>
       )}
-      {analyticsReady && (
+      {deferredReady && (
         <Suspense fallback={null}>
           <SpeedInsightsLazy />
+        </Suspense>
+      )}
+      {deferredReady && (
+        <Suspense fallback={null}>
+          <AskYahaya />
         </Suspense>
       )}
       {PANEL_ON && (

@@ -353,6 +353,7 @@
 /* Fade + control sitting at the clip line. */
 .tl__more {
   position: absolute;
+  z-index: 3; /* over the shots and the flare's canvas */
   inset: auto 0 0 0;
   height: clamp(150px, 24vh, 280px);
   display: flex;
@@ -470,8 +471,13 @@
   width: min(100%, var(--tl-strip-w));
 }
 
+/* z-index lifts the shot (transparent, so the photo still shows) and its
+   caption above the scroll flare's canvas (lib/flare.js), which draws the photo
+   itself. On the shot rather than the caption: the reveal leaves a transform on
+   it, which would trap a caption's own z-index underneath. */
 .tl__shot {
   position: relative;
+  z-index: 2;
   min-width: 0;
   margin: 0;
   border-radius: 6px;

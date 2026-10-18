@@ -1,0 +1,526 @@
+/* ---------------------------------------------------------------------------
+   YahayaLLM — the floating "Ask" pill and the side panel it opens.
+   ---------------------------------------------------------------------------
+   Two surfaces, both above everything else on the page (the project drawer
+   sits at 9998, and the assistant is meant to work on top of it too).
+
+   The cream (#f5f3ee) and ink (#0a0a0a) on the pills are the deliberate fixed
+   literals the design system reserves for physical objects: a pill is the same
+   object in both themes, so it does not swap with the canvas.
+   --------------------------------------------------------------------------- */
+
+/* ---- The floating pill over a selection ---- */
+.yllm-pill {
+  position: fixed;
+  z-index: 10000;
+  /* `left`/`top` are the centre-top of the selection; the pill hangs above it. */
+  transform: translate(-50%, -100%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: var(--cursor-pointer);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  animation: yllm-pop 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Flipped under the selection, for a highlight too close to the top of the
+   viewport to hang a pill above it. */
+.yllm-pill--below {
+  transform: translate(-50%, 0);
+  animation-name: yllm-pop-below;
+}
+
+.yllm-pill:hover {
+  background: #fff;
+}
+
+@keyframes yllm-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.9);
+  }
+}
+
+@keyframes yllm-pop-below {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.9);
+  }
+}
+
+/* ---- Persistent launcher (bottom right) ---- */
+.yllm-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: var(--cursor-pointer);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
+}
+
+.yllm-fab:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5);
+}
+
+.yllm-fab:active {
+  transform: translateY(0) scale(0.97);
+}
+
+[data-theme='light'] .yllm-fab {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* ---- Shell ---- */
+.yllm {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+/* Only the panel itself takes clicks, never the full-viewport wrapper. On
+   desktop there is no scrim, so everything outside the panel stays live: you
+   can scroll the page, follow a link and highlight another passage with the
+   assistant still open beside you. On mobile the scrim is displayed and does
+   catch clicks, which is what closes the full-screen panel. */
+.yllm--open .yllm__panel,
+.yllm--open .yllm__scrim {
+  pointer-events: auto;
+}
+
+/* Desktop keeps the page live behind the panel on purpose: you can carry on
+   reading and highlight another passage without closing anything. The scrim
+   only exists for the full-screen mobile panel. */
+.yllm__scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  cursor: var(--cursor-pointer);
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Panel ---- */
+.yllm__panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 94vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  border-left: 1px solid var(--border);
+  box-shadow: -26px 0 70px rgba(0, 0, 0, 0.42);
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* closed, the panel waits just off the right edge: its shadow would spill a
+   dark strip over the page's right side (it showed on the project tiles), so
+   it only casts one while open */
+.yllm:not(.yllm--open) .yllm__panel {
+  box-shadow: none;
+}
+
+.yllm--open .yllm__panel {
+  transform: translateX(0);
+}
+
+.yllm--still .yllm__panel {
+  transition: none;
+}
+
+[data-theme='light'] .yllm__panel {
+  box-shadow: -26px 0 70px rgba(0, 0, 0, 0.16);
+}
+
+/* ---- Title bar ---- */
+.yllm__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px 14px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.yllm__title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+[data-theme='light'] .yllm__title {
+  color: var(--text);
+}
+
+.yllm__bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.yllm__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: var(--cursor-pointer);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.yllm__icon:hover {
+  color: var(--text);
+  background: var(--border);
+}
+
+.yllm__icon--tiny {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+/* ---- Thread ---- */
+.yllm__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* The site hides scrollbars everywhere; the panel matches. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.yllm__greeting,
+.yllm__answer {
+  margin: 0;
+  /* Consecutive paragraphs of one composed answer sit closer than two separate
+     replies do. */
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  text-wrap: pretty;
+}
+
+.yllm__greeting {
+  color: var(--text-dim);
+}
+
+/* The question, as a pill on the right. */
+.yllm__ask {
+  margin: 0 0 0 auto;
+  max-width: 86%;
+  padding: 10px 15px;
+  border-radius: 16px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.yllm__reply {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.yllm__answer + .yllm__answer {
+  margin-top: -2px;
+}
+
+.yllm__list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* ---- Image snippets ----
+   No border on the images, per the design system. The rounded corner and the
+   grid do the framing. */
+.yllm__shots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.yllm__shot {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  background: var(--border);
+}
+
+/* ---- Links offered with an answer ---- */
+.yllm__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.yllm__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 15px;
+  border: 1px solid var(--pill-border);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.yllm__link:hover {
+  background: #f5f3ee;
+  color: #0a0a0a;
+}
+
+.yllm__source {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ---- Thinking dots ---- */
+/* Thinking state — the playground's scramble stream, sized for the thread. */
+.yllm__thinking {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+}
+
+/* ---- Suggested follow-ups ---- */
+.yllm__suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-top: 2px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.yllm__suggestion {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: var(--cursor-pointer);
+  transition: color 0.2s ease;
+}
+
+/* The site's arrow, not a new one: → is what StickerInput's go button uses. */
+.yllm__suggestion::before {
+  content: '→';
+  margin-right: 10px;
+  color: var(--text-muted);
+}
+
+.yllm__suggestion:hover {
+  color: var(--text);
+}
+
+/* ---- Composer ---- */
+.yllm__composer {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg);
+}
+
+.yllm__quote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 8px 8px 11px;
+  border-left: 2px solid var(--pill-border);
+  border-radius: 0 8px 8px 0;
+  background: var(--border);
+}
+
+.yllm__quote p {
+  margin: 0;
+  flex: 1;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-dim);
+  /* Long passages are kept to three lines so the composer never swallows the
+     thread; the full text still goes to the engine. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.yllm__field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 5px 5px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: border-color 0.2s ease;
+}
+
+.yllm__field:focus-within {
+  border-color: var(--pill-border);
+}
+
+.yllm__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.4;
+  padding: 9px 0;
+  outline: none;
+}
+
+.yllm__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Same object as the hero's sticker input go button: a round pill with the
+   site's → in it, rather than an icon drawn only for this panel. */
+.yllm__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f3ee;
+  color: #0a0a0a;
+  cursor: var(--cursor-pointer);
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.yllm__send:disabled {
+  opacity: 0.32;
+  cursor: var(--cursor-default);
+}
+
+.yllm__send:not(:disabled):hover {
+  background: #fff;
+}
+
+.yllm__send:not(:disabled):active {
+  transform: scale(0.94);
+}
+
+/* ---- Phone: full screen, with the page frozen behind it ---- */
+@media (max-width: 760px) {
+  .yllm__scrim {
+    display: block;
+  }
+
+  .yllm--open .yllm__scrim {
+    opacity: 1;
+  }
+
+  .yllm__panel {
+    width: 100%;
+    border-left: 0;
+  }
+
+  .yllm-pill {
+    font-size: 15px;
+    padding: 12px 20px;
+  }
+
+  .yllm-fab {
+    right: 14px;
+    bottom: 14px;
+    height: 42px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yllm-pill {
+    animation: none;
+  }
+  .yllm-fab {
+    transition: none;
+  }
+  .yllm__panel {
+    transition: none;
+  }
+}
