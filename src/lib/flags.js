@@ -11,3 +11,8 @@ export const SHOW_NAV_ICONS = false
 // switch back. Set to `true` to bring the toggle back; stored preferences were
 // never cleared, so people get their old choice returned to them.
 export const SHOW_THEME_TOGGLE = false
+
+// Show Ask YahayaLLM (highlight text, ask about it). Still being built, so it
+// runs on the local dev server only and never on the deployed site. Set to
+// `true` to ship it.
+export const SHOW_ASK_YAHAYA = import.meta.env.DEV

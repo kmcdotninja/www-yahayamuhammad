@@ -9,6 +9,7 @@ import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
 import { applySEO, ROUTE_SEO } from './lib/seo.js'
+import { SHOW_ASK_YAHAYA } from './lib/flags.js'
 
 // Route-level code splitting. The home page (Hero + Works2 + Footer) ships
 // in the initial chunk because that's the LCP path; the other routes lazy
@@ -32,7 +33,8 @@ const DesignPanel = lazy(() => import('./components/DesignPanel.jsx'))
 // YahayaLLM — highlight any text on the site and ask about it. Mounted on every
 // route, but deferred to idle alongside the analytics: it does nothing until
 // there is a selection to react to, so it has no business in the LCP path.
-const AskYahaya = lazy(() => import('./components/AskYahaya.jsx'))
+// Dev only for now (SHOW_ASK_YAHAYA in lib/flags.js).
+const AskYahaya = import.meta.env.DEV && SHOW_ASK_YAHAYA ? lazy(() => import('./components/AskYahaya.jsx')) : null
 // Local machine only — never on the deployed domain, so visitors can't see it.
 const IS_LOCALHOST =
   typeof window !== 'undefined' &&
@@ -197,7 +199,7 @@ export default function App() {
           <SpeedInsightsLazy />
         </Suspense>
       )}
-      {deferredReady && (
+      {SHOW_ASK_YAHAYA && deferredReady && (
         <Suspense fallback={null}>
           <AskYahaya />
         </Suspense>
