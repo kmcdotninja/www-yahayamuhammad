@@ -22,6 +22,7 @@
 // ---------------------------------------------------------------------------
 
 import { projects } from '../data.js'
+import { SHOW_PLAYGROUND } from './flags.js'
 import { APPROACH, TIMELINE } from '../data/timeline.js'
 
 export const EMAIL = 'yahayabinmuhammad@gmail.com'
@@ -316,8 +317,8 @@ const STATIC_CHUNKS = [
       'this page', 'this site', 'this website', 'made this', 'built this', 'built with',
     ],
     answer:
-      'I designed and built this site myself. It’s React and Vite, with Jaro for the display type and BDO Grotesk for everything else. The playground page is where I keep the smaller interaction experiments, and the about page runs as a scrolling timeline rather than a résumé list. The stickers on the home page are a hand-rolled physics solver, and yes, you can throw them.',
-    href: '/playground',
+      `I designed and built this site myself. It’s React and Vite, with Jaro for the display type and BDO Grotesk for everything else. ${SHOW_PLAYGROUND ? 'The playground page is where I keep the smaller interaction experiments, and the' : 'The'} about page runs as a scrolling timeline rather than a résumé list. The stickers on the home page are a hand-rolled physics solver, and yes, you can throw them.`,
+    href: SHOW_PLAYGROUND ? '/playground' : '/about',
     suggestions: ['What have you built?', 'What tools do you use?'],
   },
 ]

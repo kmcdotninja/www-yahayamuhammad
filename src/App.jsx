@@ -9,7 +9,7 @@ import { useScrollAnimations } from './hooks/useScrollAnimations.js'
 import { usePathname } from './lib/router.js'
 import { getLenis } from './lib/lenisStore.js'
 import { applySEO, ROUTE_SEO } from './lib/seo.js'
-import { SHOW_ASK_YAHAYA } from './lib/flags.js'
+import { SHOW_ASK_YAHAYA, SHOW_PLAYGROUND } from './lib/flags.js'
 
 // Route-level code splitting. The home page (Hero + Works2 + Footer) ships
 // in the initial chunk because that's the LCP path; the other routes lazy
@@ -25,6 +25,10 @@ const AboutPage2 = lazy(() => import('./components/AboutPage2.jsx'))
 // The original About — kept and parked at /about-old.
 const AboutPage = lazy(() => import('./components/AboutPage.jsx'))
 const NotFoundPage = lazy(() => import('./components/NotFoundPage.jsx'))
+// /v2: a playground experiment, every project in one mosaic. Not linked anywhere.
+const V2Page = lazy(() => import('./components/V2Page.jsx'))
+// /v3: the same, with every piece of every project (Waffle too)
+const V3Page = lazy(() => import('./components/V3Page.jsx'))
 // Loader (and its 3D dependency) is gated behind a runtime flag — only
 // pull it into the bundle when we actually decide to mount it.
 const Loader = lazy(() => import('./components/Loader.jsx'))
@@ -128,7 +132,19 @@ export default function App() {
   }, [loading])
 
   let body
-  if (renderPath === '/playground') {
+  if (renderPath === '/v3') {
+    body = (
+      <Suspense fallback={null}>
+        <V3Page />
+      </Suspense>
+    )
+  } else if (renderPath === '/v2') {
+    body = (
+      <Suspense fallback={null}>
+        <V2Page />
+      </Suspense>
+    )
+  } else if (SHOW_PLAYGROUND && renderPath === '/playground') {
     body = (
       <Suspense fallback={null}>
         <PlaygroundPage />

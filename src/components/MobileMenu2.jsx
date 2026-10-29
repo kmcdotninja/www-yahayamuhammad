@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import './MobileMenu2.css'
 import Picture from './Picture.jsx'
-import { SHOW_NAV_ICONS, SHOW_THEME_TOGGLE } from '../lib/flags.js'
+import { SHOW_NAV_ICONS, SHOW_PLAYGROUND, SHOW_THEME_TOGGLE } from '../lib/flags.js'
 import { useSnd } from '../hooks/useSnd.js'
 import { navigate, usePathname } from '../lib/router.js'
 
@@ -155,17 +155,19 @@ export default function MobileMenu2({
             <Picture src="/icons/nav/work.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
           )}
         </a>
-        <a
-          href="/playground"
-          className="mm2__item"
-          onClick={goTo('/playground')}
-          tabIndex={open ? 0 : -1}
-        >
-          <span>Playground </span>
-          {SHOW_NAV_ICONS && (
-            <Picture src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
-          )}
-        </a>
+        {SHOW_PLAYGROUND && (
+          <a
+            href="/playground"
+            className="mm2__item"
+            onClick={goTo('/playground')}
+            tabIndex={open ? 0 : -1}
+          >
+            <span>Playground </span>
+            {SHOW_NAV_ICONS && (
+              <Picture src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
+            )}
+          </a>
+        )}
         <a
           href="/about"
           className="mm2__item"

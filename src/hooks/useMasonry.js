@@ -7,7 +7,9 @@ import { useLayoutEffect } from 'react'
 // columns end unevenly, as a masonry does. Columns
 // follow the site's breakpoints: 3 above 900px, 2 above 600px, and on phones
 // the tiles simply stack (no positioning at all).
-export function useMasonry(ref, enabled) {
+// `columnsFor` is optional: a function of the viewport width choosing another
+// ladder (the /v2 mosaic wants more, narrower columns); omit it for 3/2/1.
+export function useMasonry(ref, enabled, columnsFor) {
   useLayoutEffect(() => {
     const box = ref.current
     if (!enabled || !box) return undefined
@@ -17,13 +19,13 @@ export function useMasonry(ref, enabled) {
       const items = [...box.children]
       const w = box.clientWidth - parseFloat(getComputedStyle(box).paddingLeft) * 2
       const pad = parseFloat(getComputedStyle(box).paddingLeft)
-      const n = innerWidth > 900 ? 3 : innerWidth > 600 ? 2 : 1
+      const n = columnsFor ? columnsFor(innerWidth) : innerWidth > 900 ? 3 : innerWidth > 600 ? 2 : 1
       if (n === 1) {
         box.style.height = ''
         items.forEach((el) => { el.style.position = ''; el.style.left = ''; el.style.top = ''; el.style.width = '' })
         return
       }
-      const g = n === 3 ? Math.min(14, Math.max(8, innerWidth / 100)) : 10
+      const g = n >= 3 ? Math.min(14, Math.max(8, innerWidth / 100)) : 10
       const cw = (w - g * (n - 1)) / n
       const h = new Array(n).fill(0)
       items.forEach((el) => {
@@ -53,5 +55,5 @@ export function useMasonry(ref, enabled) {
     ;[...box.children].forEach((el) => ro.observe(el))
     addEventListener('resize', queue)
     return () => { ro.disconnect(); removeEventListener('resize', queue); cancelAnimationFrame(raf) }
-  }, [ref, enabled])
+  }, [ref, enabled, columnsFor])
 }

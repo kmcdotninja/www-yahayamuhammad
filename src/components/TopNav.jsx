@@ -6,7 +6,7 @@ import './Hero.css'
 import MobileMenu2 from './MobileMenu2.jsx'
 import CopyToast from './CopyToast.jsx'
 import Picture from './Picture.jsx'
-import { SHOW_NAV_ICONS, SHOW_THEME_TOGGLE } from '../lib/flags.js'
+import { SHOW_NAV_ICONS, SHOW_PLAYGROUND, SHOW_THEME_TOGGLE } from '../lib/flags.js'
 import { useSnd } from '../hooks/useSnd.js'
 import { useTheme } from '../hooks/useTheme.js'
 import { navigate, usePathname } from '../lib/router.js'
@@ -160,14 +160,16 @@ export default function TopNav() {
               <NavIcon src="/icons/nav/work.webp" eager />
               <span className="intro__pill">Work</span>
             </a>
-            <a
-              href="/playground"
-              className="intro__nav-group"
-              onClick={linkTo('/playground')}
-            >
-              <NavIcon src="/icons/nav/playground.webp" eager />
-              <span className="intro__pill">Playground</span>
-            </a>
+            {SHOW_PLAYGROUND && (
+              <a
+                href="/playground"
+                className="intro__nav-group"
+                onClick={linkTo('/playground')}
+              >
+                <NavIcon src="/icons/nav/playground.webp" eager />
+                <span className="intro__pill">Playground</span>
+              </a>
+            )}
             <a
               href="/about"
               className="intro__nav-group"

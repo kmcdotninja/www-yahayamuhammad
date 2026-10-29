@@ -12,9 +12,23 @@
   display: flex;
   flex-direction: column;
   padding: 116px var(--pad) 28px;
-  border-bottom: 1px solid var(--border);
   background: var(--bg);
   gap: 32px;
+}
+
+/* The line under the hero. Full-bleed (100vw, centred) rather than a border,
+   so on screens wider than the page's 1512px cap it still runs to the
+   viewport edge through the rails, like every horizontal line. */
+.introC::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .introC__big {

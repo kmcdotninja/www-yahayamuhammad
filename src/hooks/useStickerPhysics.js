@@ -776,10 +776,11 @@ export function useStickerPhysics(sectionRef) {
       prev = performance.now() // reset so the first dt isn't the whole decode wait
       raf = requestAnimationFrame(frame)
     }
-    Promise.allSettled(els.map((el) => (el.decode ? el.decode() : Promise.resolve()))).then(
-      start,
-    )
-    const startTimer = setTimeout(start, 300)
+    // And while a loader covers the page (window.__pfLoader, set in main.jsx), hold the drop until it lifts, so the
+    // stickers fall as the site appears instead of unseen beneath it
+    const go = () => (window.__pfLoader ? window.__pfLoader.then(start) : start())
+    Promise.allSettled(els.map((el) => (el.decode ? el.decode() : Promise.resolve()))).then(go)
+    const startTimer = setTimeout(go, 300)
 
     return () => {
       started = true // no-op a late decode callback after unmount

@@ -12,7 +12,18 @@ export const SHOW_NAV_ICONS = false
 // never cleared, so people get their old choice returned to them.
 export const SHOW_THEME_TOGGLE = false
 
-// Show Ask YahayaLLM (highlight text, ask about it). Still being built, so it
-// runs on the local dev server only and never on the deployed site. Set to
-// `true` to ship it.
-export const SHOW_ASK_YAHAYA = import.meta.env.DEV
+// Show the Playground: its nav entry (desktop header and mobile menu) and the
+// /playground page itself, which 404s while this is off. Off for now. Nothing
+// was deleted: flip to `true` and put its line back in public/sitemap.xml
+// (it's in that file's git history).
+export const SHOW_PLAYGROUND = false
+
+// Show Ask YahayaLLM (highlight text, ask about it). Off everywhere, the local
+// dev server too: something better is coming. The code is all still here
+// (AskYahaya.jsx, lib/yahaya*.js); set to `true` (or `import.meta.env.DEV` for
+// dev only) to bring it back.
+export const SHOW_ASK_YAHAYA = false
+
+// Show the video polaroid (Building Rednoxx) among the hero's stickers. Hidden for
+// now; HeroVideoCard.jsx is all still there. Set to `true` to bring it back.
+export const SHOW_HERO_VIDEO = false

@@ -69,8 +69,14 @@ const bandFor = (vh) => Math.min(140, Math.max(80, vh * 0.14))
 // Smaller images flare less, so thumbnails don't sprout wings.
 const flareFor = (w) => Math.min(28, w * 0.06)
 
+// Desktop Safari scrolls the page with the flare on at ~30fps (the tile warp's SVG
+// filter is redrawn on the CPU every frame) and still stutters with the photo flare
+// alone (each photo's first upload stalls a frame): it gets the page without the
+// flare, at full speed. Chrome, Edge and Firefox keep it; phones never had it.
+const SAFARI = typeof navigator !== 'undefined' && /^((?!chrome|chromium|crios|fxios|android|edg).)*safari/i.test(navigator.userAgent)
+
 function supported() {
-  if (unsupported) return false
+  if (unsupported || SAFARI) return false
   return (
     window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -178,9 +184,7 @@ function sourceOf(item) {
 function coverCrop(img, source, width, height) {
   const imageAspect = mediaWidth(source) / mediaHeight(source)
   const boxAspect = width / height
-  const [px, py] = getComputedStyle(img)
-    .objectPosition.split(' ')
-    .map((v) => (v.endsWith('%') ? parseFloat(v) / 100 : 0.5))
+  const [px, py] = statics(img).pos
   if (imageAspect > boxAspect) {
     const sx = boxAspect / imageAspect
     return [(1 - sx) * px, 0, sx, 1]
@@ -192,7 +196,7 @@ function coverCrop(img, source, width, height) {
 // Follows the scroll reveal and any other fades on the image's containers.
 function opacityOf(img) {
   let alpha = 1
-  for (let el = img.parentElement; el && el !== document.body; el = el.parentElement) {
+  for (const el of statics(img).up) {
     alpha *= parseFloat(getComputedStyle(el).opacity)
     if (alpha === 0) break
   }
@@ -205,16 +209,34 @@ function opacityOf(img) {
 // doesn't fully contain the image. The card that rounds a tile contains it
 // exactly, so it never counts.
 function clipped(img, r) {
-  for (let el = img.parentElement; el && el !== document.body; el = el.parentElement) {
-    const s = getComputedStyle(el)
-    if (s.overflowX === 'visible' && s.overflowY === 'visible') continue
+  for (const el of statics(img).clips) {
     const b = el.getBoundingClientRect()
     if (r.left < b.left - 1 || r.right > b.right + 1 || r.top < b.top - 1 || r.bottom > b.bottom + 1) return true
   }
   return false
 }
 
+// What doesn't change while an image is on the page, read once rather than on
+// every frame (Safari pays dearly for style reads in the scroll loop): its
+// ancestors, the ones that clip it, its corner radius and its crop position.
+const fixed = new WeakMap()
+function statics(img) {
+  let f = fixed.get(img)
+  if (f) return f
+  const up = []
+  for (let el = img.parentElement; el && el !== document.body; el = el.parentElement) up.push(el)
+  const clips = up.filter((el) => { const s = getComputedStyle(el); return !(s.overflowX === 'visible' && s.overflowY === 'visible') })
+  const pos = getComputedStyle(img).objectPosition.split(' ').map((v) => (v.endsWith('%') ? parseFloat(v) / 100 : 0.5))
+  f = { up, clips, radius: radiusRead(img), pos }
+  fixed.set(img, f)
+  return f
+}
+
 function radiusOf(img) {
+  return statics(img).radius
+}
+
+function radiusRead(img) {
   const own = parseFloat(getComputedStyle(img).borderTopLeftRadius) || 0
   if (own) return own
   const card = img.closest('.project__tile, .tl__shot, .ab2__portrait')

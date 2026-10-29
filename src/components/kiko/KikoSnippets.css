@@ -25,7 +25,7 @@
   display: block;
   width: 100%;
   aspect-ratio: 4 / 5;
-  background: #eaebec;
+  background: #f5f1e8;
   overflow: hidden;
   /* the one milky cream every light Kiko card uses (Kiko's own cream, #f5f1e8) */
   --kiko-cream: #f5f1e8;

@@ -1,3 +1,5 @@
+import { SHOW_PLAYGROUND } from './flags.js'
+
 const SITE = 'https://yahayamuhammad.com'
 
 function setMeta(selector, attr, value) {
@@ -72,10 +74,24 @@ export const ROUTE_SEO = {
     description:
       'Yahaya Muhammad: a product designer and engineer from Kaduna, Nigeria. A timeline of the work, the trips, and the years in between.',
   },
-  '/playground': {
-    title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',
+  // the Playground's own entry: only while it's shown (SHOW_PLAYGROUND)
+  ...(SHOW_PLAYGROUND
+    ? {
+        '/playground': {
+          title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',
+          description:
+            'A loose archive of small experiments by Yahaya Muhammad — type tests, colour studies, posters, and screens that never shipped.',
+        },
+      }
+    : {}),
+  '/v2': {
+    title: 'Yahaya Muhammad / The work, all at once',
     description:
-      'A loose archive of small experiments by Yahaya Muhammad — type tests, colour studies, posters, and screens that never shipped.',
+      'An experiment: Kiko, Kutuby, Rednoxx and Groq in one mosaic of screens, films and animations.',
+  },
+  '/v3': {
+    title: 'Yahaya Muhammad / Everything, all at once',
+    description: 'An experiment: every piece of every project in one mosaic.',
   },
   '/404': {
     title: 'Page not found — Yahaya Muhammad',

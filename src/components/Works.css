@@ -7,11 +7,19 @@
   position: relative;
 }
 
-/* Hairline separator between projects. Sits flush against the page
-   rails like the other section dividers. First project has no top
-   border because it's the start of the section. */
-.project + .project {
-  border-top: 1px solid var(--border);
+/* Hairline separator between projects. Full-bleed (100vw, centred) so it
+   crosses the page's guide rails and runs to the viewport edge, like every
+   other horizontal line. First project has none: it starts the section. */
+.project + .project::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: 1px;
+  background: var(--border);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .project__title {
@@ -42,10 +50,14 @@
 /* Diagonal corner ribbon for "coming soon" projects. The ribbon strip
    is wider than its visible area and pulled into the top-left corner
    at -45° so it reads as a printed sash across the project's corner.
-   `overflow: hidden` on .project--soon clips the ends that extend past
-   the section edge. */
-.project--soon {
+   Its own clip box (.project__ribbon-clip, the project's size) cuts the ends
+   that extend past the section edge; clipping the project itself would also
+   cut the full-bleed divider above it. */
+.project__ribbon-clip {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .project__ribbon {

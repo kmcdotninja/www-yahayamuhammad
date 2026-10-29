@@ -97,14 +97,16 @@ const Project = memo(function Project({ project, onOpen }) {
   return (
     <article className={`project${comingSoon && !link ? ' project--soon' : ''}`}>
       {comingSoon && !link && (
-        <span
-          className={`project__ribbon${
-            parkedLabel.length > 12 ? ' project__ribbon--long' : ''
-          }`}
-          aria-label={`case study ${parkedLabel.toLowerCase()}`}
-        >
-          {parkedLabel}
-        </span>
+        <div className="project__ribbon-clip">
+          <span
+            className={`project__ribbon${
+              parkedLabel.length > 12 ? ' project__ribbon--long' : ''
+            }`}
+            aria-label={`case study ${parkedLabel.toLowerCase()}`}
+          >
+            {parkedLabel}
+          </span>
+        </div>
       )}
       <h2 className="project__title" data-reveal>
         {name}

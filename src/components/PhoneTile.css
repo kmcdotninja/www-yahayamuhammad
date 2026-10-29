@@ -17,9 +17,11 @@
   display: block;
   width: 100%;
   aspect-ratio: 4 / 5;
-  /* The mockups' panel grey: a fixed "object" surface like the stickers, not
-     the page, so it stays the same in both themes. */
-  background: #eaebec;
+  /* The mockups' panel: Kiko's milky cream (the same #f5f1e8 as its brand
+     cards, KikoSnippets.css), so the device tiles and the cards read as one
+     strip. A fixed "object" surface like the stickers, not the page, so it
+     stays the same in both themes. */
+  background: #f5f1e8;
   overflow: hidden;
 }
 

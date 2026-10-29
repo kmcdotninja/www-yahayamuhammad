@@ -336,4 +336,6 @@ const allProjects = [
   },
 ]
 export const projects = allProjects.filter((p) => !p.hidden)
+// every project, hidden ones too (the /v3 feed experiment shows them all)
+export const everyProject = allProjects
 

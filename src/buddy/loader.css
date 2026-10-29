@@ -1,0 +1,23 @@
+/* The loader: the site's black, the Robot kickboxing in the middle, snapshots kicked off to stick round it, then the
+   whole screen lifts away */
+.pf-loader{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;align-content:center;background:#0a0a0a;cursor:pointer;overflow:hidden;transition:transform .7s cubic-bezier(.76,0,.24,1)}
+.pf-loader.out{transform:translateY(-100%)}
+.pf-loader-stage{position:relative;width:min(440px,80vw);aspect-ratio:16/13}
+.pf-loader-clip{width:100%;height:100%;display:block;-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent)}   /* (feathered: a video's black is a shade darker than the page's) */
+
+/* a snapshot: a cream polaroid, thrown at the Robot from off the screen (from --fx/--fy, tumbling --fr), reaching its
+   foot just as it kicks (40% in), taking the hit, and flying off spinning to stick at --tx/--ty, tipped --r */
+.pf-snap{position:absolute;width:clamp(130px,14vw,200px);margin:0;padding:9px 9px 0;background:#f5f3ee;box-shadow:0 10px 28px rgba(0,0,0,.55);opacity:0;translate:-50% -50%;animation:pfKick 1s linear both}
+.pf-snap img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+.pf-snap figcaption{padding:8px 2px 11px;color:#0a0a0a;font-size:14px;line-height:1.2;white-space:nowrap}
+.pf-snap.k1{left:24%;top:62%;--fx:-62vw;--fy:-8vh;--fr:-200deg;--tx:-30vw;--ty:-24vh;--r:-12deg}
+.pf-snap.k2{left:24%;top:66%;--fx:-60vw;--fy:30vh;--fr:-160deg;--tx:-24vw;--ty:16vh;--r:9deg}
+.pf-snap.k3{left:78%;top:60%;--fx:62vw;--fy:4vh;--fr:220deg;--tx:28vw;--ty:-14vh;--r:11deg}
+.pf-snap.k4{left:74%;top:52%;--fx:58vw;--fy:-30vh;--fr:240deg;--tx:20vw;--ty:28vh;--r:-8deg}
+@keyframes pfKick{
+  0%{opacity:1;transform:translate(var(--fx),var(--fy)) rotate(var(--fr)) scale(.9);animation-timing-function:cubic-bezier(.3,.1,.7,.9)}   /* thrown in... */
+  40%{transform:translate(0,0) rotate(-4deg) scale(1);animation-timing-function:ease-out}                                         /* ...to the foot */
+  45%{transform:translate(5px,2px) rotate(-7deg) scale(.86,.94);animation-timing-function:cubic-bezier(.15,.8,.25,1)}             /* the hit */
+  100%{opacity:1;transform:translate(var(--tx),var(--ty)) rotate(calc(var(--r) + 360deg)) scale(1.05)}                            /* kicked off */
+}
+@media (prefers-reduced-motion:reduce){ .pf-loader{transition:opacity .4s} .pf-loader.out{transform:none;opacity:0} .pf-snap{animation:none;opacity:1} .pf-snap{transform:translate(var(--tx),var(--ty)) rotate(var(--r))} }

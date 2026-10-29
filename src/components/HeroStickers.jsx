@@ -1,5 +1,6 @@
 import './HeroStickers.css'
 import HeroVideoCard from './HeroVideoCard.jsx'
+import { SHOW_HERO_VIDEO } from '../lib/flags.js'
 
 // The hero's sticker collage (a selection from /public/playground/stickers),
 // shared by the desktop <HeroCentered> and mobile <Hero>. `mod` selects the CSS
@@ -49,7 +50,7 @@ export default function HeroStickers() {
       {STICKERS.map((sticker) => (
         <Sticker key={sticker.id} {...sticker} />
       ))}
-      <HeroVideoCard />
+      {SHOW_HERO_VIDEO && <HeroVideoCard />}
     </>
   )
 }
