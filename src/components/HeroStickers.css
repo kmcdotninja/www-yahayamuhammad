@@ -49,12 +49,14 @@
    Sizing them up means dropping one. (The 1180px rule hides the book for the
    desktop pile; it comes back here, where there's no input pill.) */
 @media (max-width: 900px) {
-  .hero-sticker--pin { width: clamp(32px, 8.5vw, 46px); }
-  .hero-sticker--brain { width: clamp(62px, 16vw, 88px); }
-  .hero-sticker--face { width: clamp(54px, 15.5vw, 76px); }
+  /* (Bigger since the video card left the band, Oct 2026: the four have its
+     whole width now. The pin most of all: it read as a speck at 46px.) */
+  .hero-sticker--pin { width: clamp(46px, 13vw, 66px); }
+  .hero-sticker--brain { width: clamp(78px, 21vw, 112px); }
+  .hero-sticker--face { width: clamp(74px, 21vw, 106px); }
   .hero-sticker--book {
     display: block;
-    width: clamp(50px, 14vw, 72px);
+    width: clamp(66px, 19vw, 98px);
   }
 }
 
