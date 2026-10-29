@@ -20,4 +20,17 @@
   45%{transform:translate(5px,2px) rotate(-7deg) scale(.86,.94);animation-timing-function:cubic-bezier(.15,.8,.25,1)}             /* the hit */
   100%{opacity:1;transform:translate(var(--tx),var(--ty)) rotate(calc(var(--r) + 360deg)) scale(1.05)}                            /* kicked off */
 }
+/* a phone held upright: the wide layout spilled the snapshots off both sides and crowded the Robot. Here the Robot is
+   a touch smaller and each snapshot, kicked from its foot, flies up or down instead: two above it, two below, all
+   on screen. Sized in vw so it fits an iPhone SE as well as a Pro Max. (The impact point, translate(0,0), is the foot:
+   the left one for k1/k2, the right for k3/k4; --tx/--ty go from there to each corner) */
+@media (max-width:600px) and (orientation:portrait){
+  .pf-loader-stage{width:70vw}
+  .pf-snap{width:34vw;padding:7px 7px 0}
+  .pf-snap figcaption{padding:7px 1px 9px;font-size:13px}
+  .pf-snap.k1{left:36%;top:70%;--fx:-70vw;--fy:-12vh;--tx:-14.2vw;--ty:calc(-57vw - 12px);--r:-8deg}
+  .pf-snap.k2{left:36%;top:70%;--fx:-70vw;--fy:22vh;--tx:-14.2vw;--ty:calc(34.2vw + 12px);--r:7deg}
+  .pf-snap.k3{left:64%;top:68%;--fx:70vw;--fy:-6vh;--tx:14.2vw;--ty:calc(-55.8vw - 12px);--r:9deg}
+  .pf-snap.k4{left:64%;top:68%;--fx:70vw;--fy:24vh;--tx:14.2vw;--ty:calc(35.4vw + 12px);--r:-7deg}
+}
 @media (prefers-reduced-motion:reduce){ .pf-loader{transition:opacity .4s} .pf-loader.out{transform:none;opacity:0} .pf-snap{animation:none;opacity:1} .pf-snap{transform:translate(var(--tx),var(--ty)) rotate(var(--r))} }
