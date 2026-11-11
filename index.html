@@ -244,6 +244,30 @@
       }
     </script>
 
+    <!-- The kickboxing loader (src/buddy/Loader.jsx) plays on a visit's first page. Its clip and four snapshots start
+         downloading here, as the HTML is parsed, instead of after the scripts have loaded and run, so on a first
+         visit they are there when the loader wants them. Same test as src/main.jsx: skipped on later pages of the
+         visit, for reduced motion and on a slow connection. -->
+    <script>
+      try {
+        var net = navigator.connection, slow = !!net && (net.saveData || /(^|-)2g|3g/.test(net.effectiveType || ''))
+        if (!slow && !sessionStorage.getItem('pf.loader') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          // the clip: fetched whole here and handed to the loader as a blob (window.__pfClip)
+          window.__pfClip = fetch('/loader/robot-kicks.mp4').then(function (r) {
+            if (!r.ok) throw new Error('clip ' + r.status)
+            return r.blob()
+          })
+          window.__pfClip.catch(function () {})
+          // the snapshots: preloaded, so the loader's <img>s find them already there
+          ;['north-bridge', 'marina-bay', 'arab-street', 'selfie'].forEach(function (n) {
+            var l = document.createElement('link')
+            l.rel = 'preload'; l.as = 'image'; l.href = '/loader/' + n + '.webp'
+            document.head.appendChild(l)
+          })
+        }
+      } catch (e) {}
+    </script>
+
     <!-- Preload only the critical BDO Grotesk weight that the LCP heading
          relies on. The other six weights swap in lazily through their
          @font-face rules. yahaya-hero.webp is a below-the-fold image used

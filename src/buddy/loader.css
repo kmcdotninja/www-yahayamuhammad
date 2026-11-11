@@ -7,7 +7,8 @@
 
 /* a snapshot: a cream polaroid, thrown at the Robot from off the screen (from --fx/--fy, tumbling --fr), reaching its
    foot just as it kicks (40% in), taking the hit, and flying off spinning to stick at --tx/--ty, tipped --r */
-.pf-snap{position:absolute;width:clamp(130px,14vw,200px);margin:0;padding:9px 9px 0;background:#f5f3ee;box-shadow:0 10px 28px rgba(0,0,0,.55);opacity:0;translate:-50% -50%;animation:pfKick 1s linear both}
+.pf-snap{position:absolute;width:clamp(130px,14vw,200px);margin:0;padding:9px 9px 0;background:#f5f3ee;box-shadow:0 10px 28px rgba(0,0,0,.55);opacity:0;translate:-50% -50%}
+.pf-loader.go .pf-snap{animation:pfKick 1s linear both}   /* (.go: the clip is playing, see Loader.jsx; until then they wait unseen) */
 .pf-snap img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
 .pf-snap figcaption{padding:8px 2px 11px;color:#0a0a0a;font-size:14px;line-height:1.2;white-space:nowrap}
 .pf-snap.k1{left:24%;top:62%;--fx:-62vw;--fy:-8vh;--fr:-200deg;--tx:-30vw;--ty:-24vh;--r:-12deg}
@@ -33,4 +34,4 @@
   .pf-snap.k3{left:64%;top:68%;--fx:70vw;--fy:-6vh;--tx:14.2vw;--ty:calc(-55.8vw - 12px);--r:9deg}
   .pf-snap.k4{left:64%;top:68%;--fx:70vw;--fy:24vh;--tx:14.2vw;--ty:calc(35.4vw + 12px);--r:-7deg}
 }
-@media (prefers-reduced-motion:reduce){ .pf-loader{transition:opacity .4s} .pf-loader.out{transform:none;opacity:0} .pf-snap{animation:none;opacity:1} .pf-snap{transform:translate(var(--tx),var(--ty)) rotate(var(--r))} }
+@media (prefers-reduced-motion:reduce){ .pf-loader{transition:opacity .4s} .pf-loader.out{transform:none;opacity:0} .pf-loader .pf-snap,.pf-loader.go .pf-snap{animation:none;opacity:1} .pf-snap{transform:translate(var(--tx),var(--ty)) rotate(var(--r))} }

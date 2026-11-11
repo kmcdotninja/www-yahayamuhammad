@@ -42,7 +42,11 @@ createRoot(document.getElementById('root')).render(
   const LOADER = true   // the loader (set false to skip it)
   const EVERY = import.meta.env.DEV   // the dev server plays it on every refresh; the live site on a visit's first page
   let first = false
-  if (LOADER) try { first = (EVERY || !sessionStorage.getItem('pf.loader')) && !matchMedia('(prefers-reduced-motion: reduce)').matches; sessionStorage.setItem('pf.loader', '1') } catch { /* storage off */ }
+  // a connection the browser already knows to be slow (or on data saver) gets no loader at all: its clip and snapshots
+  // would not be here in time (Loader.jsx gives them 1.5s), so the site comes straight up
+  const net = navigator.connection
+  const SLOW = !!net && (net.saveData || /(^|-)2g|3g/.test(net.effectiveType || ''))
+  if (LOADER) try { first = (EVERY || !sessionStorage.getItem('pf.loader')) && !SLOW && !matchMedia('(prefers-reduced-motion: reduce)').matches; sessionStorage.setItem('pf.loader', '1') } catch { /* storage off */ }
   if (first) {
     // the loader's black goes up at once; the guide is built behind it (its moment of work hidden there, the
     // loader's own motion runs off the main thread), ready to tumble in with the stickers as it lifts
