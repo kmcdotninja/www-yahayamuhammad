@@ -266,19 +266,22 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       const clone = t.el.cloneNode(true)
       clone.querySelectorAll('video').forEach((v) => v.remove())
       clone.removeAttribute('style'); clone.className = 'tile'
-      const extra = `.tile{position:relative;width:${t.w}px;height:${t.h}px;border-radius:10px;overflow:hidden;background:#1a1a1c}
+      // laid out at twice the size, so the frame stays sharp in the middle of the lens. (Not drawn small and scaled
+      // up by the SVG: Safari ignores an SVG's scaling of HTML, and drew the frame at half size in the corner.)
+      // deviceTiles.css sizes everything from the card's width, so the whole frame simply lays out larger.
+      const S = 2, w = t.w * S, h = t.h * S
+      const extra = `.tile{position:relative;width:${w}px;height:${h}px;border-radius:${10 * S}px;overflow:hidden;background:#1a1a1c}
 .tile .ptile{height:100%;aspect-ratio:auto}
 .tile .ptile.ttile.ttile > .ttile__pad.ttile__pad{transform:translate(-50%,-50%) scale(0.96)}` + (over ? `
 .tile,.ptile,.ptile__phone,.ttile__pad,.ptile__screen,.ttile__screen{background:transparent!important}
 .ptile__phone::before,.ttile__pad::before{display:none}
 .ptile__bezel,.ttile__bezel,.ptile__btn,.ttile__cam{visibility:hidden}` : '')
-      const S = 2 // twice the size, so the frame stays sharp in the middle of the lens
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${t.w * S}" height="${t.h * S}" viewBox="0 0 ${t.w} ${t.h}"><foreignObject x="0" y="0" width="${t.w}" height="${t.h}"><div xmlns="http://www.w3.org/1999/xhtml"><style>${css}${extra}</style>${new XMLSerializer().serializeToString(clone)}</div></foreignObject></svg>`
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject x="0" y="0" width="${w}" height="${h}"><div xmlns="http://www.w3.org/1999/xhtml"><style>${css}${extra}</style>${new XMLSerializer().serializeToString(clone)}</div></foreignObject></svg>`
       const img = new Image()
       img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
       await img.decode()
-      const c = document.createElement('canvas'); c.width = t.w * S; c.height = t.h * S
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height)
+      const c = document.createElement('canvas'); c.width = w; c.height = h
+      c.getContext('2d').drawImage(img, 0, 0, w, h)
       return c
     }
 
