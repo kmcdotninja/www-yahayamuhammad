@@ -2,6 +2,35 @@
 // section and the assistant both read `projects` below) without deleting it.
 const allProjects = [
   {
+    name: 'Groq',
+    // Parked as a teaser for now (same pattern as Waffle) — the card shows the
+    // image strip + info but the drawer stays closed. Flip `comingSoon` off and
+    // add a `sections` array to take it fully live.
+    comingSoon: true,
+    description:
+      'Groq is a crypto payment platform designed to help freelancers and businesses seamlessly receive and spend cryptocurrency.',
+    roles: ['Brand Design', 'Product Design', 'Product Strategy', 'Illustration & Icon Design'],
+    team: [
+      { name: 'Saidu Bello', role: 'Backend Developer' },
+      { name: 'Moses Chimaso', role: 'Frontend Developer' },
+    ],
+    // Flat array drives the horizontal scroller on the works page.
+    images: [
+      '/projects/Groq/1.png',
+      '/projects/Groq/2.png',
+      '/projects/Groq/3.png',
+      '/projects/Groq/4.png',
+      '/projects/Groq/5.png',
+      '/projects/Groq/6.png',
+      '/projects/Groq/7.png',
+      '/projects/Groq/8.png',
+      '/projects/Groq/9.png',
+      '/projects/Groq/10.png',
+      '/projects/Groq/11.png',
+      '/projects/Groq/12.png',
+    ],
+  },
+  {
     name: 'Kiko',
     // A side project, not client work: the third info block reads "Side
     // project" (from `kind`) with the `solo` line in place of a team list.
@@ -246,35 +275,6 @@ const allProjects = [
       '/projects/Rednoxx/Discharge%20summary.webp',
       '/projects/Rednoxx/No%20duplicate%20candidates.webp',
       '/projects/Rednoxx/Badge.webp',
-    ],
-  },
-  {
-    name: 'Groq',
-    // Parked as a teaser for now (same pattern as Waffle) — the card shows the
-    // image strip + info but the drawer stays closed. Flip `comingSoon` off and
-    // add a `sections` array to take it fully live.
-    comingSoon: true,
-    description:
-      'Groq is a crypto payment platform designed to help freelancers and businesses seamlessly receive and spend cryptocurrency.',
-    roles: ['Brand Design', 'Product Design', 'Product Strategy', 'Illustration & Icon Design'],
-    team: [
-      { name: 'Saidu Bello', role: 'Backend Developer' },
-      { name: 'Moses Chimaso', role: 'Frontend Developer' },
-    ],
-    // Flat array drives the horizontal scroller on the works page.
-    images: [
-      '/projects/Groq/1.png',
-      '/projects/Groq/2.png',
-      '/projects/Groq/3.png',
-      '/projects/Groq/4.png',
-      '/projects/Groq/5.png',
-      '/projects/Groq/6.png',
-      '/projects/Groq/7.png',
-      '/projects/Groq/8.png',
-      '/projects/Groq/9.png',
-      '/projects/Groq/10.png',
-      '/projects/Groq/11.png',
-      '/projects/Groq/12.png',
     ],
   },
   {

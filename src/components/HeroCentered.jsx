@@ -44,7 +44,7 @@ export default function HeroCentered() {
 
       <div className="introC__about">
         <p className="introC__bio" data-sticker-keepout>
-          Currently designing at Kutuby to make Islamic studies more fun and engaging for kids.
+          Product designer and engineer who designs and builds, from payments to healthcare to learning.
         </p>
         {/* Scroll cue hidden for now.
         <a
