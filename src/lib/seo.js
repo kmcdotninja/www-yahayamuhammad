@@ -80,7 +80,7 @@ export const ROUTE_SEO = {
         '/playground': {
           title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',
           description:
-            'A loose archive of small experiments by Yahaya Muhammad — type tests, colour studies, posters, and screens that never shipped.',
+            'The work of Yahaya Muhammad on one canvas you drag around, seen through a fisheye lens: Gukart, Kiko, Kutuby and Bayan, playing.',
         },
       }
     : {}),

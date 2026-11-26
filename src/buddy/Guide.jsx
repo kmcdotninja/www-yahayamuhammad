@@ -12,7 +12,7 @@ const SEQ = [['backflip', 'exicited'], ['herolanding', 'determined'], ['webswing
   ['flying', 'determined'], ['spinjump', 'exicited'], ['portal', 'determined'], ['celebrate', 'happy']]
 // what it says on each page: a welcome as you arrive, then a line for each section as it comes into view (found by its
 // selector, or a project by its title, so the pages need nothing added), typed out, with somewhere to go next
-const MAIL = ['Book a chat', 'mailto:yahayabinmuhammad@gmail.com']
+const MAIL = ['Book a chat', 'https://calendly.com/yahayabinmuhammad/coffee-chat']
 const PAGES = {
   '/': {
     hello: { say: 'Hi! I’m Yahaya’s assistant. He’s busy designing, so I’ll show you around.', face: 'welcoming' },
@@ -65,6 +65,22 @@ export default function Guide() {
     return () => { removeEventListener('pointermove', move); cancelAnimationFrame(raf) }
   }, [])
   useEffect(() => () => clearTimeout(t.current), [])
+  // the footer's links bar (GitHub, X, Instagram, LinkedIn) runs under the corner it stands in: as that bar scrolls
+  // into view it rises with it, standing on the bar instead of covering the links
+  const root = useRef(null)
+  useEffect(() => {
+    let raf = 0
+    const fit = () => {
+      raf = 0
+      const el = root.current, bar = document.querySelector('footer.footer'); if (!el) return
+      const lift = bar ? Math.max(0, innerHeight - bar.getBoundingClientRect().top) : 0
+      el.style.transform = lift ? `translateY(${-lift}px)` : ''
+    }
+    const on = () => { if (!raf) raf = requestAnimationFrame(fit) }
+    addEventListener('scroll', on, { passive: true }); addEventListener('resize', on); on()
+    const ro = new ResizeObserver(on); ro.observe(document.body)   // (a page that loads in, or grows, moves the bar)
+    return () => { removeEventListener('scroll', on); removeEventListener('resize', on); ro.disconnect(); cancelAnimationFrame(raf) }
+  }, [])
   // the page you're on (the site's own navigation: history, and its 'spa-navigate' event)
   const [path, setPath] = useState(here)
   useEffect(() => {
@@ -146,7 +162,7 @@ export default function Guide() {
     t.current = setTimeout(() => { delete el.dataset.trick; setBusy(false); setFace('neutral') }, (trickLength(id) || 1) * 1000 + 50)
   }
   return (
-    <div className={`pf-guide ${stage}`}>
+    <div ref={root} className={`pf-guide ${stage}`}>
       <span className="bwrap pf-guide-stage" data-st="idle">
         <span className="buddy" ref={fig} data-face={bubble && !busy ? bubble.face : face}><Figure variant="robot" /></span>
       </span>

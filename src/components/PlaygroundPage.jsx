@@ -1,95 +1,53 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import './PlaygroundPage.css'
-import Footer from './Footer.jsx'
 import TopNav from './TopNav.jsx'
+import LensCanvas from './lens/LensCanvas.jsx'
 
-import PlaygroundSection from './playground2/PlaygroundSection.jsx'
-import PneumaCareIcons from './playground2/interactions/PneumaCareIcons.jsx'
-// Drag to File temporarily unlinked — re-enable this import + its card below to restore.
-// import FileDrop from './playground2/interactions/FileDrop.jsx'
-import StickerStack from './playground2/interactions/StickerStack.jsx'
-import ImageZoomStory from './playground2/interactions/ImageZoomStory.jsx'
-import NumberFlipCounter from './playground2/interactions/NumberFlipCounter.jsx'
-import AppleCarousel from './playground2/interactions/AppleCarousel.jsx'
-import ThinkingStream from './playground2/interactions/ThinkingStream.jsx'
-import NeonTicker from './playground2/interactions/NeonTicker.jsx'
-import { kmcStickers } from './playground2/data/kmcStickers.js'
-import { carImage, carScenes } from './playground2/data/carScenes.js'
-import { carouselCards } from './playground2/data/carouselCards.jsx'
+// The Playground: every project clip on one canvas you drag around, through a fisheye lens.
+// The page doesn't scroll (scrolling moves the canvas), so the nav is told when to tuck in: once the canvas has
+// been moved as far as a page scrolls before the nav tucks in elsewhere (TopNav: 80px). Until then a strip of page
+// sits under the nav, as at the top of every other page; then it slides away and the canvas runs under the nav.
+// (The earlier demos, Sticker Stack, Neon Ticker and the rest, are still in components/playground2,
+// just no longer on this page.)
+const STICK_AT = 80
+
+const navEl = () => document.querySelector('.intro__top')
 
 export default function PlaygroundPage() {
+  const mainRef = useRef(null)
+  const stuck = useRef(false)
+
   useEffect(() => {
     window.scrollTo(0, 0)
+    const nav = navEl()
+    const main = mainRef.current
+    if (!nav || !main) return
+    const fit = () => main.style.setProperty('--nav-h', `${nav.offsetHeight}px`)
+    fit()
+    const ro = new ResizeObserver(() => { if (!stuck.current) fit() })
+    ro.observe(nav)
+    return () => {
+      ro.disconnect()
+      // leave the nav as the next page expects it
+      if (window.scrollY <= STICK_AT) nav.classList.remove('intro__top--stuck')
+    }
+  }, [])
+
+  const onPan = useCallback((moved) => {
+    if (stuck.current || moved < STICK_AT) return
+    stuck.current = true
+    navEl()?.classList.add('intro__top--stuck')
+    mainRef.current?.classList.add('pgp--stuck')
   }, [])
 
   return (
     <>
       <TopNav />
-
-      <main className="pgp">
-        <header className="pgp__head" data-reveal>
-          <h1 className="pgp__title">
-            <span className="sr-only">
-              Yahaya Muhammad’s Playground —{' '}
-            </span>
-            Bits I make
-            <br />
-            between projects
-          </h1>
-          <p className="pgp__sub">
-            Small experiments in illustrations, code, and interaction design.
-          </p>
-        </header>
-
-        <div className="pgp__demos">
-          <PlaygroundSection title="PneumaCare Icons" meta="SVG · Loop" aspect="wide">
-            {({ inView }) => <PneumaCareIcons play={inView} />}
-          </PlaygroundSection>
-
-          <PlaygroundSection title="Sticker Stack" meta="Drag · Spring" aspect="wide">
-            {({ inView }) => (
-              /* Entry ≈ 1.7 s, so loopDelay 2300 ms gives a 4 s replay cycle. */
-              <StickerStack
-                stickers={kmcStickers}
-                play={inView}
-                loop
-                loopDelay={2300}
-              />
-            )}
-          </PlaygroundSection>
-
-          {/* Drag to File temporarily unlinked — restore by uncommenting this card
-              and the FileDrop import above.
-          <PlaygroundSection title="Drag to File" meta="Drag · Drop" aspect="wide">
-            {({ inView }) => <FileDrop play={inView} loop />}
-          </PlaygroundSection>
-          */}
-
-          <PlaygroundSection title="Image Zoom Story" meta="Camera · Zoom" aspect="wide">
-            {() => <ImageZoomStory image={carImage} scenes={carScenes} autoPlay loop />}
-          </PlaygroundSection>
-
-          <PlaygroundSection title="Neon Ticker" meta="LED · Marquee" aspect="wide">
-            {({ inView }) => <NeonTicker active={inView} />}
-          </PlaygroundSection>
-
-          <PlaygroundSection title="Number Flip Counter" meta="Spring · Roll" aspect="wide">
-            {() => <NumberFlipCounter value={0} maxDigits={4} autoPlay duration={0.6} />}
-          </PlaygroundSection>
-
-          <PlaygroundSection title="Thinking Stream" meta="Scramble · Loop" aspect="wide">
-            {({ inView }) => (
-              <ThinkingStream active={inView} mode="analytical" accentColor="#37D15D" />
-            )}
-          </PlaygroundSection>
-
-          <PlaygroundSection title="Apple Carousel" meta="Drag · Snap" aspect="wide">
-            {() => <AppleCarousel items={carouselCards} autoPlay loop showControls showDots />}
-          </PlaygroundSection>
-        </div>
+      <main ref={mainRef} className="pgp">
+        <h1 className="sr-only">Yahaya Muhammad’s Playground: the work, on a canvas you can drag around</h1>
+        <LensCanvas className="pgp__canvas" topInset={() => navEl()?.offsetHeight || 0} onPan={onPan} />
+        <div className="pgp__cap" aria-hidden="true" />
       </main>
-
-      <Footer />
     </>
   )
 }

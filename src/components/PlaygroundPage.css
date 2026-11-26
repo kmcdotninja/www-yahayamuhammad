@@ -1,82 +1,27 @@
-/* ---- Page body ---- */
+/* The Playground: the lens canvas fills the window. A strip of page sits under the nav, as at the top of any
+   other page, until the canvas is moved; then it slides away with the nav's own tuck-in (Hero.css: 0.6s). */
 .pgp {
+  position: fixed;
+  inset: 0;
   background: var(--bg);
-  min-height: 100svh;
-  /* top distance matches the About page so the header clears the nav by the
-     same amount across pages */
-  padding: 156px var(--pad) clamp(60px, 8vw, 120px);
 }
 
-/* ---- Two-line header ---- */
-.pgp__head {
-  margin-bottom: clamp(56px, 7vw, 96px);
+.lens.pgp__canvas {
+  position: absolute;
+  inset: 0;
 }
 
-.pgp__title {
-  font-family: var(--display);
-  font-weight: 400;
-  /* Shared page-hero size — same as the home hero and About. */
-  font-size: var(--fs-hero);
-  line-height: var(--lh-hero);
-  letter-spacing: var(--ls-display);
-  text-transform: uppercase;
-  color: #fff;
-  margin: 0;
+.pgp__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--nav-h, 76px);
+  background: var(--bg);
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-theme='light'] .pgp__title {
-  color: var(--text);
-}
-
-.pgp__sub {
-  font-family: var(--sans);
-  font-size: clamp(16px, 1.4vw, 22px);
-  line-height: 1.3;
-  color: var(--text-dim);
-  /* Keep the sub at a readable measure; the cap used to live on .pgp__head but
-     that clipped the hero title, forcing "between projects" onto a 3rd line. */
-  max-width: 52ch;
-  margin: 14px 0 0;
-  font-weight: 400;
-}
-
-/* ---- Demo grid: 2 columns on desktop. ---- */
-.pgp__demos {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: clamp(16px, 1.6vw, 24px);
-  row-gap: clamp(48px, 5vw, 64px);
-}
-
-@media (max-width: 760px) {
-  .pgp {
-    padding-top: 120px;
-  }
-  .pgp__sub {
-    font-size: clamp(15px, 4vw, 20px);
-  }
-  /* Single column on narrow viewports so each demo stays usable. */
-  .pgp__demos {
-    grid-template-columns: 1fr;
-    row-gap: 56px;
-  }
-  /* Most demos sit at a comfortable 4:3 on phones. The folder/drag scenes are
-     composed for a wide-ish stage, so forcing them taller leaves the folder
-     small and the pieces spread out (looks scattered). */
-  .pgp__demos .pg2-section__stage--wide,
-  .pgp__demos .pg2-section__stage--portrait,
-  .pgp__demos .pg2-section__stage--card,
-  .pgp__demos .pg2-section__stage--short {
-    aspect-ratio: 4 / 3;
-  }
-  /* Apple Carousel: square on phones so the slide card sits comfortably
-     above its controls. */
-  .pgp__demos .pg2-section__stage:has(.pg2-carousel) {
-    aspect-ratio: 1 / 1;
-  }
-  /* The PneumaCare icon set is the one that wants extra height — room for its
-     two rows of icons plus the colour control. */
-  .pgp__demos .pg2-section__stage:has(.li) {
-    aspect-ratio: 1 / 1;
-  }
+.pgp--stuck .pgp__cap {
+  transform: translateY(-100%);
 }

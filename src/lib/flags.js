@@ -16,7 +16,7 @@ export const SHOW_THEME_TOGGLE = false
 // /playground page itself, which 404s while this is off. Off for now. Nothing
 // was deleted: flip to `true` and put its line back in public/sitemap.xml
 // (it's in that file's git history).
-export const SHOW_PLAYGROUND = false
+export const SHOW_PLAYGROUND = true
 
 // Show Ask YahayaLLM (highlight text, ask about it). Off everywhere, the local
 // dev server too: something better is coming. The code is all still here
