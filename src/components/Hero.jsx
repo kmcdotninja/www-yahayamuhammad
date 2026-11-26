@@ -61,7 +61,7 @@ export default function Hero() {
           mobile, so stickers fall past it and seat on the bottom line below. */}
       <div className="intro__about" data-reveal>
         <p className="intro__bio">
-          Product designer and engineer who designs and builds, from payments to healthcare to learning.
+          I love designing and building, from payments to healthcare to learning.
         </p>
         {/* Scroll cue hidden for now.
         <a

@@ -8,9 +8,10 @@ const allProjects = [
     // add a `sections` array to take it fully live.
     comingSoon: true,
     description:
-      'Groq is a crypto payment platform designed to help freelancers and businesses seamlessly receive and spend cryptocurrency.',
+      'Groq is a digital payments platform that works like a bank account for freelancers and businesses: get paid by clients anywhere, hold a balance, and spend it day to day, with crypto handled behind the scenes.',
     roles: ['Brand Design', 'Product Design', 'Product Strategy', 'Illustration & Icon Design'],
     team: [
+      { name: 'Yahaya Muhammad', role: 'Product Designer' },
       { name: 'Saidu Bello', role: 'Backend Developer' },
       { name: 'Moses Chimaso', role: 'Frontend Developer' },
     ],
