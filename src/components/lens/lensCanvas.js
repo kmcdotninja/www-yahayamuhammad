@@ -13,6 +13,15 @@
 
 import { TILES, LAYOUT_W as W, LAYOUT_H as H, CARD_BG } from './layout.js'
 import deviceCss from './deviceTiles.css?raw'
+import { TIERED } from './media.js'
+
+// Each browser gets the lightest canvas file it can play: AV1, else HEVC (Safari), else H.264. An open card plays
+// the clip's full-quality file.
+const probe = typeof document !== 'undefined' ? document.createElement('video') : null
+const can = (type) => !!probe && probe.canPlayType(type) === 'probably'
+const CODEC = can('video/mp4; codecs="av01.0.08M.08"') ? 'av1' : can('video/mp4; codecs="hvc1.1.6.L120.90"') ? 'hevc' : 'h264'
+const canvasFile = (name) => (TIERED.has(name) ? `${name}.c.${CODEC}.mp4` : `${name}.mp4`)
+const fullFile = (name) => (TIERED.has(name) ? `${name}.mp4` : null)
 
 // LENS_ZOOM: how much the middle is magnified. LENS_EDGE: how far round the ball the window's corners reach,
 // in radians (bigger = a stronger squeeze at the edges).
@@ -133,7 +142,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       x.setAttribute('muted', ''); x.setAttribute('playsinline', '')
       if (cls) x.className = cls
       x.poster = `${base}${spec.name}-poster.webp`
-      x.src = `${base}${spec.name}.mp4`
+      x.src = `${base}${canvasFile(spec.name)}`
       return x
     }
     if (spec.kind === 'image') {
@@ -374,8 +383,13 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
         const L = t.gl
         // a new frame: the clip said so (requestVideoFrameCallback), or its time has moved on since the last copy
         // (in case a browser stops saying so for a clip it isn't showing itself)
-        if (t.v && (L.dirty || L.always || t.v.currentTime !== L.lastT) && t.v.readyState >= 2 && t.v.videoWidth) {
-          upload(L.tex, t.v, false); L.has = true; L.frame = true; L.dirty = false; L.lastT = t.v.currentTime; L.aspect = t.v.videoWidth / t.v.videoHeight
+        // (an open card shows its full-quality clip once that has a frame)
+        const full = flying && t.full && t.full.ready ? t.full.v : null
+        const src = full || t.v
+        const last = full ? t.full.lastT : L.lastT
+        if (src && (full || L.dirty || L.always || src.currentTime !== last) && src.readyState >= 2 && src.videoWidth) {
+          if (!full || src.currentTime !== last) { upload(L.tex, src, false); L.has = true; L.frame = true; L.aspect = src.videoWidth / src.videoHeight }
+          if (full) t.full.lastT = src.currentTime; else { L.dirty = false; L.lastT = src.currentTime }
         }
         const p = Math.min(1, Math.max(0, (now - t0 - t.d) / 900)), e = reduced ? 1 : 1 - Math.pow(1 - p, 3)
         g.uniform1f(U.uMorph, flying ? m : 0)
@@ -420,6 +434,29 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     return tiles.find((t) => t.seen && Math.abs(px - t.cx) <= t.w / 2 && Math.abs(py - t.cy) <= t.h / 2) || null
   }
 
+  // ── the full-quality clip for an open card: fetched from the moment the card is pressed, swapped in on its first
+  // frame (so there's no flash), paused again once the card is home ──
+  function prepareFull(t) {
+    const file = fullFile(t.name)
+    if (!file || t.full) return
+    const v = document.createElement('video')
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '')
+    v.src = `${base}${file}`
+    const full = t.full = { v, ready: false, lastT: -1 }
+    v.addEventListener('playing', () => { full.ready = true })
+    v.load()
+  }
+  function playFull(t) {
+    if (!t.full) return
+    if (t.v && t.v.currentTime) t.full.v.currentTime = t.v.currentTime
+    t.full.v.play().catch(() => {})
+  }
+  function pauseFull(t) {
+    if (!t.full) return
+    t.full.v.pause(); t.full.ready = false; t.full.lastT = -1
+  }
+
   // ── open a card in the middle, and send it home ──
   const flyTo = (t, to, isOpen, ms) => new Promise((resolve) => { fly = { t, to, open: isOpen, ms, at: performance.now(), done: false, resolve } })
   function show(t) {
@@ -431,12 +468,13 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     const to = { x: 0, y: 0, w, h } // centred
     open = { t, to }
     root.classList.add('is-open')
+    prepareFull(t); playFull(t)
     flyTo(t, to, true, reduced ? 240 : 820).then(() => { fly = null })
   }
   function hide() {
     if (!open || (fly && !fly.open)) return
     const { t, to } = open
-    flyTo(t, to, false, reduced ? 200 : 600).then(() => { fly = null; open = null; root.classList.remove('is-open') })
+    flyTo(t, to, false, reduced ? 200 : 600).then(() => { fly = null; open = null; root.classList.remove('is-open'); pauseFull(t) })
   }
 
   // ── motion ──
@@ -478,6 +516,8 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     dragging = true; root.classList.add('is-dragging'); root.setPointerCapture?.(e.pointerId)
     px = e.clientX; py = e.clientY; pt = performance.now(); vx = vy = 0
     down = { x: e.clientX, y: e.clientY, t: pt }
+    // a press may be the start of a click: start fetching that card's full-quality clip now
+    if (lens) { const t = tileAt(e.clientX, e.clientY); if (t) prepareFull(t) }
   }
   const onMove = (e) => {
     if (!dragging) return
@@ -526,7 +566,9 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     root.removeEventListener('pointercancel', onCancel)
     root.removeEventListener('wheel', onWheel)
     window.removeEventListener('keydown', onKey)
-    tiles.forEach((t) => { if (t.v) { t.v.pause(); t.v.removeAttribute('src'); t.v.load() } })
+    tiles.forEach((t) => {
+      for (const v of [t.v, t.full && t.full.v]) if (v) { v.pause(); v.removeAttribute('src'); v.load() }
+    })
     if (lens) { lens.dispose(); lens.canvas.remove() }
     world.remove()
   }
