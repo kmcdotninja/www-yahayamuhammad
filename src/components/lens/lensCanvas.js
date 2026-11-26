@@ -16,11 +16,22 @@ import deviceCss from './deviceTiles.css?raw'
 import { TIERED } from './media.js'
 
 // Each browser gets the lightest canvas file it can play: AV1, else HEVC (Safari), else H.264. An open card plays
-// the clip's full-quality file.
+// the clip's full-quality file. AV1 and HEVC only where the machine decodes them in hardware (MediaCapabilities
+// says powerEfficient): a dozen AV1 clips decoded in software stall a mid-range Android phone or an M1/Intel Mac,
+// and every one of them decodes H.264 in hardware.
 const probe = typeof document !== 'undefined' ? document.createElement('video') : null
 const can = (type) => !!probe && probe.canPlayType(type) === 'probably'
-const CODEC = can('video/mp4; codecs="av01.0.08M.08"') ? 'av1' : can('video/mp4; codecs="hvc1.1.6.L120.90"') ? 'hevc' : 'h264'
-const canvasFile = (name) => (TIERED.has(name) ? `${name}.c.${CODEC}.mp4` : `${name}.mp4`)
+const AV1 = 'video/mp4; codecs="av01.0.08M.08"', HEVC = 'video/mp4; codecs="hvc1.1.6.L120.90"'
+const fast = (contentType) => {
+  if (!can(contentType)) return Promise.resolve(false)
+  const mc = typeof navigator !== 'undefined' && navigator.mediaCapabilities
+  if (!mc || !mc.decodingInfo) return Promise.resolve(contentType === HEVC) // (no way to ask: HEVC is only ever hardware)
+  return mc.decodingInfo({ type: 'file', video: { contentType, width: 1200, height: 750, bitrate: 3000000, framerate: 30 } })
+    .then((r) => r.supported && r.powerEfficient).catch(() => false)
+}
+let codec = null
+const pickCodec = () => codec || (codec = fast(AV1).then((a) => (a ? 'av1' : fast(HEVC).then((h) => (h ? 'hevc' : 'h264')))))
+const canvasFile = (name, c) => (TIERED.has(name) ? `${name}.c.${c}.mp4` : `${name}.mp4`)
 const fullFile = (name) => (TIERED.has(name) ? `${name}.mp4` : null)
 
 // LENS_ZOOM: how much the middle is magnified. LENS_EDGE: how far round the ball the window's corners reach,
@@ -142,7 +153,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       x.setAttribute('muted', ''); x.setAttribute('playsinline', '')
       if (cls) x.className = cls
       x.poster = `${base}${spec.name}-poster.webp`
-      x.src = `${base}${canvasFile(spec.name)}`
+      // no src yet: the clip is fetched whole the first time its card comes into view (see loadClip)
       return x
     }
     if (spec.kind === 'image') {
@@ -215,6 +226,45 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     return x1 > -VW / 2 && x0 < VW / 2 && y1 > -VH / 2 && y0 < VH / 2
   }
 
+  // Each clip is downloaded whole, then played from memory. Streamed straight into the <video>, a clip that left
+  // the screen part-way through its download kept the download open but stopped reading it; a dozen of those on the
+  // site's one HTTP/2 connection used up its flow-control window, and every clip that came into view after them got
+  // no data at all, frozen on its first frame (Chrome; it never shows on localhost, where files arrive at once).
+  const urls = []
+  let alive = true
+  function fetchClip(url, signal) {
+    return fetch(url, { signal })
+      .then((r) => { if (!r.ok) throw new Error(r.status); return r.blob() })
+      .then((b) => { const u = URL.createObjectURL(b); urls.push(u); return u })
+      .catch(() => (signal && signal.aborted ? null : url)) // (can't fetch it: stream it after all)
+  }
+  // A few at a time, so on a slow line the clips in view each get the bandwidth to start, rather than all of them
+  // crawling in together; one that has left the view before its turn waits until it's seen again.
+  const MAX_FETCHES = 3
+  const queue = []
+  let fetching = 0
+  function loadClip(t) {
+    if (!t.loading && !t.queued) { t.queued = true; queue.push(t) }
+    pump() // (also when a queued clip comes back into view)
+  }
+  function pump() {
+    while (alive && fetching < MAX_FETCHES) {
+      const i = queue.findIndex((t) => t.seen)
+      if (i < 0) return
+      const t = queue.splice(i, 1)[0]
+      t.queued = false; t.loading = true; fetching++
+      pickCodec()
+        .then((c) => fetchClip(`${base}${canvasFile(t.name, c)}`))
+        .then((u) => {
+          fetching--
+          if (!alive) return
+          t.v.src = u
+          if (t.playing) t.v.play().catch(() => {})
+          pump()
+        })
+    }
+  }
+
   function place() {
     for (const t of tiles) {
       // wrap so each card shows exactly once, measured from the middle of the window, so the wrap seam stays
@@ -235,7 +285,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       }
       t.seen = seen || (fly && fly.t === t) || (open && open.t === t)
       if (!t.v) continue
-      if (t.seen && !t.playing) { t.playing = true; t.v.play().catch(() => {}) }
+      if (t.seen && !t.playing) { t.playing = true; loadClip(t); if (t.v.src) t.v.play().catch(() => {}) }
       else if (!t.seen && t.playing) { t.playing = false; t.v.pause() }
     }
   }
@@ -442,19 +492,36 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     const v = document.createElement('video')
     v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'
     v.setAttribute('muted', ''); v.setAttribute('playsinline', '')
-    v.src = `${base}${file}`
-    const full = t.full = { v, ready: false, lastT: -1 }
+    const full = t.full = { v, ready: false, lastT: -1, want: false, abort: new AbortController() }
     v.addEventListener('playing', () => { full.ready = true })
-    v.load()
+    // fetched whole too; and dropped if the card is closed (or was only pressed to drag) before it's all here, so it
+    // doesn't take a slow line from the clips in view. It starts again the next time the card is pressed.
+    fetchClip(`${base}${file}`, full.abort.signal).then((u) => {
+      full.abort = null
+      if (!u) { if (t.full === full) t.full = null; return }
+      if (!alive) return
+      v.src = u
+      if (full.want) startFull(t)
+    })
   }
-  function playFull(t) {
-    if (!t.full) return
+  // a press that turned into a drag, or a card closed early: stop fetching its full-quality clip
+  function dropFull(t) {
+    if (t.full && t.full.abort && !t.full.want) { t.full.abort.abort(); t.full = null }
+  }
+  function startFull(t) {
     if (t.v && t.v.currentTime) t.full.v.currentTime = t.v.currentTime
     t.full.v.play().catch(() => {})
   }
+  function playFull(t) {
+    if (!t.full) return
+    t.full.want = true
+    if (t.full.v.src) startFull(t)
+  }
   function pauseFull(t) {
     if (!t.full) return
+    t.full.want = false
     t.full.v.pause(); t.full.ready = false; t.full.lastT = -1
+    dropFull(t)
   }
 
   // ── open a card in the middle, and send it home ──
@@ -487,7 +554,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     lastCheck = now
     for (const t of tiles) {
       const v = t.v
-      if (!v || !t.playing || v.paused === false && v.currentTime !== t.wT) { if (v) t.wT = v.currentTime; t.stuck = 0; continue }
+      if (!v || !t.playing || !v.src || v.paused === false && v.currentTime !== t.wT) { if (v) t.wT = v.currentTime; t.stuck = 0; continue }
       if (++t.stuck >= 1) {
         v.play().catch(() => {})
         if (t.stuck >= 2 && v.readyState >= 2) v.currentTime = (v.currentTime + 0.05) % (v.duration || 1)
@@ -517,7 +584,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     px = e.clientX; py = e.clientY; pt = performance.now(); vx = vy = 0
     down = { x: e.clientX, y: e.clientY, t: pt }
     // a press may be the start of a click: start fetching that card's full-quality clip now
-    if (lens) { const t = tileAt(e.clientX, e.clientY); if (t) prepareFull(t) }
+    if (lens) { const t = tileAt(e.clientX, e.clientY); if (t) { prepareFull(t); down.tile = t } }
   }
   const onMove = (e) => {
     if (!dragging) return
@@ -538,6 +605,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       const t = lens ? tileAt(e.clientX, e.clientY) : null
       if (t) { vx = vy = 0; show(t) }
     }
+    if (down && down.tile) dropFull(down.tile) // (no-op if it opened: an open card wants its clip)
     down = null
   }
   const onCancel = () => { dragging = false; down = null; root.classList.remove('is-dragging') }
@@ -559,6 +627,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
 
   return function destroy() {
     cancelAnimationFrame(raf)
+    alive = false
     ro.disconnect(); mo.disconnect()
     root.removeEventListener('pointerdown', onDown)
     root.removeEventListener('pointermove', onMove)
@@ -569,6 +638,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
     tiles.forEach((t) => {
       for (const v of [t.v, t.full && t.full.v]) if (v) { v.pause(); v.removeAttribute('src'); v.load() }
     })
+    urls.forEach((u) => URL.revokeObjectURL(u))
     if (lens) { lens.dispose(); lens.canvas.remove() }
     world.remove()
   }
