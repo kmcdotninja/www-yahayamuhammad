@@ -112,7 +112,9 @@ void main() {
 const mod = (a, n) => ((a % n) + n) % n
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
 
-export function createLensCanvas(root, { base = '/playground/canvas/' } = {}) {
+// options: base, where the clips live; topInset, css px covered at the top (the nav), so the opening view centres
+// in what's visible; onPan(total), called with how far (css px) the visitor has moved the canvas so far
+export function createLensCanvas(root, { base = '/playground/canvas/', topInset = 0, onPan } = {}) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const world = document.createElement('div')
   world.className = 'lens__world'
@@ -176,10 +178,14 @@ export function createLensCanvas(root, { base = '/playground/canvas/' } = {}) {
   }
   measure()
 
-  // the same opening view every time: KayKav's testimonials in the middle, the hand tracing A to Z above,
-  // Bayan's record player below, a Gukart podium to the left and Kiko's Story Time to the right
+  // the same opening view every time: all of KayKav's testimonials, with the letter being traced (the middle of the
+  // hand tracing A to Z card) right above it, both centred together in what's visible; Bayan's record player below,
+  // a Gukart podium to the left and Kiko's Story Time to the right
   const home = tiles.find((t) => t.name === 'kk-testimonials')
-  let ox = VW / 2 - (home.x + home.w / 2), oy = VH / 2 - (home.y + home.h / 2), vx = 0, vy = 0, dragging = false, lastMove = 0
+  const above = tiles.find((t) => t.name === 'ks-web-trace-abc')
+  let ox = VW / 2 - (home.x + home.w / 2)
+  let oy = VH / 2 + topInset / k / 2 - (above.y + above.h / 2 + home.y + home.h) / 2
+  let vx = 0, vy = 0, dragging = false, lastMove = 0, panned = 0
   tiles.forEach((t) => { t.d = reduced ? 0 : Math.min(900, Math.hypot(t.x + t.w / 2 + ox - VW / 2, t.y + t.h / 2 + oy - VH / 2) * 0.45) })
 
   let lens = null
@@ -439,6 +445,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/' } = {}) {
     const now = performance.now()
     const dx = (e.clientX - px) / k, dy = (e.clientY - py) / k
     ox += dx; oy += dy
+    panned += Math.hypot(dx, dy) * k; onPan?.(panned)
     const dt = Math.max(1, now - pt)
     vx = vx * 0.6 + (dx / dt) * 16 * 0.4; vy = vy * 0.6 + (dy / dt) * 16 * 0.4
     px = e.clientX; py = e.clientY; pt = now; lastMove = now
@@ -455,7 +462,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/' } = {}) {
     down = null
   }
   const onCancel = () => { dragging = false; down = null; root.classList.remove('is-dragging') }
-  const onWheel = (e) => { e.preventDefault(); if (open) return; ox -= e.deltaX / k; oy -= e.deltaY / k; lastMove = performance.now() }
+  const onWheel = (e) => { e.preventDefault(); if (open) return; ox -= e.deltaX / k; oy -= e.deltaY / k; lastMove = performance.now(); panned += Math.hypot(e.deltaX, e.deltaY); onPan?.(panned) }
   const onKey = (e) => { if (e.key === 'Escape') hide() }
   root.addEventListener('pointerdown', onDown)
   root.addEventListener('pointermove', onMove)
