@@ -77,8 +77,8 @@ export const ROUTE_SEO = {
   // the Playground's own entry: only while it's shown (SHOW_PLAYGROUND)
   ...(SHOW_PLAYGROUND
     ? {
-        '/playground': {
-          title: 'Playground — Yahaya Muhammad (Product Designer & Engineer)',
+        '/lab': {
+          title: 'Lab — Yahaya Muhammad (Product Designer & Engineer)',
           description:
             'The work of Yahaya Muhammad on one canvas you drag around, seen through a fisheye lens: Gukart, Kiko, Kutuby and Bayan, playing.',
         },

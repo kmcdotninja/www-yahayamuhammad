@@ -44,7 +44,7 @@ export default function PlaygroundPage() {
     <>
       <TopNav />
       <main ref={mainRef} className="pgp">
-        <h1 className="sr-only">Yahaya Muhammad’s Playground: the work, on a canvas you can drag around</h1>
+        <h1 className="sr-only">Yahaya Muhammad’s Lab: the work, on a canvas you can drag around</h1>
         <LensCanvas className="pgp__canvas" topInset={() => navEl()?.offsetHeight || 0} onPan={onPan} />
         <div className="pgp__cap" aria-hidden="true" />
       </main>

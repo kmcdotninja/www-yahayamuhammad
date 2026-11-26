@@ -157,12 +157,12 @@ export default function MobileMenu2({
         </a>
         {SHOW_PLAYGROUND && (
           <a
-            href="/playground"
+            href="/lab"
             className="mm2__item"
-            onClick={goTo('/playground')}
+            onClick={goTo('/lab')}
             tabIndex={open ? 0 : -1}
           >
-            <span>Playground </span>
+            <span>Lab </span>
             {SHOW_NAV_ICONS && (
               <Picture src="/icons/nav/playground.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width="80" height="80" />
             )}

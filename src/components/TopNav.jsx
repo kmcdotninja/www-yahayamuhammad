@@ -162,12 +162,12 @@ export default function TopNav() {
             </a>
             {SHOW_PLAYGROUND && (
               <a
-                href="/playground"
+                href="/lab"
                 className="intro__nav-group"
-                onClick={linkTo('/playground')}
+                onClick={linkTo('/lab')}
               >
                 <NavIcon src="/icons/nav/playground.webp" eager />
-                <span className="intro__pill">Playground</span>
+                <span className="intro__pill">Lab</span>
               </a>
             )}
             <a

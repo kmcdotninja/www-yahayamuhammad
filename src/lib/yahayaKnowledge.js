@@ -313,12 +313,12 @@ const STATIC_CHUNKS = [
     id: 'site',
     title: 'This site',
     keywords: [
-      'site', 'website', 'portfolio site', 'playground', 'design system', 'tech stack',
+      'site', 'website', 'portfolio site', 'playground', 'lab', 'design system', 'tech stack',
       'this page', 'this site', 'this website', 'made this', 'built this', 'built with',
     ],
     answer:
-      `I designed and built this site myself. It’s React and Vite, with Jaro for the display type and BDO Grotesk for everything else. ${SHOW_PLAYGROUND ? 'The playground page is where I keep the smaller interaction experiments, and the' : 'The'} about page runs as a scrolling timeline rather than a résumé list. The stickers on the home page are a hand-rolled physics solver, and yes, you can throw them.`,
-    href: SHOW_PLAYGROUND ? '/playground' : '/about',
+      `I designed and built this site myself. It’s React and Vite, with Jaro for the display type and BDO Grotesk for everything else. ${SHOW_PLAYGROUND ? 'The Lab is where I keep the smaller interaction experiments, and the' : 'The'} about page runs as a scrolling timeline rather than a résumé list. The stickers on the home page are a hand-rolled physics solver, and yes, you can throw them.`,
+    href: SHOW_PLAYGROUND ? '/lab' : '/about',
     suggestions: ['What have you built?', 'What tools do you use?'],
   },
 ]

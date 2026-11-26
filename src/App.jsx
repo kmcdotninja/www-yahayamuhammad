@@ -144,7 +144,7 @@ export default function App() {
         <V2Page />
       </Suspense>
     )
-  } else if (SHOW_PLAYGROUND && renderPath === '/playground') {
+  } else if (SHOW_PLAYGROUND && renderPath === '/lab') {
     body = (
       <Suspense fallback={null}>
         <PlaygroundPage />
@@ -199,7 +199,7 @@ export default function App() {
       : 'page__veil'
 
   return (
-    <div className={renderPath === '/playground' ? 'page page--bare' : 'page'}>
+    <div className={renderPath === '/lab' ? 'page page--bare' : 'page'}>
       <div className={transitionClass} key={renderPath}>
         {body}
       </div>
