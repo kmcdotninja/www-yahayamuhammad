@@ -176,9 +176,10 @@ export function createLensCanvas(root, { base = '/playground/canvas/' } = {}) {
   }
   measure()
 
-  // the same opening view every time: The Walled City (World Tour) in the top-left corner
-  const home = tiles.find((t) => t.name === 'g-worldtour')
-  let ox = 24 - home.x, oy = 12 - home.y, vx = 0, vy = 0, dragging = false, lastMove = 0
+  // the same opening view every time: KayKav's testimonials in the middle, the hand tracing A to Z above,
+  // Bayan's record player below, a Gukart podium to the left and Kiko's Story Time to the right
+  const home = tiles.find((t) => t.name === 'kk-testimonials')
+  let ox = VW / 2 - (home.x + home.w / 2), oy = VH / 2 - (home.y + home.h / 2), vx = 0, vy = 0, dragging = false, lastMove = 0
   tiles.forEach((t) => { t.d = reduced ? 0 : Math.min(900, Math.hypot(t.x + t.w / 2 + ox - VW / 2, t.y + t.h / 2 + oy - VH / 2) * 0.45) })
 
   let lens = null
