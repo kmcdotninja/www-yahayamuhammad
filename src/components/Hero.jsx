@@ -10,17 +10,18 @@ import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 // explicitly. Tablets (768px+) have room for the tighter three-line grouping.
 // Phones get shorter lines than tablets: the display is so much larger relative
 // to the rail there that a tablet-length line would run straight past it. The
-// tightest fit is "things for fun" at 390px, which leaves ~25px of the rail.
+// longest lines are "designer who" and "makes things", which fit from 360px up.
 const PHONE_LINES = [
   'A product',
   'designer who',
-  'builds and makes',
-  'things for fun',
+  'builds and',
+  'makes things',
+  'with fun',
 ]
 const TABLET_LINES = [
   'A product designer',
   'who builds and makes',
-  'things for fun',
+  'things with fun',
 ]
 
 const PHONE_MQ = '(max-width: 760px)'
@@ -61,7 +62,7 @@ export default function Hero() {
           mobile, so stickers fall past it and seat on the bottom line below. */}
       <div className="intro__about" data-reveal>
         <p className="intro__bio">
-          I love designing and building, from payments to healthcare to learning.
+          I love exploring ideas, playing with interactions, and writing the code behind them.
         </p>
         {/* Scroll cue hidden for now.
         <a

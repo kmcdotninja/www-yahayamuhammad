@@ -16,7 +16,7 @@ import { useStickerPhysics } from '../hooks/useStickerPhysics.js'
 const HEADLINE_LINES = [
   'A product designer',
   'who builds and makes',
-  'things for fun',
+  'things with fun',
 ]
 
 export default function HeroCentered() {
@@ -44,7 +44,7 @@ export default function HeroCentered() {
 
       <div className="introC__about">
         <p className="introC__bio" data-sticker-keepout>
-          I love designing and building, from payments to healthcare to learning.
+          I love exploring ideas, playing with interactions, and writing the code behind them.
         </p>
         {/* Scroll cue hidden for now.
         <a
