@@ -199,7 +199,7 @@ export default function App() {
       : 'page__veil'
 
   return (
-    <div className="page">
+    <div className={renderPath === '/playground' ? 'page page--bare' : 'page'}>
       <div className={transitionClass} key={renderPath}>
         {body}
       </div>

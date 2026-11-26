@@ -143,3 +143,9 @@ main {
   height: 100%;
   pointer-events: none;
 }
+
+/* The playground is not a black canvas, so it goes without the two margin lines */
+.page--bare::before,
+.page--bare::after {
+  content: none;
+}
