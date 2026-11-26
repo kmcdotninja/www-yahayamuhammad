@@ -1,0 +1,29 @@
+/* The playground canvas (lensCanvas.js): it fills its box; the WebGL lens sits over the HTML cards,
+   which stay underneath, unseen, to play the clips (and are the canvas itself without WebGL). */
+.lens {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  cursor: var(--cursor-grab);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.lens.is-dragging { cursor: var(--cursor-grabbing); }
+.lens.is-open { cursor: var(--cursor-pointer); }
+.lens__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.lens__world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.lens__tile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a1a1c;
+  will-change: transform;
+}
+.lens__tile > video,
+.lens__tile > img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.lens__tile .ptile { height: 100%; aspect-ratio: auto; }
+.lens__tile .ptile.ttile.ttile > .ttile__pad.ttile__pad { transform: translate(-50%, -50%) scale(0.96); }
