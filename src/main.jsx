@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')).render(
     const host = document.body.appendChild(document.createElement('div'))
     createRoot(host).render(<Guide />)
   })
-  const LOADER = true   // the loader (set false to skip it)
+  const LOADER = false   // the loader (set true to bring it back; also flip LOADER in index.html)
   const EVERY = import.meta.env.DEV   // the dev server plays it on every refresh; the live site on a visit's first page
   let first = false
   // a connection the browser already knows to be slow (or on data saver) gets no loader at all: its clip and snapshots

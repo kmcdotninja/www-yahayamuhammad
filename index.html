@@ -250,8 +250,9 @@
          visit, for reduced motion and on a slow connection. -->
     <script>
       try {
+        var LOADER = false // off for now: keep in step with LOADER in src/main.jsx
         var net = navigator.connection, slow = !!net && (net.saveData || /(^|-)2g|3g/.test(net.effectiveType || ''))
-        if (!slow && !sessionStorage.getItem('pf.loader') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (LOADER && !slow &&!sessionStorage.getItem('pf.loader') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
           // the clip: fetched whole here and handed to the loader as a blob (window.__pfClip)
           window.__pfClip = fetch('/loader/robot-kicks.mp4').then(function (r) {
             if (!r.ok) throw new Error('clip ' + r.status)
