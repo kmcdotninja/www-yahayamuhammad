@@ -1,18 +1,14 @@
-/* The Playground: the lens canvas fills the window, under the nav. */
+/* The Playground: the lens canvas fills the window below the nav. */
 .pgp {
   position: fixed;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: var(--nav-h, 76px);
   background: var(--bg);
 }
 
 .lens.pgp__canvas {
   position: absolute;
   inset: 0;
-}
-
-/* nothing to scroll on this page */
-html.is-playground,
-html.is-playground body {
-  overflow: hidden;
-  overscroll-behavior: none;
 }
