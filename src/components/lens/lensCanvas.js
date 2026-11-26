@@ -192,6 +192,20 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
   let open = null // the card open in the middle: { t, to }
   let fly = null  // a card on its way out or home: { t, to, open, ms, at, done, resolve }
 
+  // a card's outline, bent through the lens, against the window (sampled along its edges)
+  const toScreen = (x, y) => { const r = Math.hypot(x, y), a = Math.min(r / R, Math.PI / 2); const s = r ? (LENS_ZOOM * R * Math.sin(a)) / r : LENS_ZOOM; return [x * s, y * s] }
+  function onScreen(t) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
+    for (let i = 0; i <= 4; i++) {
+      const f = i / 4 - 0.5
+      for (const [u, v] of [[f, -0.5], [f, 0.5], [-0.5, f], [0.5, f]]) {
+        const [x, y] = toScreen(t.cx + u * t.w, t.cy + v * t.h)
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y
+      }
+    }
+    return x1 > -VW / 2 && x0 < VW / 2 && y1 > -VH / 2 && y0 < VH / 2
+  }
+
   function place() {
     for (const t of tiles) {
       // wrap so each card shows exactly once, measured from the middle of the window, so the wrap seam stays
@@ -201,7 +215,10 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       t.cx = cx; t.cy = cy
       let seen
       if (lens) {
-        seen = Math.hypot(Math.max(Math.abs(cx) - t.w / 2, 0), Math.max(Math.abs(cy) - t.h / 2, 0)) < SEE
+        // on screen through the lens: inside the ball's reach, and some of it inside the window once bent. Only
+        // these play, so the browser never decodes more clips than you can see (Safari stalls some when asked
+        // to play too many at once)
+        seen = Math.hypot(Math.max(Math.abs(cx) - t.w / 2, 0), Math.max(Math.abs(cy) - t.h / 2, 0)) < SEE && onScreen(t)
       } else {
         const x = cx + VW / 2 - t.w / 2, y = cy + VH / 2 - t.h / 2
         t.el.style.transform = `translate3d(${x}px, ${y}px, 0)`
@@ -355,8 +372,10 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
         const flying = t === lifted
         if (!flying && !t.seen) continue
         const L = t.gl
-        if (t.v && (L.dirty || L.always) && t.v.readyState >= 2 && t.v.videoWidth) {
-          upload(L.tex, t.v, false); L.has = true; L.frame = true; L.dirty = false; L.aspect = t.v.videoWidth / t.v.videoHeight
+        // a new frame: the clip said so (requestVideoFrameCallback), or its time has moved on since the last copy
+        // (in case a browser stops saying so for a clip it isn't showing itself)
+        if (t.v && (L.dirty || L.always || t.v.currentTime !== L.lastT) && t.v.readyState >= 2 && t.v.videoWidth) {
+          upload(L.tex, t.v, false); L.has = true; L.frame = true; L.dirty = false; L.lastT = t.v.currentTime; L.aspect = t.v.videoWidth / t.v.videoHeight
         }
         const p = Math.min(1, Math.max(0, (now - t0 - t.d) / 900)), e = reduced ? 1 : 1 - Math.pow(1 - p, 3)
         g.uniform1f(U.uMorph, flying ? m : 0)
@@ -423,6 +442,22 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
   // ── motion ──
   let raf = 0, t0 = performance.now()
   lastMove = t0
+  // the watchdog: a clip that should be playing but hasn't moved for a second is nudged back into motion
+  let lastCheck = 0
+  function watchdog(now) {
+    if (now - lastCheck < 1000) return
+    lastCheck = now
+    for (const t of tiles) {
+      const v = t.v
+      if (!v || !t.playing || v.paused === false && v.currentTime !== t.wT) { if (v) t.wT = v.currentTime; t.stuck = 0; continue }
+      if (++t.stuck >= 1) {
+        v.play().catch(() => {})
+        if (t.stuck >= 2 && v.readyState >= 2) v.currentTime = (v.currentTime + 0.05) % (v.duration || 1)
+      }
+      t.wT = v.currentTime
+    }
+  }
+
   function frame(now) {
     if (!dragging && !open) {
       ox += vx; oy += vy
@@ -431,6 +466,7 @@ export function createLensCanvas(root, { base = '/playground/canvas/', topInset 
       if (!reduced && now - lastMove > 1800) { const s = Math.min(1, (now - lastMove - 1800) / 1500); ox -= 0.35 * s; oy -= 0.18 * s }
     }
     place()
+    watchdog(now)
     if (lens) lens.draw(now, t0)
     raf = requestAnimationFrame(frame)
   }
