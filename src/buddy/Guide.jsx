@@ -38,6 +38,10 @@ const PAGES = {
     ],
   },
 }
+PAGES['/lab'] = {
+  hello: { say: 'Welcome to the Lab, where he tinkers with games, kids’ apps and more!', face: 'excited' },
+  spots: [],
+}
 PAGES['/about-timeline'] = PAGES['/about']
 const pageOf = p => PAGES[p] || PAGES['/']
 const here = () => location.pathname
